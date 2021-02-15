@@ -1,15 +1,15 @@
+#include "sdl_graphic.h"
+
 #include <SDL.h>
 #include <SDL_image.h>  // required to load transparent texture from PNG
-#include <SDL_ttf.h>    // required to use TTF fonts
 #include <SDL_mixer.h>  // required to use music
-
+#include <SDL_ttf.h>    // required to use TTF fonts
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 
 #include "game.h"
 #include "game_io.h"
-#include "sdl_graphic.h"
 
 /* **************************************************************** */
 
@@ -239,14 +239,13 @@ bool process(SDL_Window* win, SDL_Renderer* ren, Env* env, SDL_Event* e) {
         find_one_sdl(env->game);
       else
 #ifdef __ANDROID__
-        if(sound_on){
-          Mix_HaltMusic();
-          sound_on=false;
-        }
-        else{
-          Mix_PlayMusic(env->music, -1);
-          sound_on=true;
-        }
+          if (sound_on) {
+        Mix_HaltMusic();
+        sound_on = false;
+      } else {
+        Mix_PlayMusic(env->music, -1);
+        sound_on = true;
+      }
 #else
         save_game(env->game, "save.sav");
 #endif
@@ -292,8 +291,7 @@ bool process(SDL_Window* win, SDL_Renderer* ren, Env* env, SDL_Event* e) {
             break;
         }
 #endif
-        if(sound_on)
-          Mix_PlayChannel(-1, env->turn_sfx[rand() % 3], 0);
+        if (sound_on) Mix_PlayChannel(-1, env->turn_sfx[rand() % 3], 0);
         rotate_piece(env->game, piece_x, piece_y, turn);
 
         env->win = false;

@@ -25,5 +25,4 @@ game load_game(char *filename);
  **/
 void save_game(cgame g, char *filename);
 
-
 #endif  // GAME_IO_H

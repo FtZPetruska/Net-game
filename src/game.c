@@ -1,9 +1,9 @@
+#include "game.h"
+
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-
-#include "game.h"
 
 #define NB_DIR 4
 #define DEFAULT_SIZE 5
@@ -234,16 +234,17 @@ int game_width(cgame game) {
 
 void rotate_piece_one(game game, int x, int y) {
   assert(game);
-  if(x < 0 || x >= game_width(game) || y < 0 || y >= game_height(game)){
+  if (x < 0 || x >= game_width(game) || y < 0 || y >= game_height(game)) {
     fprintf(stderr, "Error, cell is out of bounds!\n");
     return;
   }
-  rotate_piece(game, x, y, 1); //Rotate a piece once is the same as using rotate_piece with 1 quarter turn
+  rotate_piece(game, x, y, 1);  // Rotate a piece once is the same as using
+                                // rotate_piece with 1 quarter turn
 }
 
 void rotate_piece(game game, int x, int y, int nb_cw_quarter_turn) {
   assert(game);
-  if(x < 0 || x >= game_width(game) || y < 0 || y >= game_height(game)){
+  if (x < 0 || x >= game_width(game) || y < 0 || y >= game_height(game)) {
     fprintf(stderr, "Error, cell is out of bounds!\n");
     return;
   }
@@ -264,7 +265,7 @@ void rotate_piece(game game, int x, int y, int nb_cw_quarter_turn) {
     dir++;
     nb_cw_quarter_turn--;
   }
-  setCellDir(c, dir%NB_DIR);
+  setCellDir(c, dir % NB_DIR);
 }
 
 void set_piece_current_dir(game game, int x, int y, direction dir) {

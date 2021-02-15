@@ -1,9 +1,10 @@
+#include "game_io.h"
+
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 
 #include "game.h"
-#include "game_io.h"
 
 //--------------------------------------------------------------------------------------
 //                                Static functions
@@ -81,12 +82,12 @@ void save_game(cgame g, char* filename) {
           is_wrapping(g) ? 'S' : 'N');
 
   for (int y = game_height(g) - 1; y >= 0; y--) {
-    for (int x = 0; x < game_width(g)-1; x++) {
+    for (int x = 0; x < game_width(g) - 1; x++) {
       fprintf(f, "%c%c ", pieceToChar(get_piece(g, x, y)),
               dirToChar(get_current_dir(g, x, y)));
     }
-    fprintf(f, "%c%c\n", pieceToChar(get_piece(g, game_width(g)-1, y)),
-              dirToChar(get_current_dir(g, game_width(g)-1, y)));
+    fprintf(f, "%c%c\n", pieceToChar(get_piece(g, game_width(g) - 1, y)),
+            dirToChar(get_current_dir(g, game_width(g) - 1, y)));
   }
   fclose(f);
 }
@@ -99,23 +100,17 @@ static char dirTab[] = {'N', 'E', 'S', 'W'};
 static char pieceTab[] = {'L', 'S', 'C', 'T', 'F'};
 
 static direction charToDir(char c) {
-  
   for (int i = 0; i < NB_DIR; i++)
     if (c == dirTab[i]) return i;
   return N;
 }
 
-static char dirToChar(direction d) {
-  return dirTab[d];
-}
+static char dirToChar(direction d) { return dirTab[d]; }
 
 static piece charToPiece(char c) {
-  
   for (int i = 0; i < NB_PIECE_TYPE; i++)
     if (c == pieceTab[i]) return i;
   return EMPTY;
 }
 
-static char pieceToChar(piece p) {
-  return pieceTab[p];
-}
+static char pieceToChar(piece p) { return pieceTab[p]; }

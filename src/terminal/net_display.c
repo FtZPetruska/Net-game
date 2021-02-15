@@ -1,6 +1,6 @@
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <assert.h>
 
 #include "game.h"
 #include "game_io.h"
@@ -12,17 +12,17 @@
 void drawGame(game board);
 void drawHBorder();
 
-int main(int argc, char** argv){
-    if(argc != 2){
-        fprintf(stderr, "usage : ./net_display savegame\n");
-        return EXIT_FAILURE;
-    }
-    game g = load_game(argv[1]);
-    assert(g);
-    drawGame(g);
-    delete_game(g);
+int main(int argc, char** argv) {
+  if (argc != 2) {
+    fprintf(stderr, "usage : ./net_display savegame\n");
+    return EXIT_FAILURE;
+  }
+  game g = load_game(argv[1]);
+  assert(g);
+  drawGame(g);
+  delete_game(g);
 
-    return EXIT_SUCCESS;
+  return EXIT_SUCCESS;
 }
 
 // board display:

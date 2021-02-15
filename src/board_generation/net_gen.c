@@ -5,7 +5,6 @@
 
 #include "game.h"
 #include "game_io.h"
-
 #include "game_rand.h"
 
 void usage();

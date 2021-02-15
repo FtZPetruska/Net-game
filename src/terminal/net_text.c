@@ -1,13 +1,3 @@
-/*
- * ----------------------------------------------------------------------------
- * "THE BEER-WARE LICENSE" (Revision 42):
- * As long as you retain this notice you
- * can do whatever you want with this stuff. If we meet some day, and you think
- * this stuff is worth it, you can buy me a beer in return.
- * Romain Pigret-Cadou | Pamphile Saltel | Pierre Wendling
- * ----------------------------------------------------------------------------
- */
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -51,9 +41,9 @@ int main(int argc, char* argv[]) {
       usage();
       return (EXIT_FAILURE);
     }
-  } else  
+  } else
       // Generates games depending on the number of arguments
-    if (argc > 2 && argc < 6) {    
+      if (argc > 2 && argc < 6) {
     bool wrap = false;
     bool forbidCross = false;
     if (argc == 4) wrap = strcmp("S", argv[3]);
