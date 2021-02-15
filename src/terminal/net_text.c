@@ -15,7 +15,7 @@
 
 #include "game.h"
 #include "game_io.h"
-// #include "game_rand.h" Excluded until implemented back
+#include "game_rand.h"
 
 #define DEFAULT_SIZE 5
 #define BORDER_CHAR "█"
