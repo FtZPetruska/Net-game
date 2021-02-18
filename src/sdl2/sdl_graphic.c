@@ -155,16 +155,16 @@ void render(SDL_Window* win, SDL_Renderer* ren, Env* env) {
 
   rect.w = env->piece_size;
   rect.h = env->piece_size;
-  piece piece;
+  piece board_piece;
   direction dir;
   for (int y = game_h - 1; y >= 0; y--) {
     for (int x = 0; x < game_w; x++) {
-      piece = get_piece(env->game, x, y);
+      board_piece = get_piece(env->game, x, y);
       dir = get_current_dir(env->game, x, y);
       rect.x = env->pos_x + x * env->piece_size;
       rect.y = env->pos_y + (game_h - (y + 1)) * env->piece_size;
-      SDL_RenderCopyEx(ren, env->pieces[piece], NULL, &rect, (double)dir * 90,
-                       NULL, SDL_FLIP_NONE);
+      SDL_RenderCopyEx(ren, env->pieces[board_piece], NULL, &rect,
+                       (double)dir * 90, NULL, SDL_FLIP_NONE);
     }
   }
 
@@ -176,10 +176,10 @@ void render(SDL_Window* win, SDL_Renderer* ren, Env* env) {
     rect.x = BORDER + i * button_width;
     SDL_RenderCopy(ren, env->button, NULL, &rect);
   }
-  rect.w *= 0.8;
-  rect.h *= 0.8;
+  rect.w = (int)floor(rect.w * 0.8);
+  rect.h = (int)floor(rect.h * 0.8);
   for (int i = 0; i < NB_BUTTONS; i++) {
-    rect.x = BORDER + i * button_width + (button_width * 0.2) / 2;
+    rect.x = BORDER + i * button_width + (int)(button_width * 0.2) / 2;
     SDL_RenderCopy(ren, env->button_text[i], NULL, &rect);
   }
 
@@ -193,7 +193,7 @@ void render(SDL_Window* win, SDL_Renderer* ren, Env* env) {
 
 /* **************************************************************** */
 
-bool process(SDL_Window* win, SDL_Renderer* ren, Env* env, SDL_Event* e) {
+bool process(SDL_Window* win, Env* env, SDL_Event* e) {
   if (e->type == SDL_QUIT) {
     return true;
   }
@@ -308,6 +308,8 @@ bool process(SDL_Window* win, SDL_Renderer* ren, Env* env, SDL_Event* e) {
 
 void clean(SDL_Window* win, SDL_Renderer* ren, Env* env) {
   if (!env) return;
+  SDL_DestroyWindow(win);
+  SDL_DestroyRenderer(ren);
   SDL_DestroyTexture(env->background);
   for (int i = 0; i < NB_PIECE_TYPE; i++) SDL_DestroyTexture(env->pieces[i]);
   SDL_DestroyTexture(env->button);
@@ -372,7 +374,7 @@ int open_graphic(game g) {
     /* manage events */
     while (SDL_PollEvent(&e)) {
       /* process your events */
-      quit = process(win, ren, env, &e);
+      quit = process(win, env, &e);
       if (quit) break;
     }
 

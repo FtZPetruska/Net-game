@@ -26,7 +26,7 @@ int main(int argc, char* argv[]) {
     usage();
     return EXIT_FAILURE;
   }
-  srand(time(0));
+  srand((unsigned int)time(0));
 
   // Loads a game file
   if (argc == 2) {
