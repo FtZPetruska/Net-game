@@ -17,7 +17,7 @@ void usage();
 
 // MAIN:
 int main(int argc, char* argv[]) {
-  srand(time(0));  // Turns on the random machine
+  srand((unsigned int)time(0));  // Turns on the random machine
 
   // Default variables:
   int turn = 1;
@@ -92,7 +92,7 @@ int main(int argc, char* argv[]) {
 
         while (!scanf("%d", adress[i])) {
           do {
-            c = getchar();
+            c = (char)getchar();
           } while (c != ' ' && c != '\n');
         }
       }
