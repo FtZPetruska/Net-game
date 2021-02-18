@@ -4,8 +4,10 @@ X Rewrite game_rand.c, the original code was provided by the teachers for us to 
 - Clean the code, it's been written before any of the original writers had heard about the book called "Clean code"
 - Comment the code, for the same reason as above, actual meaningful (and working) doxygen could be very useful
 X Format the code, preferably set up a clean .clang-format
-- Make the CMakeList more portable, by adding options for CLang, MSVC, right now it pretty much only works on GCC
+X Make the CMakeList more portable, by adding options for CLang, MSVC, right now it pretty much only works on GCC
 - Fix the warnings, (bonus point if -Wextra is enabled)
+    - 18/02/2020 Mostly done, only solver left
+- Improve stability of the smart solver on larger boards
 - Restore the Android compilation features, it had to be removed because it was too dependent on the University's environment to be of any use. (Docker ?)
 - Port it to whatever you want!
 - Find another background music, the original one was copyrighted, so this original commit comes with a similar music that is under CC BY 3.0
