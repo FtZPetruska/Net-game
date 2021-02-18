@@ -10,7 +10,7 @@
 void usage();
 
 int main(int argc, char* argv[]) {
-  srand(time(0));  // Turns on the random machine
+  srand((unsigned int)time(0));  // Turns on the random machine
 
   // Tests if there is a correct amount of arguments
   if (argc < 4 || 6 < argc) {
