@@ -1,11 +1,7 @@
-cmake_minimum_required(VERSION 3.10)
-
-enable_testing()
-
 include_directories(${NET_HEADERS_DIR})
 
 add_executable(tests tests.c)
-target_link_libraries(tests game)
+target_link_libraries(tests PRIVATE project_warnings project_options game)
 
 add_test(new_game               tests   new_game)
 add_test(game_height            tests   game_height)

@@ -1,5 +1,3 @@
-cmake_minimum_required(VERSION 3.10)
-
 find_package(SDL2 REQUIRED)
 find_package(SDL2_image REQUIRED)
 find_package(SDL2_mixer REQUIRED)
@@ -21,17 +19,7 @@ set( SDL2_ALL_LIBS
 
 include_directories(${SDL2_ALL_INC})
 
-add_executable( net_sdl
-    net_graphic.c
-    sdl_graphic.c
-    ../solver/solve_smart.c
-)
-
-target_link_libraries( net_sdl
-    ${SDL2_ALL_LIBS}
-    m
-    game
-    rand
-)
+add_executable(net_sdl net_graphic.c sdl_graphic.c ../solver/solve_smart.c)
+target_link_libraries(net_sdl PRIVATE project_warnings project_options ${SDL2_ALL_LIBS} m game rand)
 
 file(COPY assets DESTINATION .)

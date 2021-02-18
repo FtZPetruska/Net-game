@@ -14,7 +14,7 @@
 // the pieces, then restarting the game, and comparing the array with the
 // initial directions with the current game
 
-int test_set_piece(int argc, char* argv[]) {
+int test_set_piece() {
   piece default_pieces[] = {EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY,
                             EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY,
                             EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY,
@@ -53,7 +53,7 @@ int test_set_piece(int argc, char* argv[]) {
 // Test if game_width returns the correct width of a standard game
 // (DEFAULT_SIZE) and of an extended game (variable width)
 
-int test_game_width(int argc, char* argv[]) {
+int test_game_width() {
   game g = new_game_empty();
   if (game_width(g) == DEFAULT_SIZE) {
     delete_game(g);
@@ -84,7 +84,7 @@ int test_game_width(int argc, char* argv[]) {
 // by changing and checking the direction of every cell on the board for all 4
 // directions
 
-int test_set_piece_current_dir(int argc, char* argv[]) {
+int test_set_piece_current_dir() {
   game g = new_game_empty();
   direction dir = N;
   for (int x = 0; x < game_width(g); x++) {
@@ -151,7 +151,7 @@ int test_set_piece_current_dir(int argc, char* argv[]) {
 // Tests if opposite_dire returns the correct direction for every possible
 // direction
 
-int test_opposite_dir(int argc, char* argv[]) {
+int test_opposite_dir() {
   if (opposite_dir(N) != S) {
     fprintf(stderr,
             "Error with opposite_dir : opposite of %d is %d, was expected %d\n",
@@ -189,7 +189,7 @@ int test_opposite_dir(int argc, char* argv[]) {
     exit(EXIT_SUCCESS);
 }*/
 
-int test_delete_game(int argc, char* argv[]) {
+int test_delete_game() {
   game g = new_game_empty();
   delete_game(g);
   game g_ext = new_game_empty_ext(10, 10, false);
@@ -207,7 +207,7 @@ int test_delete_game(int argc, char* argv[]) {
 // created game by shuffling it, restarting it and compare the result to the
 // arrays of initial pieces and directions
 
-int test_restart_game(int argc, char* argv[]) {
+int test_restart_game() {
   piece default_pieces[] = {EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY,
                             EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY,
                             EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY,
@@ -243,7 +243,7 @@ int test_restart_game(int argc, char* argv[]) {
 // pointer, placing the correct width and height, and filling the grid with
 // EMPTY pieces for both values of wrapping
 
-int test_new_game_empty_ext(int argc, char* argv[]) {
+int test_new_game_empty_ext() {
   for (int wrapping = 0; wrapping < 2; wrapping++) {
     game g = new_game_empty_ext(42, 115, wrapping);
 
@@ -289,7 +289,7 @@ int test_new_game_empty_ext(int argc, char* argv[]) {
 // pointer, placing the correct width and height, and filling the grid with
 // given pieces in a given direction for both values of wrapping
 
-int test_new_game_ext(int argc, char* argv[]) {
+int test_new_game_ext() {
   piece default_pieces[] = {CROSS, TEE, LEAF, CORNER};
   direction default_dirs[] = {E, W, S, E};
 
@@ -344,7 +344,7 @@ int test_new_game_ext(int argc, char* argv[]) {
 /* ********** TEST NEW GAME ********** */
 /* test if new_game correclty generate the game object.
  */
-int test_new_game(int argc, char* argv[]) {
+int test_new_game() {
   piece default_pieces[] = {LEAF,    TEE,    LEAF,    LEAF, LEAF, LEAF, TEE,
                             TEE,     CORNER, SEGMENT, LEAF, LEAF, TEE,  LEAF,
                             SEGMENT, TEE,    TEE,     TEE,  TEE,  TEE,  CORNER,
@@ -387,7 +387,7 @@ int test_new_game(int argc, char* argv[]) {
 /* test if game_height return the height of the game and not the age of the
  * captain
  */
-int test_game_height(int argc, char* argv[]) {
+int test_game_height() {
   game g = new_game_empty();
   if (game_height(g) != DEFAULT_SIZE) {
     fprintf(stderr,
@@ -402,7 +402,7 @@ int test_game_height(int argc, char* argv[]) {
 /* ********** TEST ROTATE PIECE ********** */
 /* test if rotate_piece rotate correctly pieces
  */
-int test_rotate_piece(int argc, char* argv[]) {
+int test_rotate_piece() {
   game g = new_game_empty();
   int w = game_width(g);
   int h = game_height(g);
@@ -429,7 +429,7 @@ int test_rotate_piece(int argc, char* argv[]) {
 /* test if is_edge return a boolean to know if a given piece type can connect
  * itself in a given direction
  */
-int test_is_edge(int argc, char* argv[]) {
+int test_is_edge() {
   for (int i = 0; i < 4; i++) {
     for (int j = 0; j < 4; j++) {
       if (is_edge(EMPTY, i, j) != false) {
@@ -483,7 +483,7 @@ int test_is_edge(int argc, char* argv[]) {
 /* ********** TEST GET PIECE ********** */
 /* test get_piece
  */
-int test_get_piece(int argc, char* argv[]) {
+int test_get_piece() {
   game g = new_game_empty();
   int w = game_width(g);
   int h = game_height(g);
@@ -509,7 +509,7 @@ int test_get_piece(int argc, char* argv[]) {
 /* test on a few examples if is_game_over correclty detect a finished game
  * board.
  */
-int test_is_game_over(int argc, char* argv[]) {
+int test_is_game_over() {
   piece default_pieces[] = {LEAF,    TEE,    LEAF,    LEAF, LEAF, LEAF, TEE,
                             TEE,     CORNER, SEGMENT, LEAF, LEAF, TEE,  LEAF,
                             SEGMENT, TEE,    TEE,     TEE,  TEE,  TEE,  CORNER,
@@ -621,7 +621,7 @@ int test_is_game_over(int argc, char* argv[]) {
 /* test if on creation of a new game empty, the returned pointer is valid, the
  * game has good direction, and if it is empty.
  */
-int test_new_game_empty(int argc, char* argv[]) {
+int test_new_game_empty() {
   game g = new_game_empty();
 
   if (!g) {
@@ -653,7 +653,7 @@ int test_new_game_empty(int argc, char* argv[]) {
  * shuffle correctly pieces. After shufle, a piece has 25% of chance to have
  * same position as before.
  */
-int test_shuffle_dir(int argc, char* argv[]) {
+int test_shuffle_dir() {
   int seed = 0;
   srand(seed);
 
@@ -705,7 +705,7 @@ int test_shuffle_dir(int argc, char* argv[]) {
 /* That test check if the function to rotate one time correclty rotate in the
  * good direction, at the good place and one one time.
  */
-int test_rotate_piece_one(int argc, char* argv[]) {
+int test_rotate_piece_one() {
   bool isGood = true;
   piece default_pieces[] = {LEAF,    LEAF,    LEAF,    LEAF,    LEAF,
                             TEE,     TEE,     TEE,     TEE,     TEE,
@@ -752,7 +752,7 @@ int test_rotate_piece_one(int argc, char* argv[]) {
  * know which answer is_edge_coordinate must return depending of the direction
  * and type of the piece.
  */
-int test_is_edge_coordinates(int argc, char* argv[]) {
+int test_is_edge_coordinates() {
   piece default_pieces[] = {
       LEAF,   LEAF,    LEAF,    LEAF,    LEAF,    TEE,   TEE,    TEE,    TEE,
       TEE,    SEGMENT, SEGMENT, SEGMENT, SEGMENT, CROSS, CORNER, CORNER, CROSS,
@@ -892,7 +892,7 @@ int test_is_edge_coordinates(int argc, char* argv[]) {
 /* That test check if the copy function copy correclty the original board, and
  * check if the new pointer is really a new board and not the same reference.
  */
-int test_copy_game(int argc, char* argv[]) {
+int test_copy_game() {
   piece default_pieces[] = {LEAF,    LEAF,    LEAF,    LEAF,    LEAF,
                             TEE,     TEE,     TEE,     TEE,     TEE,
                             SEGMENT, SEGMENT, SEGMENT, SEGMENT, SEGMENT,
@@ -969,7 +969,7 @@ int test_copy_game(int argc, char* argv[]) {
 /* ********** TEST get_current_dir ********** */
 /* test if get_current_dir correctly get dir of a given cell.
  */
-int test_get_current_dir(int argc, char* argv[]) {
+int test_get_current_dir() {
   piece default_pieces[] = {LEAF,    LEAF,    LEAF,    LEAF,    LEAF,
                             TEE,     TEE,     TEE,     TEE,     TEE,
                             SEGMENT, SEGMENT, SEGMENT, SEGMENT, SEGMENT,
@@ -980,7 +980,7 @@ int test_get_current_dir(int argc, char* argv[]) {
 
   game board = new_game(default_pieces, default_dirs);
 
-  int values[game_height(board) * game_width(board)];
+  int values[DEFAULT_SIZE * DEFAULT_SIZE];
 
   for (int row = game_height(board) - 1; row >= 0; row--) {
     for (int col = 0; col < game_width(board); col++) {
@@ -1003,7 +1003,7 @@ int test_get_current_dir(int argc, char* argv[]) {
 /* ********** TEST is_wrapping ********** */
 /* test if that simple boolean getter work
  */
-int test_is_wrapping(int argc, char* argv[]) {
+int test_is_wrapping() {
   piece default_pieces[] = {LEAF,    LEAF,    LEAF,    LEAF,    LEAF,
                             TEE,     TEE,     TEE,     TEE,     TEE,
                             SEGMENT, SEGMENT, SEGMENT, SEGMENT, SEGMENT,
@@ -1011,7 +1011,8 @@ int test_is_wrapping(int argc, char* argv[]) {
                             EMPTY,   EMPTY,   EMPTY,   EMPTY,   EMPTY};
   direction default_dirs[] = {N, S, W, E, N, N, S, W, E, N, N, S, W,
                               E, N, N, S, W, E, N, N, S, W, E, N};
-  game g1 = new_game_ext(5, 5, default_pieces, default_dirs, true);
+  game g1 = new_game_ext(DEFAULT_SIZE, DEFAULT_SIZE, default_pieces,
+                         default_dirs, true);
   if (!is_wrapping(g1)) {
     delete_game(g1);
     fprintf(stderr, "is_wrapping say there is no wrap but there is !\n");
@@ -1029,8 +1030,6 @@ int test_is_wrapping(int argc, char* argv[]) {
   delete_game(g2);
   return EXIT_SUCCESS;
 }
-
-#ifndef TESTFW
 
 void usage(int argc, char* argv[]) {
   fprintf(stderr, "Usage: %s <testname>\n", argv[0]);
@@ -1096,5 +1095,3 @@ int main(int argc, char* argv[]) {
     printf("SUCCESS (status %d)\n", status);
   return status;
 }
-
-#endif
