@@ -122,8 +122,8 @@ static void add_half_edge(game board, edge new_edge) {
   piece_edge_links.links[new_edge.piece_direction] = true;
   board_element new_element =
       get_board_element_from_edge_links(piece_edge_links);
-  set_piece(board, new_edge.point.x, new_edge.point.y,
-            new_element.piece_type, new_element.piece_direction);
+  set_piece(board, new_edge.point.x, new_edge.point.y, new_element.piece_type,
+            new_element.piece_direction);
 }
 
 static void add_edge(game board, edge new_edge) {
