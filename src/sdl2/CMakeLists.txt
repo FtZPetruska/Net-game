@@ -34,4 +34,4 @@ target_link_libraries( net_sdl
     rand
 )
 
-file(COPY assets DESTINATION assets)
+file(COPY assets DESTINATION .)

@@ -5,6 +5,8 @@
 #include <stdbool.h>
 #include <stdio.h>
 
+#include "game.h"
+
 typedef struct Env_t Env;
 
 /* **************************************************************** */

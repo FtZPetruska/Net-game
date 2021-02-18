@@ -8,7 +8,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "game.h"
 #include "game_io.h"
 
 /* **************************************************************** */
@@ -66,7 +65,7 @@ bool find_one_sdl(game g);  // Defined in src/solve_smart.c
 game change_game(void);
 bool sound_on;
 
-int min(int a, int b) { return a < b ? a : b; }
+int minimum(int a, int b) { return a < b ? a : b; }
 
 /* **************************************************************** */
 
@@ -291,7 +290,7 @@ bool process(SDL_Window* win, SDL_Renderer* ren, Env* env, SDL_Event* e) {
             break;
         }
 #endif
-        if (sound_on) Mix_PlayChannel(-1, env->turn_sfx[rand() % 3], 0);
+        if (sound_on) Mix_PlayChannel(-1, env->turn_sfx[rand() % NB_SFX], 0);
         rotate_piece(env->game, piece_x, piece_y, turn);
 
         env->win = false;
@@ -330,7 +329,7 @@ void set_game_layout(SDL_Window* win, Env* env) {
   game_h = game_height(env->game);
   env->win_w = env->win_w - 2 * BORDER;
   env->win_h = env->win_h - 3 * BORDER - BUTTON_BOTTOM_SPACE;
-  env->piece_size = min(env->win_w / game_w, env->win_h / game_h);
+  env->piece_size = minimum(env->win_w / game_w, env->win_h / game_h);
   // avoid 1 px gap between pieces, because of piece rotation algorithm:
   if (env->piece_size % 2 == 1) env->piece_size += 1;
   int offset_x = (env->piece_size * game_w) / 2;
