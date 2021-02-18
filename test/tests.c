@@ -412,7 +412,7 @@ int test_rotate_piece() {
       for (int i = 0; i < 8; i++) {
         dir = get_current_dir(g, x, y);
         rotate_piece(g, x, y, i);
-        if (get_current_dir(g, x, y) != (dir + i) % 4) {
+        if (get_current_dir(g, x, y) != (dir + (unsigned int)i) % 4) {
           fprintf(stderr,
                   "Error: function void rotate_piece(game game, int x, int y, "
                   "int cnb_cw_quarter_turn) is not working correctly\n");
@@ -654,7 +654,7 @@ int test_new_game_empty() {
  * same position as before.
  */
 int test_shuffle_dir() {
-  int seed = 0;
+  unsigned int seed = 0;
   srand(seed);
 
   piece default_pieces[] = {
@@ -671,8 +671,8 @@ int test_shuffle_dir() {
 
   int same = 0;
 
-  int N = 500;
-  for (int i = 0; i < N; i++) {
+  int roll_amount = 500;
+  for (int i = 0; i < roll_amount; i++) {
     shuffle_dir(g);
     for (int y = game_height(g) - 1; y >= 0; y--) {
       for (int x = 0; x < game_width(g); x++) {
@@ -685,7 +685,7 @@ int test_shuffle_dir() {
   }
   double height = (double)game_height(g);
   double width = (double)game_width(g);
-  double proba = (double)same / ((double)N * (height * width));
+  double proba = (double)same / ((double)roll_amount * (height * width));
 
   double interval = 0.05;
   if (proba > (1.0 / (double)NB_DIR) - interval &&
@@ -980,7 +980,7 @@ int test_get_current_dir() {
 
   game board = new_game(default_pieces, default_dirs);
 
-  int values[DEFAULT_SIZE * DEFAULT_SIZE];
+  direction values[DEFAULT_SIZE * DEFAULT_SIZE];
 
   for (int row = game_height(board) - 1; row >= 0; row--) {
     for (int col = 0; col < game_width(board); col++) {
@@ -1031,13 +1031,13 @@ int test_is_wrapping() {
   return EXIT_SUCCESS;
 }
 
-void usage(int argc, char* argv[]) {
-  fprintf(stderr, "Usage: %s <testname>\n", argv[0]);
+void usage(char* program_name) {
+  fprintf(stderr, "Usage: %s <testname>\n", program_name);
   exit(EXIT_FAILURE);
 }
 
 int main(int argc, char* argv[]) {
-  if (argc == 1) usage(argc, argv);
+  if (argc == 1) usage(argv[0]);
 
   printf("=> RUN TEST \"%s\"\n", argv[1]);
 
