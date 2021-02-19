@@ -1,6 +1,7 @@
 #ifndef __GAME_H__
 #define __GAME_H__
 #include <stdbool.h>
+#include <stdint.h>
 
 /**
  * @file game.h

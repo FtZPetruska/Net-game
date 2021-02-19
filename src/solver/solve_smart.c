@@ -197,10 +197,9 @@ bool find_all(char *argv[]) {
  * @param g, the game to solve
  * @return false in case of error, true otherwise
  **/
-bool find_one_sdl(game game) {
-  g = game;
-  checked = allocBoolDoubleArray(game_width(g), game_height(g));
-  unmovable = allocBoolDoubleArray(game_width(g), game_height(g));
+bool find_one_sdl(game board) {
+  checked = allocBoolDoubleArray(game_width(board), game_height(board));
+  unmovable = allocBoolDoubleArray(game_width(board), game_height(board));
   possibility solution = findSolution(0, 0);
 
   bool status = true;
@@ -210,11 +209,11 @@ bool find_one_sdl(game game) {
   } else
     status = false;
 
-  freeDoubleArray((void **)checked, game_width(g));
+  freeDoubleArray((void **)checked, game_width(board));
   checked = NULL;
-  freeDoubleArray((void **)unmovable, game_width(g));
+  freeDoubleArray((void **)unmovable, game_width(board));
   unmovable = NULL;
-  g = NULL;
+  board = NULL;
   return status;
 }
 //--------------------------------------------------------------------------------------

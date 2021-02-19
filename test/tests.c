@@ -396,6 +396,7 @@ int test_game_height() {
     delete_game(g);
     return EXIT_FAILURE;
   }
+  delete_game(g);
   return EXIT_SUCCESS;
 }
 
@@ -422,6 +423,7 @@ int test_rotate_piece() {
       }
     }
   }
+  delete_game(g);
   return EXIT_SUCCESS;
 }
 
@@ -489,7 +491,7 @@ int test_get_piece() {
   int h = game_height(g);
   for (int x = 0; x < w; x++) {
     for (int y = 0; y < h; y++) {
-      for (int i = -1; i < 5; i++) {
+      for (piece i = EMPTY; i < NB_PIECE_TYPE; i++) {
         set_piece(g, x, y, i, N);
         if (get_piece(g, x, y) != i) {
           fprintf(stderr,
@@ -502,6 +504,7 @@ int test_get_piece() {
       }
     }
   }
+  delete_game(g);
   return EXIT_SUCCESS;
 }
 
