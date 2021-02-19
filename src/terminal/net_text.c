@@ -17,7 +17,7 @@ void usage();
 
 // MAIN:
 int main(int argc, char* argv[]) {
-  srand((unsigned int)time(0));  // Turns on the random machine
+  srand((uint32_t)time(0));  // Turns on the random machine
 
   // Default variables:
   int turn = 1;

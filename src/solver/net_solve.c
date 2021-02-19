@@ -9,21 +9,20 @@
 //--------------------------------------------------------------------------------------
 //                                Structures
 typedef struct possibility_s *possibility;
-typedef unsigned int uint;
 
 // this structure is used as a chained list to save different dispositions of
 // pieces.
 struct possibility_s {
-  uint x;         // the coordinates of the corresponding cell in the game
-  uint y;         //
+  uint32_t x;         // the coordinates of the corresponding cell in the game
+  uint32_t y;         //
   direction dir;  // the direction to put this piece in in order to set the game
                   // with the saved possibility
   bool isLeaf;    // a boolean to indicate if this possibility is a leaf or not
-  uint nbNextPos;  // the number of deriving possibilities from this cell (0 if
+  uint32_t nbNextPos;  // the number of deriving possibilities from this cell (0 if
                    // it is a leaf)
-  uint *nbNextDerivPos;  // an array of the number of leaves we can access from
+  uint32_t *nbNextDerivPos;  // an array of the number of leaves we can access from
                          // the deriving possibilities of this possibility
-  uint totalNextDerivPos;  // the number of leaves we can access from this
+  uint32_t totalNextDerivPos;  // the number of leaves we can access from this
                            // possibility
   possibility
       *nextPos;  // an array of the deriving possibilities from this cell

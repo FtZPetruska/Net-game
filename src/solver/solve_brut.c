@@ -166,7 +166,7 @@ int *bruteResolve(game g, int type, int n, int *sol, bool found,
     bruteResolve(g, type, n + 1, sol, found, nameFile);
   } else {
     // case of every pieces except segment and cross
-    for (int dir = 0; dir < NB_DIR; dir++) {
+    for (direction dir = 0; dir < NB_DIR; dir++) {
       set_piece_current_dir(g, x, y, dir);
       bruteResolve(g, type, n + 1, sol, found, nameFile);
     }

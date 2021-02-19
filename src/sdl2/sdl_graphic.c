@@ -46,17 +46,19 @@
 // Some macros to load the assets
 #define LOAD_TEXTURE(texture, image)          \
   env->texture = IMG_LoadTexture(ren, image); \
-  if (!env->texture) ERROR("IMG_LoadTexture: %s\n", image);
+  if (!env->texture)                          \
+    ERROR("Error: IMG_LoadTexture, \"%s\" can't be found.\n", image);
 
-#define LOAD_TEXT(font, color, string, texture)               \
-  surf = TTF_RenderText_Blended(font, string, color);         \
-  env->texture = SDL_CreateTextureFromSurface(ren, surf);     \
-  if (!env->texture) ERROR("TEXT_LoadTexture: %s\n", string); \
+#define LOAD_TEXT(font, color, string, texture)                         \
+  surf = TTF_RenderText_Blended(font, string, color);                   \
+  env->texture = SDL_CreateTextureFromSurface(ren, surf);               \
+  if (!env->texture)                                                    \
+    ERROR("Error: TEXT_LoadTexture, \"%s\" can't be found.\n", string); \
   SDL_FreeSurface(surf);
 
 #define LOAD_SFX(chunk, sfx)     \
   env->chunk = Mix_LoadWAV(sfx); \
-  if (!env->chunk) ERROR("AUDIO_MixerError: %s\n", sfx);
+  if (!env->chunk) ERROR("Error: AUDIO_Mixer, \"%s\" can't be found.\n", sfx);
 
 /* **************************************************************** */
 
@@ -123,7 +125,7 @@ Env* init(SDL_Window* win, SDL_Renderer* ren, game g) {
   TTF_CloseFont(font);
 
   env->music = Mix_LoadMUS(MUSIC);
-  if (!env->music) ERROR("AUDIO_MixerError: %s\n", MUSIC);
+  if (!env->music) ERROR("Error: AUDIO_Mixer, \"%s\" can't be found.\n", MUSIC);
 
   LOAD_SFX(turn_sfx[0], TURN_SFX1);
   LOAD_SFX(turn_sfx[1], TURN_SFX2);
@@ -344,7 +346,7 @@ int open_graphic(game g) {
   /* initialize SDL2 and some extensions */
   if (SDL_Init(SDL_INIT_VIDEO) != 0)
     ERROR("Error: SDL_Init VIDEO (%s)", SDL_GetError());
-  if (IMG_Init(IMG_INIT_PNG & IMG_INIT_PNG) != IMG_INIT_PNG)
+  if (IMG_Init(IMG_INIT_PNG) != IMG_INIT_PNG)
     ERROR("Error: IMG_Init PNG (%s)", SDL_GetError());
   if (TTF_Init() != 0) ERROR("Error: TTF_Init (%s)", SDL_GetError());
 

@@ -30,8 +30,8 @@ struct cell_s {
 // game board structure:
 struct game_s {
   bool wrapped;  // boolean to know if the game is in tore mode.
-  unsigned int width;
-  unsigned int height;
+  uint32_t width;
+  uint32_t height;
   cell origin;  // first cell at (0,0) (down-left corner), all other cells of
                 // the board will be linked from this point.
 };
@@ -68,12 +68,12 @@ static void setDown(cell c, cell target);
 // game primitives
 static cell getOrigin(cgame game);
 static void setOrigin(game game, cell c);
-static void setHeight(game game, unsigned int height);
-static void setWidth(game game, unsigned int width);
+static void setHeight(game game, uint32_t height);
+static void setWidth(game game, uint32_t width);
 static int getHeight(cgame game);
 static int getWidth(cgame game);
-static bool **allocBoolDoubleArray(unsigned int x, unsigned int y);
-static void freeDoubleArray(void **table, unsigned int x);
+static bool **allocBoolDoubleArray(uint32_t x, uint32_t y);
+static void freeDoubleArray(void **table, uint32_t x);
 static void getCoordFromDir(direction dir, int *x, int *y);
 static bool isBranchOver(cgame g, cell c, direction dir, bool **checked, int x,
                          int y);
@@ -214,7 +214,7 @@ void shuffle_dir(game game) {
   for (int y = 0; y < getHeight(game); y++) {
     cell pX = pY;
     for (int x = 0; x < getWidth(game); x++) {
-      unsigned int value = rand() % NB_DIR;  // Take a random direction
+      uint32_t value = rand() % NB_DIR;  // Take a random direction
       setCellDir(pX, value);
       pX = getRight(pX);
     }
@@ -793,7 +793,7 @@ static void setOrigin(game game, cell c) {
  * @param game, the game we want to set the height on
  * @param height, the height we want the game to be
  **/
-static void setHeight(game game, unsigned int height) {
+static void setHeight(game game, uint32_t height) {
   if (game != NULL)
     game->height = height;
   else
@@ -806,7 +806,7 @@ static void setHeight(game game, unsigned int height) {
  * @param game, the game we want to set the width on
  * @param width, the width we want the game to be
  **/
-static void setWidth(game game, unsigned int width) {
+static void setWidth(game game, uint32_t width) {
   if (game != NULL)
     game->width = width;
   else
@@ -871,19 +871,19 @@ static bool getWrap(cgame game) {
  * @param y, the number of lines for the double array
  * @return the adress of the double array
  */
-static bool **allocBoolDoubleArray(unsigned int x, unsigned int y) {
+static bool **allocBoolDoubleArray(uint32_t x, uint32_t y) {
   bool **table = (bool **)malloc(sizeof(bool *) * x);
   if (!table) {
     fprintf(stderr, "not enough memory to alloc a table of %d pointers", x);
     exit(EXIT_FAILURE);
   }
-  for (unsigned int i = 0; i < x; i++) {
+  for (uint32_t i = 0; i < x; i++) {
     table[i] = (bool *)malloc(sizeof(bool) * y);
     if (!table[i]) {
       fprintf(stderr, "not enough memory to alloc a table of %d booleans", y);
       exit(EXIT_FAILURE);
     }
-    for (unsigned int j = 0; j < y; j++) {
+    for (uint32_t j = 0; j < y; j++) {
       table[i][j] = false;
     }
   }
@@ -896,9 +896,9 @@ static bool **allocBoolDoubleArray(unsigned int x, unsigned int y) {
  * @param table, the double array to free
  * @param x, the number of columns for the double array
  */
-void freeDoubleArray(void **table, unsigned int x) {
+void freeDoubleArray(void **table, uint32_t x) {
   if (table) {
-    for (unsigned int i = 0; i < x; i++) {
+    for (uint32_t i = 0; i < x; i++) {
       if (table[i]) {
         free(table[i]);
       }

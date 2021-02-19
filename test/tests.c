@@ -412,7 +412,7 @@ int test_rotate_piece() {
       for (int i = 0; i < 8; i++) {
         dir = get_current_dir(g, x, y);
         rotate_piece(g, x, y, i);
-        if (get_current_dir(g, x, y) != (dir + (unsigned int)i) % 4) {
+        if (get_current_dir(g, x, y) != (dir + (uint32_t)i) % 4) {
           fprintf(stderr,
                   "Error: function void rotate_piece(game game, int x, int y, "
                   "int cnb_cw_quarter_turn) is not working correctly\n");
@@ -430,8 +430,8 @@ int test_rotate_piece() {
  * itself in a given direction
  */
 int test_is_edge() {
-  for (int i = 0; i < 4; i++) {
-    for (int j = 0; j < 4; j++) {
+  for (direction i = 0; i < NB_DIR; i++) {
+    for (direction j = 0; j < NB_DIR; j++) {
       if (is_edge(EMPTY, i, j) != false) {
         fprintf(stderr,
                 "Error: function is_edge(EMPTY, %d, %d) returned a wrong "
@@ -654,7 +654,7 @@ int test_new_game_empty() {
  * same position as before.
  */
 int test_shuffle_dir() {
-  unsigned int seed = 0;
+  uint32_t seed = 0;
   srand(seed);
 
   piece default_pieces[] = {
@@ -1043,47 +1043,47 @@ int main(int argc, char* argv[]) {
 
   int status;
   if (strcmp("new_game", argv[1]) == 0)
-    status = test_new_game(argc, argv);
+    status = test_new_game();
   else if (strcmp("game_height", argv[1]) == 0)
-    status = test_game_height(argc, argv);
+    status = test_game_height();
   else if (strcmp("rotate_piece", argv[1]) == 0)
-    status = test_rotate_piece(argc, argv);
+    status = test_rotate_piece();
   else if (strcmp("is_edge", argv[1]) == 0)
-    status = test_is_edge(argc, argv);
+    status = test_is_edge();
   else if (strcmp("get_piece", argv[1]) == 0)
-    status = test_get_piece(argc, argv);
+    status = test_get_piece();
   else if (strcmp("is_game_over", argv[1]) == 0)
-    status = test_is_game_over(argc, argv);
+    status = test_is_game_over();
   else if (strcmp("new_game_empty", argv[1]) == 0)
-    status = test_new_game_empty(argc, argv);
+    status = test_new_game_empty();
   else if (strcmp("shuffle_dir", argv[1]) == 0)
-    status = test_shuffle_dir(argc, argv);
+    status = test_shuffle_dir();
   else if (strcmp("rotate_piece_one", argv[1]) == 0)
-    status = test_rotate_piece_one(argc, argv);
+    status = test_rotate_piece_one();
   else if (strcmp("is_edge_coordinates", argv[1]) == 0)
-    status = test_is_edge_coordinates(argc, argv);
+    status = test_is_edge_coordinates();
   else if (strcmp("copy_game", argv[1]) == 0)
-    status = test_copy_game(argc, argv);
+    status = test_copy_game();
   else if (strcmp("get_current_dir", argv[1]) == 0)
-    status = test_get_current_dir(argc, argv);
+    status = test_get_current_dir();
   else if (strcmp("is_wrapping", argv[1]) == 0)
-    status = test_is_wrapping(argc, argv);
+    status = test_is_wrapping();
   else if (strcmp("set_piece", argv[1]) == 0)
-    status = test_set_piece(argc, argv);
+    status = test_set_piece();
   else if (strcmp("game_width", argv[1]) == 0)
-    status = test_game_width(argc, argv);
+    status = test_game_width();
   else if (strcmp("set_piece_current_dir", argv[1]) == 0)
-    status = test_set_piece_current_dir(argc, argv);
+    status = test_set_piece_current_dir();
   else if (strcmp("opposite_dir", argv[1]) == 0)
-    status = test_opposite_dir(argc, argv);
+    status = test_opposite_dir();
   else if (strcmp("delete_game", argv[1]) == 0)
-    status = test_delete_game(argc, argv);
+    status = test_delete_game();
   else if (strcmp("restart_game", argv[1]) == 0)
-    status = test_restart_game(argc, argv);
+    status = test_restart_game();
   else if (strcmp("new_game_empty_ext", argv[1]) == 0)
-    status = test_new_game_empty_ext(argc, argv);
+    status = test_new_game_empty_ext();
   else if (strcmp("new_game_ext", argv[1]) == 0)
-    status = test_new_game_ext(argc, argv);
+    status = test_new_game_ext();
   else {
     fprintf(stderr, "Error: test %s not found!\n", argv[1]);
     return EXIT_FAILURE;

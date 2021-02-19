@@ -11,7 +11,7 @@ typedef struct Env_t Env;
 
 /* **************************************************************** */
 
-#ifdef __ANDROID__
+#if defined(__ANDROID__)
 #define PRINT(STR, ...)          \
   do {                           \
     SDL_Log(STR, ##__VA_ARGS__); \
@@ -24,11 +24,11 @@ typedef struct Env_t Env;
 #else
 #define PRINT(STR, ...)         \
   do {                          \
-    printf(STR, ##__VA_ARGS__); \
+    printf(STR, __VA_ARGS__); \
   } while (0)
 #define ERROR(STR, ...)                  \
   do {                                   \
-    fprintf(stderr, STR, ##__VA_ARGS__); \
+    fprintf(stderr, STR, __VA_ARGS__); \
     exit(EXIT_FAILURE);                  \
   } while (0)
 #endif
