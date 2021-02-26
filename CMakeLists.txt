@@ -32,7 +32,7 @@ enable_doxygen()
 option(ENABLE_TESTING "Enable Test Builds" ON)
 
 # Add the modules to find SDL2 libraries
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/sdl2-cmake-scripts")
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/sdl2")
 
 if(ENABLE_TESTING)
   set(NET_HEADERS_DIR "${CMAKE_SOURCE_DIR}/src/include")
