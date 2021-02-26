@@ -30,8 +30,8 @@ struct cell_s {
 // game board structure:
 struct game_s {
   bool wrapped;  // boolean to know if the game is in tore mode.
-  uint32_t width;
-  uint32_t height;
+  int width;
+  int height;
   cell origin;  // first cell at (0,0) (down-left corner), all other cells of
                 // the board will be linked from this point.
 };
@@ -66,20 +66,20 @@ static void setUp(cell c, cell target);
 static void setDown(cell c, cell target);
 
 // game primitives
-static cell getOrigin(cgame game);
-static void setOrigin(game game, cell c);
-static void setHeight(game game, uint32_t height);
-static void setWidth(game game, uint32_t width);
-static int getHeight(cgame game);
-static int getWidth(cgame game);
-static bool **allocBoolDoubleArray(uint32_t x, uint32_t y);
-static void freeDoubleArray(void **table, uint32_t x);
+static cell getOrigin(cgame board);
+static void setOrigin(game board, cell c);
+static void setHeight(game board, int height);
+static void setWidth(game board, int width);
+static int getHeight(cgame board);
+static int getWidth(cgame board);
+static bool **allocBoolDoubleArray(int x, int y);
+static void freeDoubleArray(void **table, int x);
 static void getCoordFromDir(direction dir, int *x, int *y);
 static bool isBranchOver(cgame g, cell c, direction dir, bool **checked, int x,
                          int y);
 
-static void setWrap(game game, bool b);
-static bool getWrap(cgame game);
+static void setWrap(game board, bool b);
+static bool getWrap(cgame board);
 //--------------------------------------------------------------------------------------
 //                                 Prototyped functions
 //                 NB: headers documentation for this functions are in the .h of
@@ -193,28 +193,28 @@ game new_game_ext(int width, int height, piece *pieces,
   return g;
 }
 
-void set_piece(game game, int x, int y, piece piece, direction dir) {
-  assert(game);
-  cell c = getCell(getOrigin(game), x, y);
+void set_piece(game board, int x, int y, piece new_piece, direction dir) {
+  assert(board);
+  cell c = getCell(getOrigin(board), x, y);
   setCellDir(c, dir);
-  setCellPiece(c, piece);
+  setCellPiece(c, new_piece);
 }
 
-bool is_wrapping(cgame game) {
-  assert(game);
-  return getWrap(game);
+bool is_wrapping(cgame board) {
+  assert(board);
+  return getWrap(board);
 }
 
-void shuffle_dir(game game) {
-  assert(game);
+void shuffle_dir(game board) {
+  assert(board);
 
-  cell pY = getOrigin(game);
+  cell pY = getOrigin(board);
 
   // Board swipe loops :
-  for (int y = 0; y < getHeight(game); y++) {
+  for (int y = 0; y < getHeight(board); y++) {
     cell pX = pY;
-    for (int x = 0; x < getWidth(game); x++) {
-      uint32_t value = rand() % NB_DIR;  // Take a random direction
+    for (int x = 0; x < getWidth(board); x++) {
+      int value = rand() % NB_DIR;  // Take a random direction
       setCellDir(pX, value);
       pX = getRight(pX);
     }
@@ -222,29 +222,29 @@ void shuffle_dir(game game) {
   }
 }
 
-int game_height(cgame game) {
-  assert(game);
-  return getHeight(game);
+int game_height(cgame board) {
+  assert(board);
+  return getHeight(board);
 }
 
-int game_width(cgame game) {
-  assert(game);
-  return getWidth(game);
+int game_width(cgame board) {
+  assert(board);
+  return getWidth(board);
 }
 
-void rotate_piece_one(game game, int x, int y) {
-  assert(game);
-  if (x < 0 || x >= game_width(game) || y < 0 || y >= game_height(game)) {
+void rotate_piece_one(game board, int x, int y) {
+  assert(board);
+  if (x < 0 || x >= game_width(board) || y < 0 || y >= game_height(board)) {
     fprintf(stderr, "Error, cell is out of bounds!\n");
     return;
   }
-  rotate_piece(game, x, y, 1);  // Rotate a piece once is the same as using
-                                // rotate_piece with 1 quarter turn
+  rotate_piece(board, x, y, 1);  // Rotate a piece once is the same as using
+                                 // rotate_piece with 1 quarter turn
 }
 
-void rotate_piece(game game, int x, int y, int nb_cw_quarter_turn) {
-  assert(game);
-  if (x < 0 || x >= game_width(game) || y < 0 || y >= game_height(game)) {
+void rotate_piece(game board, int x, int y, int nb_cw_quarter_turn) {
+  assert(board);
+  if (x < 0 || x >= game_width(board) || y < 0 || y >= game_height(board)) {
     fprintf(stderr, "Error, cell is out of bounds!\n");
     return;
   }
@@ -259,7 +259,7 @@ void rotate_piece(game game, int x, int y, int nb_cw_quarter_turn) {
       NB_DIR;  // Removes useless iterations since rotating a piece NB_DIR times
                // is equivalent to do nothing
 
-  cell c = getCell(getOrigin(game), x, y);
+  cell c = getCell(getOrigin(board), x, y);
   direction dir = getCellDir(c);
   while (nb_cw_quarter_turn > 0) {
     dir++;
@@ -268,23 +268,23 @@ void rotate_piece(game game, int x, int y, int nb_cw_quarter_turn) {
   setCellDir(c, dir % NB_DIR);
 }
 
-void set_piece_current_dir(game game, int x, int y, direction dir) {
-  assert(game);
-  cell c = getCell(getOrigin(game), x, y);
+void set_piece_current_dir(game board, int x, int y, direction dir) {
+  assert(board);
+  cell c = getCell(getOrigin(board), x, y);
   setCellDir(c, dir);
 }
 
-bool is_edge_coordinates(cgame game, int x, int y, direction dir) {
-  assert(game);
-  return is_edge(get_piece(game, x, y), get_current_dir(game, x, y),
+bool is_edge_coordinates(cgame board, int x, int y, direction dir) {
+  assert(board);
+  return is_edge(get_piece(board, x, y), get_current_dir(board, x, y),
                  dir);  // test if the (x,y)piece on the board has a connection
                         // in the given direction.
 }
 
-bool is_edge(piece piece, direction orientation, direction dir) {
+bool is_edge(piece test_piece, direction orientation, direction dir) {
   assert(!(orientation < 0 || orientation > 3 || dir < 0 || dir > 3));
   // this code use tips with enum integer values
-  switch (piece) {
+  switch (test_piece) {
     case EMPTY:
       return false;  // empty is always connected to nothing
       break;
@@ -357,33 +357,33 @@ game copy_game(cgame game_src) {
   return copy;
 }
 
-void delete_game(game game) {
+void delete_game(game board) {
   cell pY =
-      getCell(getOrigin(game), game_width(game) - 1, game_height(game) - 1);
+      getCell(getOrigin(board), game_width(board) - 1, game_height(board) - 1);
 
   // Board swipe loops, begin at top-right:
-  for (int y = game_height(game) - 1; y >= 0; y--) {
+  for (int y = game_height(board) - 1; y >= 0; y--) {
     cell pX = pY;
     pY = getDown(pY);
-    for (int x = game_width(game) - 1; x >= 0; x--) {
+    for (int x = game_width(board) - 1; x >= 0; x--) {
       cell c = pX;
       pX = getLeft(pX);
       freeCell(c);
     }
   }
 
-  free(game);
-  game = NULL;
+  free(board);
+  board = NULL;
 }
 
-piece get_piece(cgame game, int x, int y) {
-  assert(game);
-  return getCellPiece(getCell(getOrigin(game), x, y));
+piece get_piece(cgame board, int x, int y) {
+  assert(board);
+  return getCellPiece(getCell(getOrigin(board), x, y));
 }
 
-direction get_current_dir(cgame game, int x, int y) {
-  assert(game);
-  return getCellDir(getCell(getOrigin(game), x, y));
+direction get_current_dir(cgame board, int x, int y) {
+  assert(board);
+  return getCellDir(getCell(getOrigin(board), x, y));
 }
 
 bool is_game_over(cgame g) {
@@ -763,101 +763,101 @@ static void setDown(cell c, cell target) {
 }
 
 /**
- * @brief Get the origin field of a game
+ * @brief Get the origin field of a board
  *
- * @param game, the game we want to get the (0,0) cell from
+ * @param board, the board we want to get the (0,0) cell from
  * @return a pointer to a cell or NULL in case of error
  **/
-static cell getOrigin(cgame game) {
-  if (game != NULL) return game->origin;
-  fprintf(stderr, "Warning, tried to get origin from a NULL game");
+static cell getOrigin(cgame board) {
+  if (board != NULL) return board->origin;
+  fprintf(stderr, "Warning, tried to get origin from a NULL board");
   return NULL;
 }
 
 /**
- * @brief Set the origin field of a game
+ * @brief Set the origin field of a board
  *
- * @param game, the game we want to set the origin on
- * @param c, the cell we want who will be the origin of the game
+ * @param board, the board we want to set the origin on
+ * @param c, the cell we want who will be the origin of the board
  **/
-static void setOrigin(game game, cell c) {
-  if (game != NULL)
-    game->origin = c;
+static void setOrigin(game board, cell c) {
+  if (board != NULL)
+    board->origin = c;
   else
-    fprintf(stderr, "Warning, tried to set origin on a NULL game");
+    fprintf(stderr, "Warning, tried to set origin on a NULL board");
 }
 
 /**
- * @brief Set the height of a game
+ * @brief Set the height of a board
  *
- * @param game, the game we want to set the height on
- * @param height, the height we want the game to be
+ * @param board, the board we want to set the height on
+ * @param height, the height we want the board to be
  **/
-static void setHeight(game game, uint32_t height) {
-  if (game != NULL)
-    game->height = height;
+static void setHeight(game board, int height) {
+  if (board != NULL)
+    board->height = height;
   else
-    fprintf(stderr, "Warning, tried to set height on a NULL game");
+    fprintf(stderr, "Warning, tried to set height on a NULL board");
 }
 
 /**
- * @brief Set the width of a game
+ * @brief Set the width of a board
  *
- * @param game, the game we want to set the width on
- * @param width, the width we want the game to be
+ * @param board, the board we want to set the width on
+ * @param width, the width we want the board to be
  **/
-static void setWidth(game game, uint32_t width) {
-  if (game != NULL)
-    game->width = width;
+static void setWidth(game board, int width) {
+  if (board != NULL)
+    board->width = width;
   else
-    fprintf(stderr, "Warning, tried to set width on a NULL game");
+    fprintf(stderr, "Warning, tried to set width on a NULL board");
 }
 
 /**
- * @brief Get the height of a game
+ * @brief Get the height of a board
  *
- * @param game, the game we want to get the height
- * @return height game or -1 in case of error
+ * @param board, the board we want to get the height
+ * @return board's height or -1 in case of error
  **/
-static int getHeight(cgame game) {
-  if (game != NULL) return game->height;
-  fprintf(stderr, "Warning, tried to get height from a NULL game");
+static int getHeight(cgame board) {
+  if (board != NULL) return board->height;
+  fprintf(stderr, "Warning, tried to get height from a NULL board");
   return -1;
 }
 
 /**
- * @brief Get the width of a game
+ * @brief Get the width of a board
  *
- * @param game, the game we want to get the width
- * @return width game or -1 in case of error
+ * @param board, the board we want to get the width
+ * @return board's width or -1 in case of error
  **/
-static int getWidth(cgame game) {
-  if (game != NULL) return game->width;
-  fprintf(stderr, "Warning, tried to get width from a NULL game");
+static int getWidth(cgame board) {
+  if (board != NULL) return board->width;
+  fprintf(stderr, "Warning, tried to get width from a NULL board");
   return -1;
 }
 
 /**
- * @brief Set the wrapped parameter of a game
+ * @brief Set the wrapped parameter of a board
  *
- * @param game, the game we want to set the arg
- * @param bool, the cell we want who will be the origin of the game
+ * @param board, the board we want to set the arg
+ * @param bool, the cell we want who will be the origin of the board
  **/
-static void setWrap(game game, bool b) {
-  if (game != NULL)
-    game->wrapped = b;
+static void setWrap(game board, bool b) {
+  if (board != NULL)
+    board->wrapped = b;
   else
-    fprintf(stderr, "Warning, tried to set wrap on a NULL game");
+    fprintf(stderr, "Warning, tried to set wrap on a NULL board");
 }
 /**
- * @brief Get the wrap parameter
+ * @brief Get the wrap parameter of a board
  *
- * @param game, the game we want to get the wrap
- * @return wrip boolean or -1 in case of error
+ * @param board, the board we want to get the wrap
+ * @return wrap boolean or -1 in case of error
  **/
-static bool getWrap(cgame game) {
-  if (game != NULL) return game->wrapped;
-  fprintf(stderr, "Warning, tried to get wrap from a NULL game");
+static bool getWrap(cgame board) {
+  if (board != NULL) return board->wrapped;
+  fprintf(stderr, "Warning, tried to get wrap from a NULL board");
   return -1;
 }
 
@@ -871,19 +871,19 @@ static bool getWrap(cgame game) {
  * @param y, the number of lines for the double array
  * @return the adress of the double array
  */
-static bool **allocBoolDoubleArray(uint32_t x, uint32_t y) {
-  bool **table = (bool **)malloc(sizeof(bool *) * x);
+static bool **allocBoolDoubleArray(int x, int y) {
+  bool **table = (bool **)malloc(sizeof(bool *) * (size_t)x);
   if (!table) {
     fprintf(stderr, "not enough memory to alloc a table of %d pointers", x);
     exit(EXIT_FAILURE);
   }
-  for (uint32_t i = 0; i < x; i++) {
-    table[i] = (bool *)malloc(sizeof(bool) * y);
+  for (int i = 0; i < x; i++) {
+    table[i] = (bool *)malloc(sizeof(bool) * (size_t)y);
     if (!table[i]) {
       fprintf(stderr, "not enough memory to alloc a table of %d booleans", y);
       exit(EXIT_FAILURE);
     }
-    for (uint32_t j = 0; j < y; j++) {
+    for (int j = 0; j < y; j++) {
       table[i][j] = false;
     }
   }
@@ -896,9 +896,9 @@ static bool **allocBoolDoubleArray(uint32_t x, uint32_t y) {
  * @param table, the double array to free
  * @param x, the number of columns for the double array
  */
-void freeDoubleArray(void **table, uint32_t x) {
+void freeDoubleArray(void **table, int x) {
   if (table) {
-    for (uint32_t i = 0; i < x; i++) {
+    for (int i = 0; i < x; i++) {
       if (table[i]) {
         free(table[i]);
       }
@@ -977,7 +977,7 @@ static bool isBranchOver(cgame g, cell c, direction dir, bool **checked, int x,
   // Now we need to verify that it is well connected to further cells of the
   // branch
   int x2, y2;
-  for (int d = 0; d < NB_DIR; d++) {
+  for (direction d = 0; d < NB_DIR; d++) {
     if (d != dir &&
         is_edge(currentPiece, currentDir,
                 d)) {  // for each direction where the cell is connected (except

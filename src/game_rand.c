@@ -29,10 +29,10 @@ typedef struct board_element_t {
   direction piece_direction;
 } board_element;
 
-int get_edge_links_count(edge_links edge_links) {
+int get_edge_links_count(edge_links links) {
   int result = 0;
   for (int i = 0; i < NB_DIR; i++)
-    if (edge_links.links[i]) result++;
+    if (links.links[i]) result++;
   return result;
 }
 
@@ -45,14 +45,15 @@ static bool is_filled(cgame board) {
   return true;
 }
 
-static bool is_point_in_board_bounds(cgame board, point point) {
-  return (0 <= point.x && point.x < game_width(board)) &&
-         (0 <= point.y && point.y < game_height(board));
+static bool is_point_in_board_bounds(cgame board, point test_point) {
+  return (0 <= test_point.x && test_point.x < game_width(board)) &&
+         (0 <= test_point.y && test_point.y < game_height(board));
 }
 
-static point get_neighbour_point(cgame board, edge edge) {
+static point get_neighbour_point(cgame board, edge current_edge) {
   const point delta[NB_DIR] = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
-  point neighbor_point = translate(edge.point, delta[edge.piece_direction]);
+  point neighbor_point =
+      translate(current_edge.point, delta[current_edge.piece_direction]);
   if (is_wrapping(board)) {
     neighbor_point.x = neighbor_point.x % game_width(board);
     neighbor_point.y = neighbor_point.y % game_height(board);
@@ -70,10 +71,10 @@ static edge_links get_edge_links_from_board_element(board_element element) {
   return result;
 }
 
-static board_element get_board_element_from_edge_links(edge_links edge_links) {
+static board_element get_board_element_from_edge_links(edge_links links) {
   piece new_piece;
   direction new_direction;
-  switch (get_edge_links_count(edge_links)) {
+  switch (get_edge_links_count(links)) {
     case 0:
       new_piece = EMPTY;
       new_direction = N;
@@ -81,18 +82,18 @@ static board_element get_board_element_from_edge_links(edge_links edge_links) {
     case 1:
       new_piece = LEAF;
       for (direction orientation = 0; orientation < NB_DIR; orientation++) {
-        if (edge_links.links[orientation]) new_direction = orientation;
+        if (links.links[orientation]) new_direction = orientation;
       }
       break;
     case 2:
       for (direction orientation = 0; orientation < NB_DIR; orientation++) {
-        if (edge_links.links[orientation] &&
-            edge_links.links[(orientation + 1) % NB_DIR]) {
+        if (links.links[orientation] &&
+            links.links[(orientation + 1) % NB_DIR]) {
           new_piece = CORNER;
           new_direction = orientation;
         }
-        if (edge_links.links[orientation] &&
-            edge_links.links[(orientation + 2) % NB_DIR]) {
+        if (links.links[orientation] &&
+            links.links[(orientation + 2) % NB_DIR]) {
           new_piece = SEGMENT;
           new_direction = orientation;
         }
@@ -101,7 +102,7 @@ static board_element get_board_element_from_edge_links(edge_links edge_links) {
     case 3:
       new_piece = TEE;
       for (direction orientation = 0; orientation < NB_DIR; orientation++)
-        if (!edge_links.links[orientation])
+        if (!links.links[orientation])
           new_direction = opposite_dir(orientation);
       break;
     case 4:
@@ -134,12 +135,15 @@ static void add_edge(game board, edge new_edge) {
   add_half_edge(board, neighbour_edge);
 }
 
-static bool is_valid_candidate(cgame board, edge edge, bool allow_cross) {
-  point neighbough_point = get_neighbour_point(board, edge);
+static bool is_valid_candidate(cgame board, edge current_edge,
+                               bool allow_cross) {
+  point neighbough_point = get_neighbour_point(board, current_edge);
   if (!is_point_in_board_bounds(board, neighbough_point)) return false;
-  return (get_piece(board, edge.point.x, edge.point.y) != EMPTY &&
-          get_piece(board, neighbough_point.x, neighbough_point.y) == EMPTY &&
-          (allow_cross || get_piece(board, edge.point.x, edge.point.y) != TEE));
+  return (
+      get_piece(board, current_edge.point.x, current_edge.point.y) != EMPTY &&
+      get_piece(board, neighbough_point.x, neighbough_point.y) == EMPTY &&
+      (allow_cross ||
+       get_piece(board, current_edge.point.x, current_edge.point.y) != TEE));
 }
 
 static edge get_random_candidate(cgame board, bool allow_cross) {

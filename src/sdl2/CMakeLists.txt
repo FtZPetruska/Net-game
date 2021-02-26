@@ -17,9 +17,15 @@ set( SDL2_ALL_LIBS
     ${SDL2_TTF_LIBRARIES}
 )
 
+if(MSVC)
+    set(MATH_LIB)
+else()
+    set(MATH_LIB m)
+endif()
+
 include_directories(${SDL2_ALL_INC})
 
 add_executable(net_sdl net_graphic.c sdl_graphic.c ../solver/solve_smart.c)
-target_link_libraries(net_sdl PRIVATE project_warnings project_options ${SDL2_ALL_LIBS} m game rand)
+target_link_libraries(net_sdl PRIVATE project_warnings project_options ${SDL2_ALL_LIBS} ${MATH_LIB} game rand)
 
 file(COPY assets DESTINATION .)
