@@ -110,6 +110,8 @@ static board_element get_board_element_from_edge_links(edge_links links) {
       new_direction = N;
       break;
     default:
+      new_piece = EMPTY;
+      new_direction = N;
       break;
   }
   return (board_element){new_piece, new_direction};

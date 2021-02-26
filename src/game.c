@@ -214,7 +214,7 @@ void shuffle_dir(game board) {
   for (int y = 0; y < getHeight(board); y++) {
     cell pX = pY;
     for (int x = 0; x < getWidth(board); x++) {
-      int value = rand() % NB_DIR;  // Take a random direction
+      direction value = rand() % NB_DIR;  // Take a random direction
       setCellDir(pX, value);
       pX = getRight(pX);
     }
@@ -396,7 +396,7 @@ bool is_game_over(cgame g) {
   checked[0][0] = true;  // the actual cell (the first one is the origin (0,0))
                          // is considered checked before checking the others
   int x2, y2;
-  for (int d = 0; d < NB_DIR; d++) {  // for each direction
+  for (direction d = N; d < NB_DIR; d++) {  // for each direction
     if (is_edge(getCellPiece(getOrigin(g)), getCellDir(getOrigin(g)),
                 d)) {  // if the cell is connected to this direction we check if
                        // the branch is well formed

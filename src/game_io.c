@@ -100,7 +100,7 @@ static char dirTab[] = {'N', 'E', 'S', 'W'};
 static char pieceTab[] = {'L', 'S', 'C', 'T', 'F'};
 
 static direction charToDir(char c) {
-  for (int i = 0; i < NB_DIR; i++)
+  for (direction i = N; i < NB_DIR; i++)
     if (c == dirTab[i]) return i;
   return N;
 }
@@ -108,7 +108,7 @@ static direction charToDir(char c) {
 static char dirToChar(direction d) { return dirTab[d]; }
 
 static piece charToPiece(char c) {
-  for (int i = 0; i < NB_PIECE_TYPE; i++)
+  for (piece i = EMPTY; i < NB_PIECE_TYPE; i++)
     if (c == pieceTab[i]) return i;
   return EMPTY;
 }

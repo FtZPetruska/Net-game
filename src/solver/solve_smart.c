@@ -198,6 +198,7 @@ bool find_all(char *argv[]) {
  * @return false in case of error, true otherwise
  **/
 bool find_one_sdl(game board) {
+  g = board;
   checked = allocBoolDoubleArray(game_width(board), game_height(board));
   unmovable = allocBoolDoubleArray(game_width(board), game_height(board));
   possibility solution = findSolution(0, 0);
