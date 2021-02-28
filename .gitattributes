@@ -1,0 +1,3 @@
+# Ensures all files are classified properly by Github
+*.h linguist-language=C
+*.c linguist-language=C
