@@ -13,6 +13,9 @@ set(RAND_SOURCE_FILES game_rand.c)
 add_library(rand STATIC ${RAND_SOURCE_FILES})
 target_link_libraries(rand project_options project_warnings)
 
+add_library(bool_array bool_array.c)
+target_link_libraries(bool_array project_options project_warnings)
+
 if(ENABLE_NET_TEXT)
     add_subdirectory(terminal)
 endif()
