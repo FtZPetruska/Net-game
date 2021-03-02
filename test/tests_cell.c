@@ -483,13 +483,13 @@ int main(int argc, char* argv[]) {
     status = test_set_piece_cell_null_cell();
   else if (strcmp("link_lines_cell_valid", argv[1]) == 0)
     status = test_link_lines_cell_valid();
-    else if (strcmp("link_lines_cell_different_width", argv[1]) == 0)
+  else if (strcmp("link_lines_cell_different_width", argv[1]) == 0)
     status = test_link_lines_cell_different_width();
-    else if (strcmp("link_lines_cell_null_top", argv[1]) == 0)
+  else if (strcmp("link_lines_cell_null_top", argv[1]) == 0)
     status = test_link_lines_cell_null_top();
-    else if (strcmp("link_lines_cell_null_bottom", argv[1]) == 0)
+  else if (strcmp("link_lines_cell_null_bottom", argv[1]) == 0)
     status = test_link_lines_cell_null_bottom();
-    else if (strcmp("link_lines_cell_both_null", argv[1]) == 0)
+  else if (strcmp("link_lines_cell_both_null", argv[1]) == 0)
     status = test_link_lines_cell_both_null();
   else {
     FPRINTF(stderr, "Error: test %s not found!\n", argv[1]);

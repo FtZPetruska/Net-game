@@ -5,4 +5,4 @@
 
 void draw_game(game board);
 
-#endif // __DRAW_GAME_H__
+#endif  // __DRAW_GAME_H__

@@ -2,9 +2,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "draw_game.h"
 #include "game.h"
 #include "game_io.h"
-#include "draw_game.h"
 
 #define DEFAULT_SIZE 5
 #define BORDER_CHAR "█"

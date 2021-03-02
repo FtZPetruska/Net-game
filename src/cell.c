@@ -384,7 +384,7 @@ void destroy_cell_line(cell origin) {
   cell next_cell = make_out_of_bounds_cell();
   cell current_cell = origin;
   uint16_t length = line_size_cell(origin);
-  for(uint16_t i = 0; i < length; i++) {
+  for (uint16_t i = 0; i < length; i++) {
     next_cell = get_right_cell(current_cell);
     free_cell(current_cell);
     current_cell = next_cell;
@@ -400,7 +400,7 @@ void destroy_cell_rectangle(cell origin) {
   cell next_cell = make_out_of_bounds_cell();
   cell current_cell = origin;
   uint16_t height = size_column_cell(origin);
-  for(uint16_t i = 0; i < height; i++) {
+  for (uint16_t i = 0; i < height; i++) {
     next_cell = get_top_cell(current_cell);
     destroy_cell_line(current_cell);
     current_cell = next_cell;
@@ -461,15 +461,14 @@ bool link_lines_cell(cell bottom_origin, cell top_origin) {
   return true;
 }
 
-
-
 bool link_columns_cell(cell left_origin, cell right_origin) {
   uint16_t left_height = size_column_cell(left_origin);
   uint16_t right_height = size_column_cell(right_origin);
   if (left_height != right_height) {
     FPRINTF(stderr,
             "Error: link_column_cell, cannot link two columns of different "
-            "sizes %hu (left) and %hu (right).\n", left_height, right_height);
+            "sizes %hu (left) and %hu (right).\n",
+            left_height, right_height);
     return false;
   }
 
@@ -489,7 +488,8 @@ bool link_columns_cell(cell left_origin, cell right_origin) {
   return true;
 }
 
-//cell create_rectangle_cell(uint16_t width, uint16_t height, bool is_wrapped) {}
+// cell create_rectangle_cell(uint16_t width, uint16_t height, bool is_wrapped)
+// {}
 
 static bool is_line_valid(cell origin) {
   uint16_t width = line_size_cell(origin);
@@ -596,11 +596,11 @@ bool is_rectangle_valid(cell origin, bool is_wrapped) {
 }
 
 void restore_initial_direction_cell(cell current_cell) {
-  if(is_out_of_bounds_cell(current_cell)) {
-    FPRINTF(stderr, "Error: restore_initial_direction_cell, current cell is NULL.\n");
+  if (is_out_of_bounds_cell(current_cell)) {
+    FPRINTF(stderr,
+            "Error: restore_initial_direction_cell, current cell is NULL.\n");
     return;
   }
   direction initial_direction = get_default_direction_cell(current_cell);
   set_current_direction_cell(current_cell, initial_direction);
 }
-

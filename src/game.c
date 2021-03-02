@@ -97,7 +97,8 @@ game new_game_empty_ext(uint16_t width, uint16_t height, bool wrapping) {
     }
     cell right_cell = translate_cell(origin, width - 1, 0);
     if (!link_columns_cell(right_cell, origin)) {
-      FPRINTF(stderr, 
+      FPRINTF(
+          stderr,
 
           "Error: new_game_empty_ext, can't link first and last columns.\n");
       destroy_cell_rectangle(origin);
@@ -107,8 +108,8 @@ game new_game_empty_ext(uint16_t width, uint16_t height, bool wrapping) {
   }
 
   if (!is_rectangle_valid(origin, wrapping)) {
-    FPRINTF(stderr, 
-        "Error, new_game_empty_ext, can't validate the cell linking.\n");
+    FPRINTF(stderr,
+            "Error, new_game_empty_ext, can't validate the cell linking.\n");
     destroy_cell_rectangle(origin);
     free(board);
     return NULL;
@@ -204,11 +205,11 @@ void rotate_piece_one(game board, uint16_t x, uint16_t y) {
     return;
   }
   if (x >= get_game_width(board) || y >= get_game_height(board)) {
-    FPRINTF(stderr, 
-        "Error: rotate_piece_one, coordinates (%hu,%hu) are out of bounds, "
-        "x and y must be, respectively, in the following intervals: "
-        "[0; %hu[ and [0; %hu[.\n",
-        x, y, get_game_width(board), get_game_height(board));
+    FPRINTF(stderr,
+            "Error: rotate_piece_one, coordinates (%hu,%hu) are out of bounds, "
+            "x and y must be, respectively, in the following intervals: "
+            "[0; %hu[ and [0; %hu[.\n",
+            x, y, get_game_width(board), get_game_height(board));
     return;
   }
   rotate_piece(board, x, y, 1);
@@ -221,11 +222,11 @@ void rotate_piece(game board, uint16_t x, uint16_t y,
     return;
   }
   if (x >= get_game_width(board) || y >= get_game_height(board)) {
-    FPRINTF(stderr, 
-        "Error: rotate_piece, coordinates (%hu,%hu) are out of bounds, "
-        "x and y must be, respectively, in the following intervals: "
-        "[0; %hu[ and [0; %hu[.\n",
-        x, y, get_game_width(board), get_game_height(board));
+    FPRINTF(stderr,
+            "Error: rotate_piece, coordinates (%hu,%hu) are out of bounds, "
+            "x and y must be, respectively, in the following intervals: "
+            "[0; %hu[ and [0; %hu[.\n",
+            x, y, get_game_width(board), get_game_height(board));
     return;
   }
 
@@ -248,12 +249,12 @@ void set_piece_current_dir(game board, uint16_t x, uint16_t y,
     return;
   }
   if (x >= get_game_width(board) || y >= get_game_height(board)) {
-    FPRINTF(stderr, 
-        "Error: set_piece_current_dir, coordinates (%hu,%hu) are out of "
-        "bounds, "
-        "x and y must be, respectively, in the following intervals: "
-        "[0; %hu[ and [0; %hu[.\n",
-        x, y, get_game_width(board), get_game_height(board));
+    FPRINTF(stderr,
+            "Error: set_piece_current_dir, coordinates (%hu,%hu) are out of "
+            "bounds, "
+            "x and y must be, respectively, in the following intervals: "
+            "[0; %hu[ and [0; %hu[.\n",
+            x, y, get_game_width(board), get_game_height(board));
     return;
   }
   cell origin = get_game_origin(board);
@@ -267,7 +268,8 @@ bool is_edge_coordinates(cgame board, uint16_t x, uint16_t y, direction dir) {
     return false;
   }
   if (x >= get_game_width(board) || y >= get_game_height(board)) {
-    FPRINTF(stderr, 
+    FPRINTF(
+        stderr,
 
         "Error: is_edge_coordinates, coordinates (%hu,%hu) are out of bounds, "
         "x and y must be, respectively, in the following intervals: "
@@ -284,24 +286,24 @@ bool is_edge_coordinates(cgame board, uint16_t x, uint16_t y, direction dir) {
 
 bool is_edge(piece test_piece, direction orientation, direction dir) {
   if (test_piece < EMPTY || CROSS < test_piece) {
-    FPRINTF(stderr, 
-        "Error: is_edge, given piece has invalid value %d, expected value "
-        "in interval [%d;%d].\n",
-        test_piece, EMPTY, CROSS);
+    FPRINTF(stderr,
+            "Error: is_edge, given piece has invalid value %d, expected value "
+            "in interval [%d;%d].\n",
+            test_piece, EMPTY, CROSS);
     return false;
   }
   if (orientation < N || W < orientation) {
-    FPRINTF(stderr, 
-        "Error: is_edge, given piece orientation has invalid value %d, "
-        "expected value in interval [%d;%d].\n",
-        orientation, N, W);
+    FPRINTF(stderr,
+            "Error: is_edge, given piece orientation has invalid value %d, "
+            "expected value in interval [%d;%d].\n",
+            orientation, N, W);
     return false;
   }
   if (dir < N || W < dir) {
-    FPRINTF(stderr, 
-        "Error: is_edge, given test direction has invalid value %d, "
-        "expected value in interval [%d;%d].\n",
-        dir, N, W);
+    FPRINTF(stderr,
+            "Error: is_edge, given test direction has invalid value %d, "
+            "expected value in interval [%d;%d].\n",
+            dir, N, W);
     return false;
   }
   switch (test_piece) {
@@ -325,10 +327,10 @@ bool is_edge(piece test_piece, direction orientation, direction dir) {
 
 direction opposite_dir(direction dir) {
   if (dir < N || W < dir) {
-    FPRINTF(stderr, 
-        "Error: opposite_dir, given test direction has invalid value %d, "
-        "expected value in interval [%d;%d].\n",
-        dir, N, W);
+    FPRINTF(stderr,
+            "Error: opposite_dir, given test direction has invalid value %d, "
+            "expected value in interval [%d;%d].\n",
+            dir, N, W);
     return (direction)-1;
   }
   const direction opposite[] = {S, W, N, E};
@@ -397,11 +399,11 @@ piece get_piece(cgame board, uint16_t x, uint16_t y) {
     return (piece)-2;
   }
   if (x >= get_game_width(board) || y >= get_game_height(board)) {
-    FPRINTF(stderr, 
-        "Error: get_piece, coordinates (%hu,%hu) are out of bounds, "
-        "x and y must be, respectively, in the following intervals: "
-        "[0; %hu[ and [0; %hu[.\n",
-        x, y, get_game_width(board), get_game_height(board));
+    FPRINTF(stderr,
+            "Error: get_piece, coordinates (%hu,%hu) are out of bounds, "
+            "x and y must be, respectively, in the following intervals: "
+            "[0; %hu[ and [0; %hu[.\n",
+            x, y, get_game_width(board), get_game_height(board));
     return (piece)-2;
   }
 
@@ -416,11 +418,11 @@ direction get_current_dir(cgame board, uint16_t x, uint16_t y) {
     return (direction)-1;
   }
   if (x >= get_game_width(board) || y >= get_game_height(board)) {
-    FPRINTF(stderr, 
-        "Error: get_current_dir, coordinates (%hu,%hu) are out of bounds, "
-        "x and y must be, respectively, in the following intervals: "
-        "[0; %hu[ and [0; %hu[.\n",
-        x, y, get_game_width(board), get_game_height(board));
+    FPRINTF(stderr,
+            "Error: get_current_dir, coordinates (%hu,%hu) are out of bounds, "
+            "x and y must be, respectively, in the following intervals: "
+            "[0; %hu[ and [0; %hu[.\n",
+            x, y, get_game_width(board), get_game_height(board));
     return (direction)-1;
   }
 
@@ -510,8 +512,8 @@ static void set_game_origin(game board, cell new_origin) {
   }
   bool board_wrap = get_game_wrap(board);
   if (!is_rectangle_valid(new_origin, board_wrap)) {
-    FPRINTF(stderr, 
-        "Error: set_game_origin, new origin is not a valid rectangle.\n");
+    FPRINTF(stderr,
+            "Error: set_game_origin, new origin is not a valid rectangle.\n");
     return;
   }
   board->origin = new_origin;
@@ -529,10 +531,10 @@ static void set_game_height(game board, uint16_t new_height) {
     return;
   }
   if (new_height < MIN_GAME_HEIGHT || MAX_GAME_HEIGHT < new_height) {
-    FPRINTF(stderr, 
-        "Error: set_game_height, new height %hu is out of the allowed "
-        "interval: [%hu;%hu].\n",
-        new_height, MIN_GAME_HEIGHT, MAX_GAME_HEIGHT);
+    FPRINTF(stderr,
+            "Error: set_game_height, new height %hu is out of the allowed "
+            "interval: [%hu;%hu].\n",
+            new_height, MIN_GAME_HEIGHT, MAX_GAME_HEIGHT);
     return;
   }
   board->height = new_height;
@@ -550,10 +552,10 @@ static void set_game_width(game board, uint16_t new_width) {
     return;
   }
   if (new_width < MIN_GAME_WIDTH || MAX_GAME_WIDTH < new_width) {
-    FPRINTF(stderr, 
-        "Error: set_game_width, new height %hu is out of the allowed "
-        "interval: [%hu;%hu].\n",
-        new_width, MIN_GAME_WIDTH, MAX_GAME_WIDTH);
+    FPRINTF(stderr,
+            "Error: set_game_width, new height %hu is out of the allowed "
+            "interval: [%hu;%hu].\n",
+            new_width, MIN_GAME_WIDTH, MAX_GAME_WIDTH);
     return;
   }
   board->width = new_width;
@@ -627,7 +629,8 @@ static bool get_game_wrap(cgame board) {
 static void get_coordinates_from_direction(direction dir, int *delta_x,
                                            int *delta_y) {
   if (!delta_x || !delta_y) {
-    FPRINTF(stderr, 
+    FPRINTF(
+        stderr,
 
         "Error: get_coordinates_from_direction, out parameters are NULL.\n");
     return;
@@ -648,7 +651,8 @@ static void get_coordinates_from_direction(direction dir, int *delta_x,
       *delta_x = -1;
       break;
     default:
-      FPRINTF(stderr, "Error: get_coordinates_from_direction, unknown direction");
+      FPRINTF(stderr,
+              "Error: get_coordinates_from_direction, unknown direction");
       break;
   }
 }

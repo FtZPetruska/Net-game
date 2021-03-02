@@ -23,8 +23,8 @@ typedef struct possibility_s *possibility;
 // this structure is used as a chained list to save different dispositions of
 // pieces.
 struct possibility_s {
-  uint16_t x;          // the coordinates of the corresponding cell in the game
-  uint16_t y;          //
+  uint16_t x;     // the coordinates of the corresponding cell in the game
+  uint16_t y;     //
   direction dir;  // the direction to put this piece in in order to set the game
                   // with the saved possibility
   bool isLeaf;    // a boolean to indicate if this possibility is a leaf or not
@@ -79,8 +79,8 @@ static bool setRecUnmovable(uint16_t x, uint16_t y);
 static possibility propagate(uint16_t x, uint16_t y);
 static void loadPossibility(possibility poss, uint32_t numPoss);
 static void unloadPossibility(possibility poss, uint32_t numPoss);
-static uint32_t findPoss(possibility *possArray, uint32_t *nbDerivPos, uint16_t x,
-                         uint16_t y);
+static uint32_t findPoss(possibility *possArray, uint32_t *nbDerivPos,
+                         uint16_t x, uint16_t y);
 static bool isGoodDir(uint16_t x, uint16_t y);
 
 //--------------------------------------------------------------------------------------
@@ -648,7 +648,7 @@ static bool setRecUnmovable(uint16_t x, uint16_t y) {
 
   bool positions[NB_DIR] = {false, false, false, false};
   uint32_t nbPosition = 0;
-  int32_t x2, y2; 
+  int32_t x2, y2;
   uint16_t x3, y3;
 
   if (get_piece(g, x, y) == CROSS) {
@@ -727,7 +727,8 @@ static possibility propagate(uint16_t x, uint16_t y) {
         loadPossibility(thisPoss, j);
         // For every possibility found before on the other connections of this
         // piece
-        nbPossFound = findPoss(possFound, &nbDerivPos, (uint16_t)x2, (uint16_t)y2);
+        nbPossFound =
+            findPoss(possFound, &nbDerivPos, (uint16_t)x2, (uint16_t)y2);
         // We look up the possibilities with findPoss()
         unloadPossibility(thisPoss, j);
         if (nbPossFound == 0) {
@@ -835,8 +836,8 @@ static void unloadPossibility(possibility poss, uint32_t numPoss) {
  * @return the number of possibility tree the function has found (different than
  *the total number of possibilities)
  **/
-static uint32_t findPoss(possibility *possArray, uint32_t *nbDerivPos, uint16_t x,
-                         uint16_t y) {
+static uint32_t findPoss(possibility *possArray, uint32_t *nbDerivPos,
+                         uint16_t x, uint16_t y) {
   uint8_t nbDir;
   *nbDerivPos = 0;
   if (get_piece(g, x, y) == SEGMENT) {

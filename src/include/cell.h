@@ -14,11 +14,9 @@ cell get_bottom_cell(cell current_cell);
 piece get_piece_cell(cell current_cell);
 void set_piece_cell(cell current_cell, piece new_piece);
 direction get_current_direction_cell(cell current_cell);
-void set_current_direction_cell(cell current_cell,
-                                       direction new_direction);
+void set_current_direction_cell(cell current_cell, direction new_direction);
 direction get_default_direction_cell(cell current_cell);
-void set_default_direction_cell(cell current_cell,
-                                       direction new_direction);
+void set_default_direction_cell(cell current_cell, direction new_direction);
 bool is_out_of_bounds_cell(cell current_cell);
 cell make_out_of_bounds_cell();
 cell translate_cell(cell current_cell, int32_t x, int32_t y);
@@ -35,4 +33,4 @@ bool link_columns_cell(cell left_origin, cell right_origin);
 bool is_rectangle_valid(cell origin, bool is_wrapped);
 void restore_initial_direction_cell(cell current_cell);
 
-#endif // __CELL_H__
+#endif  // __CELL_H__

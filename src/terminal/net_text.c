@@ -122,6 +122,6 @@ int main(int argc, char* argv[]) {
 // Prints how to use ./net_solve with arguments in case they're wrong
 
 void usage() {
-  FPRINTF(stderr, 
-      "./net_text <filename>\n./net_text <width> <height> [S|N] [3|4]\n");
+  FPRINTF(stderr,
+          "./net_text <filename>\n./net_text <width> <height> [S|N] [3|4]\n");
 }

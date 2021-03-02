@@ -298,7 +298,8 @@ int test_new_game_empty_ext() {
 // given pieces in a given direction for both values of wrapping
 
 int test_new_game_ext() {
-  piece default_pieces[] = {LEAF, CORNER, CORNER, CORNER, SEGMENT, CORNER, LEAF, CORNER, SEGMENT};
+  piece default_pieces[] = {LEAF,   CORNER, CORNER, CORNER, SEGMENT,
+                            CORNER, LEAF,   CORNER, SEGMENT};
   direction default_dirs[] = {N, E, S, E, E, W, E, W, N};
   uint16_t width = 3;
   uint16_t height = 3;
@@ -373,10 +374,11 @@ int test_new_game() {
   for (uint16_t i = 0; i < width; i++) {
     for (uint16_t j = 0; j < height; j++) {
       if (get_piece(g, i, j) != default_pieces[(j * width) + i]) {
-        FPRINTF(stderr,
-                "Error: piece (%hu,%hu) is not corresponding! (should be %d, is "
-                "%d)\n",
-                i, j, default_pieces[(j * width) + i], get_piece(g, i, j));
+        FPRINTF(
+            stderr,
+            "Error: piece (%hu,%hu) is not corresponding! (should be %d, is "
+            "%d)\n",
+            i, j, default_pieces[(j * width) + i], get_piece(g, i, j));
         delete_game(g);
         return EXIT_FAILURE;
       }
@@ -608,7 +610,8 @@ int test_is_game_over() {
   }
   delete_game(g3);
 
-  piece default_pieces4[] = {LEAF, CORNER, CORNER, CORNER, SEGMENT, CORNER, LEAF, CORNER, SEGMENT};
+  piece default_pieces4[] = {LEAF,   CORNER, CORNER, CORNER, SEGMENT,
+                             CORNER, LEAF,   CORNER, SEGMENT};
   direction default_dirs3[] = {N, E, S, E, E, W, E, W, N};
   game g4 = new_game_ext(3, 3, default_pieces4, default_dirs3, true);
 
@@ -654,10 +657,11 @@ int test_new_game_empty() {
   for (uint16_t x = 0; x < width; x++) {
     for (uint16_t y = 0; y < height; y++) {
       if (get_piece(g, x, y) != EMPTY) {
-        FPRINTF(stderr,
-                "Error: test_new_game_empty, piece at (%hu,%hu) is %d, expected "
-                "%d.\n",
-                x, y, get_piece(g, x, y), EMPTY);
+        FPRINTF(
+            stderr,
+            "Error: test_new_game_empty, piece at (%hu,%hu) is %d, expected "
+            "%d.\n",
+            x, y, get_piece(g, x, y), EMPTY);
         delete_game(g);
         return EXIT_FAILURE;
       }
@@ -668,9 +672,9 @@ int test_new_game_empty() {
 }
 
 /* ********** TEST shuffle_direction ********** */
-/* By Generating many game boards, that test check if the shuffle_direction sfunction
- * shuffle correctly pieces. After shufle, a piece has 25% of chance to have
- * same position as before.
+/* By Generating many game boards, that test check if the shuffle_direction
+ * sfunction shuffle correctly pieces. After shufle, a piece has 25% of chance
+ * to have same position as before.
  */
 int test_shuffle_direction() {
   uint32_t seed = 0;

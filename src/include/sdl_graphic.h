@@ -22,14 +22,14 @@ typedef struct Env_t Env;
     exit(EXIT_FAILURE);          \
   } while (0)
 #else
-#define PRINT(STR, ...)         \
-  do {                          \
+#define PRINT(STR, ...)       \
+  do {                        \
     printf(STR, __VA_ARGS__); \
   } while (0)
-#define ERROR(STR, ...)                  \
-  do {                                   \
+#define ERROR(STR, ...)                \
+  do {                                 \
     fprintf(stderr, STR, __VA_ARGS__); \
-    exit(EXIT_FAILURE);                  \
+    exit(EXIT_FAILURE);                \
   } while (0)
 #endif
 

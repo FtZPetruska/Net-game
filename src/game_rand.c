@@ -142,7 +142,7 @@ static void add_edge(game board, edge new_edge) {
 
 static bool is_valid_candidate(cgame board, edge current_edge,
                                bool allow_cross) {
-                                   uint16_t current_edge_x = (uint16_t)current_edge.point.x;
+  uint16_t current_edge_x = (uint16_t)current_edge.point.x;
   uint16_t current_edge_y = (uint16_t)current_edge.point.y;
 
   point neighbour_point = get_neighbour_point(board, current_edge);
@@ -152,8 +152,7 @@ static bool is_valid_candidate(cgame board, edge current_edge,
   return (
       get_piece(board, current_edge_x, current_edge_y) != EMPTY &&
       get_piece(board, neighbour_x, neighbour_y) == EMPTY &&
-      (allow_cross ||
-       get_piece(board, current_edge_x, current_edge_y) != TEE));
+      (allow_cross || get_piece(board, current_edge_x, current_edge_y) != TEE));
 }
 
 static edge get_random_candidate(cgame board, bool allow_cross) {
@@ -166,7 +165,8 @@ static edge get_random_candidate(cgame board, bool allow_cross) {
   return new_edge;
 }
 
-game random_game_ext(uint16_t width, uint16_t height, bool is_swap, bool allow_cross) {
+game random_game_ext(uint16_t width, uint16_t height, bool is_swap,
+                     bool allow_cross) {
   assert(width >= MIN_GAME_WIDTH);
   assert(height >= MIN_GAME_HEIGHT);
 
