@@ -2,6 +2,7 @@ A bunch of things that could be done:
 X Rewrite game_rand.c, the original code was provided by the teachers for us to generate boards easily, it saddly cannot be shared as-is and must be rewritten from scratch
     - Add documentation to game_rand
 - Clean the code, it's been written before any of the original writers had heard about the book called "Clean code"
+    - 02/03/2020 Big rewrite of the game.c file done, passes all tests and generates no warnings
 - Comment the code, for the same reason as above, actual meaningful (and working) doxygen could be very useful
 X Format the code, preferably set up a clean .clang-format
 X Make the CMakeList more portable, by adding options for CLang, MSVC, right now it pretty much only works on GCC
@@ -11,3 +12,15 @@ X Make the CMakeList more portable, by adding options for CLang, MSVC, right now
 - Restore the Android compilation features, it had to be removed because it was too dependent on the University's environment to be of any use. (Docker ?)
 - Port it to whatever you want!
 - Find another background music, the original one was copyrighted, so this original commit comes with a similar music that is under CC BY 3.0
+- Add more tests for game. 
+- Add tests for game_io and game_rand. 
+    Ideas: 
+        - game_io -> save/load a standard game and check its attributes
+        - game_rand -> generate X game board and check if they all correspond to what was asked
+- Finish cell tests
+- Overhaul game_io to ensure more safety and save the initial directions (currently lost on save).
+    Ideas:
+        - On save, first save all the current directions, then restart the game to get the initial directions
+        - On load, create the game object with the initial directions then set each piece to what the current direction was on save
+- Clean up all the header include
+- Clean up cell header and file (It has been straight up exported from game so most functions are in header)
