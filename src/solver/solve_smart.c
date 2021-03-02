@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "bool_array.h"
 #include "game.h"
 #include "game_io.h"
 
@@ -22,17 +23,18 @@ typedef struct possibility_s *possibility;
 // this structure is used as a chained list to save different dispositions of
 // pieces.
 struct possibility_s {
-  int x;         // the coordinates of the corresponding cell in the game
-  int y;         //
+  uint16_t x;          // the coordinates of the corresponding cell in the game
+  uint16_t y;          //
   direction dir;  // the direction to put this piece in in order to set the game
                   // with the saved possibility
   bool isLeaf;    // a boolean to indicate if this possibility is a leaf or not
-  uint32_t nbNextPos;  // the number of deriving possibilities from this cell (0 if
-                   // it is a leaf)
-  uint32_t *nbNextDerivPos;  // an array of the number of leaves we can access from
-                         // the deriving possibilities of this possibility
+  uint32_t nbNextPos;  // the number of deriving possibilities from this cell (0
+                       // if it is a leaf)
+  uint32_t
+      *nbNextDerivPos;  // an array of the number of leaves we can access from
+                        // the deriving possibilities of this possibility
   uint32_t totalNextDerivPos;  // the number of leaves we can access from this
-                           // possibility
+                               // possibility
   possibility
       *nextPos;  // an array of the deriving possibilities from this cell
 };
@@ -60,28 +62,26 @@ static bool solFileError(game board);
 //                                Static functions
 //                         These functions are primitives used in the differents
 //                         solvers
-static possibility findSolution(int x, int y);
-static bool checkBoolArray(bool **array, int x, int y);
-static bool **allocBoolDoubleArray(int x, int y);
-static void freeDoubleArray(void **table, int x);
+static possibility findSolution(uint16_t x, uint16_t y);
 static possibility allocPossibility();
 static void freePossibility(possibility pos);
 static void freeChainPossibility(possibility pos);
-static possibility createSinglePoss(int x, int y, direction dir);
+static possibility createSinglePoss(uint16_t x, uint16_t y, direction dir);
 static void addBranchPoss(possibility poss, possibility chainPoss);
-// static possibility getLeaf(possibility poss, uint32_t numLeaf); Commented because
-// not used
+// static possibility getLeaf(possibility poss, uint32_t numLeaf); Commented
+// because not used
 static void spreadLeaf(possibility poss, uint32_t numLeaf, uint32_t nbPossToAdd,
                        possibility *possToAdd, uint32_t nbDerivPos);
 static possibility delLeaf(possibility poss, uint32_t numLeaf);
-static void getCoordFromDir(direction dir, int *x, int *y);
+static void getCoordFromDir(direction dir, int32_t *x, int32_t *y);
 static bool setUnmovable();
-static bool setRecUnmovable(int x, int y);
-static possibility propagate(int x, int y);
+static bool setRecUnmovable(uint16_t x, uint16_t y);
+static possibility propagate(uint16_t x, uint16_t y);
 static void loadPossibility(possibility poss, uint32_t numPoss);
 static void unloadPossibility(possibility poss, uint32_t numPoss);
-static uint32_t findPoss(possibility *possArray, uint32_t *nbDerivPos, int x, int y);
-static bool isGoodDir(int x, int y);
+static uint32_t findPoss(possibility *possArray, uint32_t *nbDerivPos, uint16_t x,
+                         uint16_t y);
+static bool isGoodDir(uint16_t x, uint16_t y);
 
 //--------------------------------------------------------------------------------------
 //                                Game solving functions bodies
@@ -96,8 +96,10 @@ bool find_one(char *argv[]) {
   g = load_game(argv[2]);
   if (!g) return gameLoadError();
 
-  checked = allocBoolDoubleArray(game_width(g), game_height(g));
-  unmovable = allocBoolDoubleArray(game_width(g), game_height(g));
+  uint16_t width = game_width(g);
+  uint16_t height = game_height(g);
+  checked = alloc_double_bool_array(width, height);
+  unmovable = alloc_double_bool_array(width, height);
   possibility solution = findSolution(0, 0);
 
   if (solution != NULL) {
@@ -106,13 +108,13 @@ bool find_one(char *argv[]) {
     freeChainPossibility(solution);
   } else {
     FILE *f = fopen(strcat(argv[3], ".sol"), "w");
-    fprintf(f, "NO SOLUTION\n");
+    FPRINTF(f, "NO SOLUTION\n");
     fclose(f);
   }
 
-  freeDoubleArray((void **)checked, game_width(g));
+  free_double_bool_array(checked, width);
   checked = NULL;
-  freeDoubleArray((void **)unmovable, game_width(g));
+  free_double_bool_array(unmovable, width);
   unmovable = NULL;
   delete_game(g);
   g = NULL;
@@ -133,21 +135,23 @@ bool nb_sol(char *argv[]) {
   if (!fSolution) return solFileError(g);
   uint32_t result = 0;
 
-  checked = allocBoolDoubleArray(game_width(g), game_height(g));
-  unmovable = allocBoolDoubleArray(game_width(g), game_height(g));
+  uint16_t width = game_width(g);
+  uint16_t height = game_height(g);
+  checked = alloc_double_bool_array(width, height);
+  unmovable = alloc_double_bool_array(width, height);
   possibility solution = findSolution(0, 0);
 
   if (solution != NULL) {
     result = solution->totalNextDerivPos;
     freeChainPossibility(solution);
   }
-  fprintf(fSolution, "%u\n", result);
+  FPRINTF(fSolution, "%u\n", result);
 
   fclose(fSolution);
 
-  freeDoubleArray((void **)checked, game_width(g));
+  free_double_bool_array(checked, width);
   checked = NULL;
-  freeDoubleArray((void **)unmovable, game_width(g));
+  free_double_bool_array(unmovable, width);
   unmovable = NULL;
   delete_game(g);
   g = NULL;
@@ -166,8 +170,10 @@ bool find_all(char *argv[]) {
   if (!g) return gameLoadError();
 
   // Multiple solution files must be created here
-  checked = allocBoolDoubleArray(game_width(g), game_height(g));
-  unmovable = allocBoolDoubleArray(game_width(g), game_height(g));
+  uint16_t width = game_width(g);
+  uint16_t height = game_height(g);
+  checked = alloc_double_bool_array(width, height);
+  unmovable = alloc_double_bool_array(width, height);
 
   possibility solution = findSolution(0, 0);
 
@@ -182,9 +188,9 @@ bool find_all(char *argv[]) {
     freeChainPossibility(solution);
   }
 
-  freeDoubleArray((void **)checked, game_width(g));
+  free_double_bool_array(checked, width);
   checked = NULL;
-  freeDoubleArray((void **)unmovable, game_width(g));
+  free_double_bool_array(unmovable, width);
   unmovable = NULL;
   delete_game(g);
   g = NULL;
@@ -194,13 +200,15 @@ bool find_all(char *argv[]) {
 /**
  * @brief Finds one solution and applies it to the given game (used for SDL)
  *
- * @param g, the game to solve
+ * @param board, the game to solve
  * @return false in case of error, true otherwise
  **/
 bool find_one_sdl(game board) {
   g = board;
-  checked = allocBoolDoubleArray(game_width(board), game_height(board));
-  unmovable = allocBoolDoubleArray(game_width(board), game_height(board));
+  uint16_t width = game_width(g);
+  uint16_t height = game_height(g);
+  checked = alloc_double_bool_array(width, height);
+  unmovable = alloc_double_bool_array(width, height);
   possibility solution = findSolution(0, 0);
 
   bool status = true;
@@ -210,11 +218,11 @@ bool find_one_sdl(game board) {
   } else
     status = false;
 
-  freeDoubleArray((void **)checked, game_width(board));
+  free_double_bool_array(checked, width);
   checked = NULL;
-  freeDoubleArray((void **)unmovable, game_width(board));
+  free_double_bool_array(unmovable, height);
   unmovable = NULL;
-  board = NULL;
+  g = NULL;
   return status;
 }
 //--------------------------------------------------------------------------------------
@@ -225,7 +233,7 @@ bool find_one_sdl(game board) {
  * @return false
  **/
 static bool gameLoadError() {
-  fprintf(stderr, "Error when loading the game from file!\n");
+  FPRINTF(stderr, "Error when loading the game from file!\n");
   return false;
 }
 
@@ -238,7 +246,7 @@ static bool gameLoadError() {
  **/
 static bool solFileError(game board) {
   if (board != NULL) delete_game(board);
-  fprintf(stderr, "Error when attempting to create the solution file(s)!\n");
+  FPRINTF(stderr, "Error when attempting to create the solution file(s)!\n");
   return false;
 }
 
@@ -251,61 +259,61 @@ static bool solFileError(game board) {
 /*
 static void displayBoolArray(bool **a, int w, int h) {
   for (int i = h - 1; i >= -1; i--) {
-    fprintf(stderr, "%d", i);
+    FPRINTF(stderr, "%d", i);
     if (i != -1) {
-      fprintf(stderr, " ");
+      FPRINTF(stderr, " ");
       for (int j = 0; j < w; j++) {
-        fprintf(stderr, "%d", a[j][i]);
+        FPRINTF(stderr, "%d", a[j][i]);
       }
     } else {
       for (int j = 0; j < w; j++) {
-        fprintf(stderr, "%d", j);
+        FPRINTF(stderr, "%d", j);
       }
     }
-    fprintf(stderr, "\n");
+    FPRINTF(stderr, "\n");
   }
-  fprintf(stderr, "\n");
+  FPRINTF(stderr, "\n");
 }
 
 static void displayPoss(possibility poss) {
-  fprintf(stderr, "x=%u\n", poss->x);
-  fprintf(stderr, "y=%u\n", poss->y);
-  fprintf(stderr, "dir=%d\n", poss->dir);
-  fprintf(stderr, "isLeaf=%d\n", poss->isLeaf);
-  fprintf(stderr, "nbNextPoss=%u\n", poss->nbNextPos);
+  FPRINTF(stderr, "x=%u\n", poss->x);
+  FPRINTF(stderr, "y=%u\n", poss->y);
+  FPRINTF(stderr, "dir=%d\n", poss->dir);
+  FPRINTF(stderr, "isLeaf=%d\n", poss->isLeaf);
+  FPRINTF(stderr, "nbNextPoss=%u\n", poss->nbNextPos);
   for (uint32_t i = 0; i < poss->nbNextPos; i++) {
-    fprintf(stderr, "nbNextDerivPos[%u]=%u\n", i, poss->nbNextDerivPos[i]);
+    FPRINTF(stderr, "nbNextDerivPos[%u]=%u\n", i, poss->nbNextDerivPos[i]);
   }
-  fprintf(stderr, "totalNextDerivPoss=%u\n", poss->totalNextDerivPos);
+  FPRINTF(stderr, "totalNextDerivPoss=%u\n", poss->totalNextDerivPos);
   for (uint32_t i = 0; i < poss->nbNextPos; i++) {
     if (poss->nextPos[i] == NULL) {
-      fprintf(stderr, "nextPos[%u]=NULL\n", i);
+      FPRINTF(stderr, "nextPos[%u]=NULL\n", i);
     } else {
-      fprintf(stderr, "nextPos[%u]=%p\n", i, poss->nextPos[i]);
+      FPRINTF(stderr, "nextPos[%u]=%p\n", i, poss->nextPos[i]);
     }
   }
-  fprintf(stderr, "\n");
+  FPRINTF(stderr, "\n");
 }
 
 static void displayPossTree(possibility poss, uint32_t indice) {
   if (poss == NULL) {
-    fprintf(stderr, "POSS is empty (NULL) !\n");
+    FPRINTF(stderr, "POSS is empty (NULL) !\n");
     return;
   }
-  fprintf(stderr, "displaying Poss num%u\n", indice);
+  FPRINTF(stderr, "displaying Poss num%u\n", indice);
   displayPoss(poss);
   if (poss->isLeaf) {
     return;
   }
   for (uint32_t i = 0; i < poss->nbNextPos; i++) {
-    fprintf(stderr, "calling poss from poss num%u\n", indice);
+    FPRINTF(stderr, "calling poss from poss num%u\n", indice);
     displayPossTree(poss->nextPos[i], indice + 1);
   }
 }*/
 /*
-  fprintf(stderr, "displaying checked!\n");
+  FPRINTF(stderr, "displaying checked!\n");
   displayBoolArray(checked, game_width(g), game_height(g));
-  fprintf(stderr, "displaying unmovable!\n");
+  FPRINTF(stderr, "displaying unmovable!\n");
   displayBoolArray(unmovable, game_width(g), game_height(g));
   */
 
@@ -322,13 +330,16 @@ static void displayPossTree(possibility poss, uint32_t indice) {
  *
  *
  */
-static possibility findSolution(int x, int y) {
+static possibility findSolution(uint16_t x, uint16_t y) {
   possibility possFound[NB_DIR], thisPoss;
   uint32_t nbPossFound, nbDerivPos;
   thisPoss = NULL;
 
+  uint16_t width = game_width(g);
+  uint16_t height = game_height(g);
+
   if (setUnmovable()) {
-    if (checkBoolArray(unmovable, game_width(g), game_height(g))) {
+    if (check_double_bool_array(unmovable, width, height)) {
       thisPoss = createSinglePoss(0, 0, get_current_dir(g, 0, 0));
       thisPoss->totalNextDerivPos = 1;
     } else {
@@ -337,7 +348,7 @@ static possibility findSolution(int x, int y) {
       spreadLeaf(thisPoss, 0, nbPossFound, possFound, nbDerivPos);
       for (uint32_t i = 0; i < thisPoss->totalNextDerivPos; i++) {
         loadPossibility(thisPoss, i);
-        if (!checkBoolArray(checked, game_width(g), game_height(g))) {
+        if (!check_double_bool_array(checked, width, height)) {
           unloadPossibility(thisPoss, i);
           thisPoss = delLeaf(thisPoss, i);
           i--;
@@ -351,67 +362,6 @@ static possibility findSolution(int x, int y) {
     }
   }
   return thisPoss;
-}
-
-/**
- *
- *
- *
- */
-static bool checkBoolArray(bool **array, int x, int y) {
-  for (int i = 0; i < x; i++) {
-    for (int j = 0; j < y; j++) {
-      if (!array[i][j]) {
-        return false;
-      }
-    }
-  }
-  return true;
-}
-
-/**
- * @brief Allocate the necessary memory for a double array of booleans, with a
- * size of x*y, initialized to false.
- *
- * @param x, the number of columns for the double array
- * @param y, the number of lines for the double array
- * @return the adress of the double array
- */
-static bool **allocBoolDoubleArray(int x, int y) {
-  bool **table = (bool **)malloc(sizeof(bool *) * (unsigned long)x);
-  if (!table) {
-    fprintf(stderr, "not enough memory to alloc a table of %d pointers", x);
-    exit(EXIT_FAILURE);
-  }
-  for (int i = 0; i < x; i++) {
-    table[i] = (bool *)malloc(sizeof(bool) * (unsigned long)y);
-    if (!table[i]) {
-      fprintf(stderr, "not enough memory to alloc a table of %d booleans", y);
-      exit(EXIT_FAILURE);
-    }
-    for (int j = 0; j < y; j++) {
-      table[i][j] = false;
-    }
-  }
-  return table;
-}
-
-/**
- * @brief Free the memory memory used by a double array of x*y.
- *
- * @param table, the double array to free
- * @param x, the number of columns for the double array
- */
-static void freeDoubleArray(void **table, int x) {
-  if (table) {
-    for (int i = 0; i < x; i++) {
-      if (table[i]) {
-        free(table[i]);
-      }
-    }
-    free(table);
-    table = NULL;
-  }
 }
 
 /**
@@ -473,7 +423,7 @@ static void freeChainPossibility(possibility pos) {
  * @param dir, the direction to save for this piece
  * @return the possibility created
  **/
-static possibility createSinglePoss(int x, int y, direction dir) {
+static possibility createSinglePoss(uint16_t x, uint16_t y, direction dir) {
   possibility poss = allocPossibility();
   poss->x = x;
   poss->y = y;
@@ -492,7 +442,7 @@ static void addBranchPoss(possibility poss, possibility chainPoss) {
   assert(poss);
   assert(chainPoss);
   if (poss->nbNextPos >= NB_DIR) {
-    fprintf(stderr, "Not enough space to add branch of possibility\n");
+    FPRINTF(stderr, "Not enough space to add branch of possibility\n");
     exit(EXIT_FAILURE);
   }
 
@@ -530,7 +480,7 @@ static possibility getLeaf(possibility poss, uint32_t numLeaf) {
     i++;
   }
   if (i >= poss->nbNextPos) {
-    fprintf(stderr,
+    FPRINTF(stderr,
             "error : wrong parameter given or malformed possibility tree!\n");
     exit(EXIT_FAILURE);
   }
@@ -565,7 +515,7 @@ static void spreadLeaf(possibility poss, uint32_t numLeaf, uint32_t nbPossToAdd,
     i++;
   }
   if (i >= poss->nbNextPos) {
-    fprintf(stderr,
+    FPRINTF(stderr,
             "error : wrong parameter given or malformed possibility tree!\n");
     exit(EXIT_FAILURE);
   }
@@ -597,7 +547,7 @@ static possibility delLeaf(possibility poss, uint32_t numLeaf) {
     i++;
   }
   if (i >= poss->nbNextPos) {
-    fprintf(stderr,
+    FPRINTF(stderr,
             "error : wrong parameter given or malformed possibility tree!\n");
     exit(EXIT_FAILURE);
   }
@@ -625,9 +575,9 @@ static possibility delLeaf(possibility poss, uint32_t numLeaf) {
  * @param x, a pointer to the x value of the coordinates
  * @param y, a pointer to the y value of the coordinates
  */
-static void getCoordFromDir(direction dir, int *x, int *y) {
+static void getCoordFromDir(direction dir, int32_t *x, int32_t *y) {
   if (!x || !y) {
-    fprintf(
+    FPRINTF(
         stderr,
         "Warning, transmitted a NULL pointer, getCoordFromDir couldn't work!");
     return;
@@ -648,7 +598,7 @@ static void getCoordFromDir(direction dir, int *x, int *y) {
       *x = -1;
       break;
     default:
-      fprintf(stderr, "Warning, unknown direction given");
+      FPRINTF(stderr, "Warning, unknown direction given");
       break;
   }
 }
@@ -665,11 +615,13 @@ static void getCoordFromDir(direction dir, int *x, int *y) {
  * @return false if a piece has no direction possible, true otherwise
  **/
 static bool setUnmovable() {
-  for (int y = 0; y < game_height(g); y++) {
-    for (int x = 0; x < game_width(g); x++) {
+  uint16_t width = game_width(g);
+  uint16_t height = game_height(g);
+  for (uint16_t y = 0; y < height; y++) {
+    for (uint16_t x = 0; x < width; x++) {
       if (!unmovable[x][y]) {
         if (!setRecUnmovable(x, y)) {
-          freeDoubleArray((void **)checked, game_width(g));
+          free_double_bool_array(checked, width);
           return false;
         }
       }
@@ -682,12 +634,12 @@ static bool setUnmovable() {
  *
  *
  */
-static bool setRecUnmovable(int x, int y) {
+static bool setRecUnmovable(uint16_t x, uint16_t y) {
   if (unmovable[x][y]) {
     return true;
   }
 
-  uint32_t nbDir;
+  uint8_t nbDir;
   if (get_piece(g, x, y) == SEGMENT) {
     nbDir = NB_DIR_SEGMENT;
   } else {
@@ -696,7 +648,8 @@ static bool setRecUnmovable(int x, int y) {
 
   bool positions[NB_DIR] = {false, false, false, false};
   uint32_t nbPosition = 0;
-  int x2, x3, y2, y3;
+  int32_t x2, y2; 
+  uint16_t x3, y3;
 
   if (get_piece(g, x, y) == CROSS) {
     unmovable[x][y] = true;
@@ -713,7 +666,7 @@ static bool setRecUnmovable(int x, int y) {
   if (nbPosition == 0) {
     return false;
   } else if (nbPosition == 1) {
-    for (uint32_t i = 0; i < nbDir; i++) {
+    for (uint8_t i = 0; i < nbDir; i++) {
       if (positions[i]) {
         set_piece_current_dir(g, x, y, DIRS[i]);
         unmovable[x][y] = true;
@@ -722,7 +675,7 @@ static bool setRecUnmovable(int x, int y) {
   }
 
   if (unmovable[x][y]) {
-    for (uint32_t i = 0; i < NB_DIR; i++) {
+    for (uint8_t i = 0; i < NB_DIR; i++) {
       getCoordFromDir(DIRS[i], &x2, &y2);
       x3 = (x + x2 + game_width(g)) % game_width(g);
       y3 = (y + y2 + game_height(g)) % game_height(g);
@@ -753,8 +706,8 @@ static bool setRecUnmovable(int x, int y) {
  * @return a possibility tree starting with the current piece in the position it
  *has just been tested or NULL if no coherent possibility has been found
  **/
-static possibility propagate(int x, int y) {
-  int x2, y2;
+static possibility propagate(uint16_t x, uint16_t y) {
+  int32_t x2, y2;
   possibility thisPoss = createSinglePoss(x, y, get_current_dir(g, x, y));
   // The possibility we're going to return at the end of the function
   possibility possFound[NB_DIR];
@@ -763,7 +716,7 @@ static possibility propagate(int x, int y) {
   // By setting nbPossToCheck to 1 instead of 0 by default, we're allowed to
   // test the first direction without actually loading a proposition because
   // thissPoss is still a leaf
-  for (uint32_t i = 0; i < NB_DIR; i++) {
+  for (uint8_t i = 0; i < NB_DIR; i++) {
     getCoordFromDir(DIRS[i], &x2, &y2);
     x2 = (x + x2 + game_width(g)) % game_width(g);
     y2 = (y + y2 + game_height(g)) % game_height(g);
@@ -774,7 +727,7 @@ static possibility propagate(int x, int y) {
         loadPossibility(thisPoss, j);
         // For every possibility found before on the other connections of this
         // piece
-        nbPossFound = findPoss(possFound, &nbDerivPos, x2, y2);
+        nbPossFound = findPoss(possFound, &nbDerivPos, (uint16_t)x2, (uint16_t)y2);
         // We look up the possibilities with findPoss()
         unloadPossibility(thisPoss, j);
         if (nbPossFound == 0) {
@@ -827,7 +780,7 @@ static void loadPossibility(possibility poss, uint32_t numPoss) {
     i++;
   }
   if (i >= poss->nbNextPos) {
-    fprintf(stderr,
+    FPRINTF(stderr,
             "error : wrong parameter given or malformed possibility tree!\n");
     exit(EXIT_FAILURE);
   }
@@ -856,7 +809,7 @@ static void unloadPossibility(possibility poss, uint32_t numPoss) {
     i++;
   }
   if (i >= poss->nbNextPos) {
-    fprintf(stderr,
+    FPRINTF(stderr,
             "error : wrong parameter given or malformed possibility tree!\n");
     exit(EXIT_FAILURE);
   }
@@ -882,8 +835,9 @@ static void unloadPossibility(possibility poss, uint32_t numPoss) {
  * @return the number of possibility tree the function has found (different than
  *the total number of possibilities)
  **/
-static uint32_t findPoss(possibility *possArray, uint32_t *nbDerivPos, int x, int y) {
-  uint32_t nbDir;
+static uint32_t findPoss(possibility *possArray, uint32_t *nbDerivPos, uint16_t x,
+                         uint16_t y) {
+  uint8_t nbDir;
   *nbDerivPos = 0;
   if (get_piece(g, x, y) == SEGMENT) {
     nbDir = NB_DIR_SEGMENT;
@@ -905,7 +859,7 @@ static uint32_t findPoss(possibility *possArray, uint32_t *nbDerivPos, int x, in
       return 1;
     }
   } else {
-    for (uint32_t i = 0; i < nbDir; i++) {
+    for (uint8_t i = 0; i < nbDir; i++) {
       // For each direction this piece can be in
       set_piece_current_dir(g, x, y, DIRS[i]);
       if (isGoodDir(x, y)) {
@@ -944,10 +898,11 @@ static uint32_t findPoss(possibility *possArray, uint32_t *nbDerivPos, int x, in
  * @return true if the piece can be placed in this position without problem,
  *false otherwise.
  **/
-bool isGoodDir(int x, int y) {
-  int x2, y2, x3, y3;
+bool isGoodDir(uint16_t x, uint16_t y) {
+  int32_t x2, y2;
+  uint16_t x3, y3;
   bool foundChecked = false;
-  for (uint32_t i = 0; i < NB_DIR; i++) {
+  for (uint16_t i = 0; i < NB_DIR; i++) {
     getCoordFromDir(DIRS[i], &x2, &y2);
     x3 = (x + x2 + game_width(g)) % game_width(g);
     y3 = (y + y2 + game_height(g)) % game_height(g);

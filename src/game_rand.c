@@ -4,7 +4,7 @@
 #include <stdlib.h>
 
 typedef struct point_t {
-  int x, y;
+  int32_t x, y;
 } point;
 
 static point translate(point origin, point vector) {
@@ -12,8 +12,8 @@ static point translate(point origin, point vector) {
 }
 
 static point get_random_point_on_board(cgame board) {
-  int x = rand() % game_width(board);
-  int y = rand() % game_height(board);
+  int32_t x = rand() % game_width(board);
+  int32_t y = rand() % game_height(board);
   return (point){x, y};
 }
 typedef struct edge_t {
@@ -29,9 +29,9 @@ typedef struct board_element_t {
   direction piece_direction;
 } board_element;
 
-int get_edge_links_count(edge_links links) {
-  int result = 0;
-  for (int i = 0; i < NB_DIR; i++)
+uint8_t get_edge_links_count(edge_links links) {
+  uint8_t result = 0;
+  for (uint8_t i = 0; i < NB_DIR; i++)
     if (links.links[i]) result++;
   return result;
 }
@@ -39,15 +39,17 @@ int get_edge_links_count(edge_links links) {
 static direction get_random_dir() { return (direction)(rand() % NB_DIR); }
 
 static bool is_filled(cgame board) {
-  for (int x = 0; x < game_width(board); x++)
-    for (int y = 0; y < game_height(board); y++)
+  for (uint16_t x = 0; x < game_width(board); x++)
+    for (uint16_t y = 0; y < game_height(board); y++)
       if (get_piece(board, x, y) == EMPTY) return false;
   return true;
 }
 
 static bool is_point_in_board_bounds(cgame board, point test_point) {
-  return (0 <= test_point.x && test_point.x < game_width(board)) &&
-         (0 <= test_point.y && test_point.y < game_height(board));
+  int32_t width = (int32_t)game_width(board);
+  int32_t height = (int32_t)game_height(board);
+  return (0 <= test_point.x && test_point.x < width) &&
+         (0 <= test_point.y && test_point.y < height);
 }
 
 static point get_neighbour_point(cgame board, edge current_edge) {
@@ -118,14 +120,15 @@ static board_element get_board_element_from_edge_links(edge_links links) {
 }
 
 static void add_half_edge(game board, edge new_edge) {
-  board_element old_element = {
-      get_piece(board, new_edge.point.x, new_edge.point.y),
-      get_current_dir(board, new_edge.point.x, new_edge.point.y)};
+  uint16_t new_edge_x = (uint16_t)new_edge.point.x;
+  uint16_t new_edge_y = (uint16_t)new_edge.point.y;
+  board_element old_element = {get_piece(board, new_edge_x, new_edge_y),
+                               get_current_dir(board, new_edge_x, new_edge_y)};
   edge_links piece_edge_links = get_edge_links_from_board_element(old_element);
   piece_edge_links.links[new_edge.piece_direction] = true;
   board_element new_element =
       get_board_element_from_edge_links(piece_edge_links);
-  set_piece(board, new_edge.point.x, new_edge.point.y, new_element.piece_type,
+  set_piece(board, new_edge_x, new_edge_y, new_element.piece_type,
             new_element.piece_direction);
 }
 
@@ -139,13 +142,18 @@ static void add_edge(game board, edge new_edge) {
 
 static bool is_valid_candidate(cgame board, edge current_edge,
                                bool allow_cross) {
-  point neighbough_point = get_neighbour_point(board, current_edge);
-  if (!is_point_in_board_bounds(board, neighbough_point)) return false;
+                                   uint16_t current_edge_x = (uint16_t)current_edge.point.x;
+  uint16_t current_edge_y = (uint16_t)current_edge.point.y;
+
+  point neighbour_point = get_neighbour_point(board, current_edge);
+  uint16_t neighbour_x = (uint16_t)neighbour_point.x;
+  uint16_t neighbour_y = (uint16_t)neighbour_point.y;
+  if (!is_point_in_board_bounds(board, neighbour_point)) return false;
   return (
-      get_piece(board, current_edge.point.x, current_edge.point.y) != EMPTY &&
-      get_piece(board, neighbough_point.x, neighbough_point.y) == EMPTY &&
+      get_piece(board, current_edge_x, current_edge_y) != EMPTY &&
+      get_piece(board, neighbour_x, neighbour_y) == EMPTY &&
       (allow_cross ||
-       get_piece(board, current_edge.point.x, current_edge.point.y) != TEE));
+       get_piece(board, current_edge_x, current_edge_y) != TEE));
 }
 
 static edge get_random_candidate(cgame board, bool allow_cross) {
@@ -158,9 +166,9 @@ static edge get_random_candidate(cgame board, bool allow_cross) {
   return new_edge;
 }
 
-game random_game_ext(int width, int height, bool is_swap, bool allow_cross) {
-  assert(width >= 3);
-  assert(height >= 3);
+game random_game_ext(uint16_t width, uint16_t height, bool is_swap, bool allow_cross) {
+  assert(width >= MIN_GAME_WIDTH);
+  assert(height >= MIN_GAME_HEIGHT);
 
   game new_board = new_game_empty_ext(width, height, is_swap);
 
@@ -172,6 +180,6 @@ game random_game_ext(int width, int height, bool is_swap, bool allow_cross) {
     add_edge(new_board, new_edge);
   }
   assert(is_game_over(new_board));
-  shuffle_dir(new_board);
+  shuffle_direction(new_board);
   return new_board;
 }

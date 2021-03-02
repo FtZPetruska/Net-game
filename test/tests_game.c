@@ -21,17 +21,19 @@ int test_set_piece() {
   direction default_dirs[] = {S, S, S, S, S, S, S, S, S, S, S, S, S,
                               S, S, S, S, S, S, S, S, S, S, S, S};
   game g = new_game(default_pieces, default_dirs);
-  for (int x = 0; x < game_width(g); x++) {
-    for (int y = 0; y < game_height(g); y++) {
+  uint16_t width = game_width(g);
+  uint16_t height = game_height(g);
+  for (uint16_t x = 0; x < width; x++) {
+    for (uint16_t y = 0; y < height; y++) {
       set_piece(g, x, y, EMPTY, S);
     }
   }
   restart_game(g);
-  for (int y = 0; y < game_height(g); y++) {
-    for (int x = 0; x < game_width(g); x++) {
+  for (uint16_t y = 0; y < height; y++) {
+    for (uint16_t x = 0; x < width; x++) {
       if (get_piece(g, x, y) != default_pieces[x + y * DEFAULT_SIZE] ||
           get_current_dir(g, x, y) != default_dirs[x + y * DEFAULT_SIZE]) {
-        fprintf(stderr,
+        FPRINTF(stderr,
                 "Error when set_piece : after a restart the piece "
                 "was %d and should be %d and the dir was %d and should be %d "
                 "@(x=%d,y=%d)\n",
@@ -57,20 +59,21 @@ int test_game_width() {
   if (game_width(g) == DEFAULT_SIZE) {
     delete_game(g);
   } else {
-    fprintf(stderr,
+    FPRINTF(stderr,
             "Error with game_width : Width of standard game is %d, was "
             "expected %d\n",
             game_width(g), DEFAULT_SIZE);
     delete_game(g);
     return EXIT_FAILURE;
   }
-  int width = 42;
-  game g_ext = new_game_empty_ext(width, 115, false);
-  if (game_width(g_ext) == 42) {
+  uint16_t width = 42;
+  uint16_t height = 115;
+  game g_ext = new_game_empty_ext(width, height, false);
+  if (game_width(g_ext) == width && game_height(g_ext) == height) {
     delete_game(g_ext);
     return EXIT_SUCCESS;
   }
-  fprintf(
+  FPRINTF(
       stderr,
       "Error with game_width : Width of extended game is %d, was expected %d\n",
       game_width(g_ext), width);
@@ -86,11 +89,13 @@ int test_game_width() {
 int test_set_piece_current_dir() {
   game g = new_game_empty();
   direction dir = N;
-  for (int x = 0; x < game_width(g); x++) {
-    for (int y = 0; y < game_height(g); y++) {
+  uint16_t width = game_width(g);
+  uint16_t height = game_height(g);
+  for (uint16_t x = 0; x < width; x++) {
+    for (uint16_t y = 0; y < height; y++) {
       set_piece_current_dir(g, x, y, dir);
       if (get_current_dir(g, x, y) != dir) {
-        fprintf(stderr,
+        FPRINTF(stderr,
                 "Error with set_piece_current_dir : Direction is %d, was "
                 "expected %d\n",
                 get_current_dir(g, x, y), dir);
@@ -100,11 +105,11 @@ int test_set_piece_current_dir() {
     }
   }
   dir = E;
-  for (int x = 0; x < game_width(g); x++) {
-    for (int y = 0; y < game_height(g); y++) {
+  for (uint16_t x = 0; x < width; x++) {
+    for (uint16_t y = 0; y < height; y++) {
       set_piece_current_dir(g, x, y, dir);
       if (get_current_dir(g, x, y) != dir) {
-        fprintf(stderr,
+        FPRINTF(stderr,
                 "Error with set_piece_current_dir : Direction is %d, was "
                 "expected %d\n",
                 get_current_dir(g, x, y), dir);
@@ -114,11 +119,11 @@ int test_set_piece_current_dir() {
     }
   }
   dir = S;
-  for (int x = 0; x < game_width(g); x++) {
-    for (int y = 0; y < game_height(g); y++) {
+  for (uint16_t x = 0; x < width; x++) {
+    for (uint16_t y = 0; y < height; y++) {
       set_piece_current_dir(g, x, y, dir);
       if (get_current_dir(g, x, y) != dir) {
-        fprintf(stderr,
+        FPRINTF(stderr,
                 "Error with set_piece_current_dir : Direction is %d, was "
                 "expected %d\n",
                 get_current_dir(g, x, y), dir);
@@ -128,11 +133,11 @@ int test_set_piece_current_dir() {
     }
   }
   dir = W;
-  for (int x = 0; x < game_width(g); x++) {
-    for (int y = 0; y < game_height(g); y++) {
+  for (uint16_t x = 0; x < width; x++) {
+    for (uint16_t y = 0; y < height; y++) {
       set_piece_current_dir(g, x, y, dir);
       if (get_current_dir(g, x, y) != dir) {
-        fprintf(stderr,
+        FPRINTF(stderr,
                 "Error with set_piece_current_dir : Direction is %d, was "
                 "expected %d\n",
                 get_current_dir(g, x, y), dir);
@@ -152,25 +157,25 @@ int test_set_piece_current_dir() {
 
 int test_opposite_dir() {
   if (opposite_dir(N) != S) {
-    fprintf(stderr,
+    FPRINTF(stderr,
             "Error with opposite_dir : opposite of %d is %d, was expected %d\n",
             0, opposite_dir(N), 2);
     return EXIT_FAILURE;
   }
   if (opposite_dir(E) != W) {
-    fprintf(stderr,
+    FPRINTF(stderr,
             "Error with opposite_dir : opposite of %d is %d, was expected %d\n",
             1, opposite_dir(E), 3);
     return EXIT_FAILURE;
   }
   if (opposite_dir(S) != N) {
-    fprintf(stderr,
+    FPRINTF(stderr,
             "Error with opposite_dir : opposite of %d is %d, was expected %d\n",
             2, opposite_dir(S), 0);
     return EXIT_FAILURE;
   }
   if (opposite_dir(W) != E) {
-    fprintf(stderr,
+    FPRINTF(stderr,
             "Error with opposite_dir : opposite of %d is %d, was expected %d\n",
             3, opposite_dir(W), 1);
     return EXIT_FAILURE;
@@ -195,7 +200,7 @@ int test_delete_game() {
   delete_game(g_ext);
   /*signal(SIGSEGV,sigsegv_handler); //Met en place une redirection temporaire
   en cas de Segmentation fault get_piece(g,0,0);
-  //fprintf(stderr,"Error with Delete_game : Game wasn't freed properly,
+  //FPRINTF(stderr,"Error with Delete_game : Game wasn't freed properly,
   expected SegFault\n");*/
   return EXIT_SUCCESS;
 }
@@ -214,13 +219,15 @@ int test_restart_game() {
   direction default_dirs[] = {S, S, S, S, S, S, S, S, S, S, S, S, S,
                               S, S, S, S, S, S, S, S, S, S, S, S};
   game g = new_game(default_pieces, default_dirs);
-  shuffle_dir(g);
+  shuffle_direction(g);
   restart_game(g);
-  for (int y = 0; y < game_height(g); y++) {
-    for (int x = 0; x < game_width(g); x++) {
+  uint16_t width = game_width(g);
+  uint16_t height = game_height(g);
+  for (uint16_t y = 0; y < height; y++) {
+    for (uint16_t x = 0; x < width; x++) {
       if (get_piece(g, x, y) != default_pieces[x + y * DEFAULT_SIZE] ||
           get_current_dir(g, x, y) != default_dirs[x + y * DEFAULT_SIZE]) {
-        fprintf(stderr,
+        FPRINTF(stderr,
                 "Error with restart_game : after a restart the piece "
                 "was %d and should be %d and the dir was %d and should be %d "
                 "@(x=%d,y=%d)\n",
@@ -243,33 +250,35 @@ int test_restart_game() {
 // EMPTY pieces for both values of wrapping
 
 int test_new_game_empty_ext() {
-  for (int wrapping = 0; wrapping < 2; wrapping++) {
-    game g = new_game_empty_ext(42, 115, wrapping);
+  uint16_t width = 42;
+  uint16_t height = 115;
+  for (uint8_t wrapping = 0; wrapping < 2; wrapping++) {
+    game g = new_game_empty_ext(width, height, wrapping);
 
     if (!g) {
-      fprintf(stderr,
+      FPRINTF(stderr,
               "Error with new_game_empty_ext : returned game is NULL\n");
       delete_game(g);
       return EXIT_FAILURE;
     }
 
-    if (game_height(g) != 115 || game_width(g) != 42) {
-      fprintf(stderr, "Error with new_game_empty_ext : invalid game size\n");
+    if (game_width(g) != width || game_height(g) != height) {
+      FPRINTF(stderr, "Error with new_game_empty_ext : invalid game size\n");
       delete_game(g);
       return EXIT_FAILURE;
     }
 
-    for (int row = game_height(g) - 1; row >= 0; row--) {
-      for (int col = 0; col < game_width(g); col++) {
+    for (uint16_t row = 0; row < height; row--) {
+      for (uint16_t col = 0; col < width; col++) {
         if (get_piece(g, col, row) != EMPTY) {
-          fprintf(stderr, "Error with new_game_empty_ext : piece not empty\n");
+          FPRINTF(stderr, "Error with new_game_empty_ext : piece not empty\n");
           delete_game(g);
           return EXIT_FAILURE;
         }
       }
     }
     if (is_wrapping(g) != wrapping) {
-      fprintf(stderr,
+      FPRINTF(stderr,
               "Error with new_game_empty_ext : wrapping was expected to be %s, "
               "but is %s\n",
               wrapping ? "true" : "false", is_wrapping(g) ? "true" : "false");
@@ -289,36 +298,39 @@ int test_new_game_empty_ext() {
 // given pieces in a given direction for both values of wrapping
 
 int test_new_game_ext() {
-  piece default_pieces[] = {CROSS, TEE, LEAF, CORNER};
-  direction default_dirs[] = {E, W, S, E};
+  piece default_pieces[] = {LEAF, CORNER, CORNER, CORNER, SEGMENT, CORNER, LEAF, CORNER, SEGMENT};
+  direction default_dirs[] = {N, E, S, E, E, W, E, W, N};
+  uint16_t width = 3;
+  uint16_t height = 3;
 
-  for (int wrapping = 0; wrapping < 2; wrapping++) {
-    game g = new_game_ext(2, 2, default_pieces, default_dirs, wrapping);
+  for (uint8_t wrapping = 0; wrapping < 2; wrapping++) {
+    game g =
+        new_game_ext(width, height, default_pieces, default_dirs, wrapping);
 
-    if (2 != game_width(g) || 2 != game_height(g)) {
-      fprintf(stderr, "Error with new_game_ext : invalid game size\n");
+    if (width != game_width(g) || height != game_height(g)) {
+      FPRINTF(stderr, "Error with new_game_ext : invalid game size\n");
       delete_game(g);
       return EXIT_FAILURE;
     }
 
-    for (int row = 0; row < 2; row++) {
-      for (int col = 0; col < 2; col++) {
-        if (get_piece(g, row, col) != default_pieces[(col * 2) + row]) {
-          fprintf(stderr,
+    for (uint16_t row = 0; row < height; row++) {
+      for (uint16_t col = 0; col < width; col++) {
+        if (get_piece(g, row, col) != default_pieces[(col * width) + row]) {
+          FPRINTF(stderr,
                   "Error with new_game_ext : piece (%d,%d) is not "
                   "corresponding! (should be %d, is "
                   "%d)\n",
-                  row, col, default_pieces[(col * 2) + row],
+                  row, col, default_pieces[(col * width) + row],
                   get_piece(g, row, col));
           delete_game(g);
           return EXIT_FAILURE;
         }
-        if (get_current_dir(g, row, col) != default_dirs[(col * 2) + row]) {
-          fprintf(stderr,
+        if (get_current_dir(g, row, col) != default_dirs[(col * width) + row]) {
+          FPRINTF(stderr,
                   "Error with new_game_ext : piece's direction (%d,%d) is not "
                   "corresponding! "
                   "(should be %d, is %d)\n",
-                  row, col, default_dirs[(col * 2) + row],
+                  row, col, default_dirs[(col * width) + row],
                   get_current_dir(g, row, col));
           delete_game(g);
           return EXIT_FAILURE;
@@ -327,7 +339,7 @@ int test_new_game_ext() {
     }
 
     if (is_wrapping(g) != wrapping) {
-      fprintf(stderr,
+      FPRINTF(stderr,
               "Error with new_game_ext : wrapping was expected to be %s, "
               "but is %s\n",
               wrapping ? "true" : "false", is_wrapping(g) ? "true" : "false");
@@ -351,28 +363,28 @@ int test_new_game() {
   direction default_dirs[] = {E, W, S, E, S, S, S, N, W, S, E, N, W,
                               W, E, S, W, N, E, E, W, N, W, N, S};
   game g = new_game(default_pieces, default_dirs);
-  int w = DEFAULT_SIZE;
-  int h = DEFAULT_SIZE;
-  if (w != game_width(g) || h != game_height(g)) {
-    fprintf(stderr, "Error: width or height is not at default size!\n");
+  uint16_t width = DEFAULT_SIZE;
+  uint16_t height = DEFAULT_SIZE;
+  if (width != game_width(g) || height != game_height(g)) {
+    FPRINTF(stderr, "Error: width or height is not at default size!\n");
     delete_game(g);
     return EXIT_FAILURE;
   }
-  for (int i = 0; i < w; i++) {
-    for (int j = 0; j < h; j++) {
-      if (get_piece(g, i, j) != default_pieces[(j * w) + i]) {
-        fprintf(stderr,
-                "Error: piece (%d,%d) is not corresponding! (should be %d, is "
+  for (uint16_t i = 0; i < width; i++) {
+    for (uint16_t j = 0; j < height; j++) {
+      if (get_piece(g, i, j) != default_pieces[(j * width) + i]) {
+        FPRINTF(stderr,
+                "Error: piece (%hu,%hu) is not corresponding! (should be %d, is "
                 "%d)\n",
-                i, j, default_pieces[(j * w) + i], get_piece(g, i, j));
+                i, j, default_pieces[(j * width) + i], get_piece(g, i, j));
         delete_game(g);
         return EXIT_FAILURE;
       }
-      if (get_current_dir(g, i, j) != default_dirs[(j * w) + i]) {
-        fprintf(stderr,
-                "Error: piece's direction (%d,%d) is not corresponding! "
+      if (get_current_dir(g, i, j) != default_dirs[(j * width) + i]) {
+        FPRINTF(stderr,
+                "Error: piece's direction (%hu,%hu) is not corresponding! "
                 "(should be %d, is %d)\n",
-                i, j, default_dirs[(j * w) + i], get_current_dir(g, i, j));
+                i, j, default_dirs[(j * width) + i], get_current_dir(g, i, j));
         delete_game(g);
         return EXIT_FAILURE;
       }
@@ -389,7 +401,7 @@ int test_new_game() {
 int test_game_height() {
   game g = new_game_empty();
   if (game_height(g) != DEFAULT_SIZE) {
-    fprintf(stderr,
+    FPRINTF(stderr,
             "Error: function int game_height(cgame game) is not working "
             "correctly or height is not at default size\n");
     delete_game(g);
@@ -404,16 +416,16 @@ int test_game_height() {
  */
 int test_rotate_piece() {
   game g = new_game_empty();
-  int w = game_width(g);
-  int h = game_height(g);
+  uint16_t width = game_width(g);
+  uint16_t height = game_height(g);
   direction dir;
-  for (int x = 0; x < w; x++) {
-    for (int y = 0; y < h; y++) {
-      for (int i = 0; i < 8; i++) {
+  for (uint16_t x = 0; x < width; x++) {
+    for (uint16_t y = 0; y < height; y++) {
+      for (int32_t i = 0; i < 8; i++) {
         dir = get_current_dir(g, x, y);
         rotate_piece(g, x, y, i);
         if (get_current_dir(g, x, y) != (dir + (uint32_t)i) % 4) {
-          fprintf(stderr,
+          FPRINTF(stderr,
                   "Error: function void rotate_piece(game game, int x, int y, "
                   "int cnb_cw_quarter_turn) is not working correctly\n");
           delete_game(g);
@@ -434,28 +446,28 @@ int test_is_edge() {
   for (direction i = 0; i < NB_DIR; i++) {
     for (direction j = 0; j < NB_DIR; j++) {
       if (is_edge(EMPTY, i, j) != false) {
-        fprintf(stderr,
+        FPRINTF(stderr,
                 "Error: function is_edge(EMPTY, %d, %d) returned a wrong "
                 "answer (%d)\n",
                 i, j, is_edge(EMPTY, i, j));
         return EXIT_FAILURE;
       }
       if (is_edge(LEAF, i, j) != (i == j)) {
-        fprintf(stderr,
+        FPRINTF(stderr,
                 "Error: function is_edge(LEAF, %d, %d) returned a wrong answer "
                 "(%d)\n",
                 i, j, is_edge(LEAF, i, j));
         return EXIT_FAILURE;
       }
       if (is_edge(SEGMENT, i, j) != (i % 2 == j % 2)) {
-        fprintf(stderr,
+        FPRINTF(stderr,
                 "Error: function is_edge(SEGMENT, %d, %d) returned a wrong "
                 "answer (%d)\n",
                 i, j, is_edge(SEGMENT, i, j));
         return EXIT_FAILURE;
       }
       if (is_edge(CORNER, i, j) != (i == j || (i + 1) % 4 == j)) {
-        fprintf(stderr,
+        FPRINTF(stderr,
                 "Error: function is_edge(CORNER, %d, %d) returned a wrong "
                 "answer (%d)\n",
                 i, j, is_edge(CORNER, i, j));
@@ -463,14 +475,14 @@ int test_is_edge() {
       }
       if (is_edge(TEE, i, j) !=
           (i == (j + 1) % 4 || i == j || (i + 1) % 4 == j)) {
-        fprintf(stderr,
+        FPRINTF(stderr,
                 "Error: function is_edge(TEE, %d, %d) returned a wrong answer "
                 "(%d)\n",
                 i, j, is_edge(TEE, i, j));
         return EXIT_FAILURE;
       }
       if (is_edge(CROSS, i, j) != true) {
-        fprintf(stderr,
+        FPRINTF(stderr,
                 "Error: function is_edge(CROSS, %d, %d) returned a wrong "
                 "answer (%d)\n",
                 i, j, is_edge(CROSS, i, j));
@@ -486,14 +498,14 @@ int test_is_edge() {
  */
 int test_get_piece() {
   game g = new_game_empty();
-  int w = game_width(g);
-  int h = game_height(g);
-  for (int x = 0; x < w; x++) {
-    for (int y = 0; y < h; y++) {
+  uint16_t width = game_width(g);
+  uint16_t height = game_height(g);
+  for (uint16_t x = 0; x < width; x++) {
+    for (uint16_t y = 0; y < height; y++) {
       for (piece i = EMPTY; i < NB_PIECE_TYPE; i++) {
         set_piece(g, x, y, i, N);
         if (get_piece(g, x, y) != i) {
-          fprintf(stderr,
+          FPRINTF(stderr,
                   "Error: function get_piece(game, %d, %d) returned a wrong "
                   "answer (%d instead of %d)\n",
                   x, y, get_piece(g, x, y), i);
@@ -519,26 +531,26 @@ int test_is_game_over() {
   direction solution_dirs[] = {E, N, W, N, N, E, S, N, S, N, N, N, E,
                                W, N, E, S, S, N, W, E, W, E, S, S};
   game g = new_game(default_pieces, solution_dirs);
-  int w = game_width(g);
-  int h = game_height(g);
+  uint16_t width = game_width(g);
+  uint16_t height = game_height(g);
   direction dir;
   piece pice;
 
   if (!is_game_over(g)) {
-    fprintf(stderr,
+    FPRINTF(stderr,
             "Error: function bool is_game_over(cgame g) returned \"false\" in "
             "a finished game\n");
     delete_game(g);
     return EXIT_FAILURE;
   }
 
-  for (int x = 0; x < w; x++) {
-    for (int y = 0; y < h; y++) {
+  for (uint16_t x = 0; x < width; x++) {
+    for (uint16_t y = 0; y < height; y++) {
       dir = get_current_dir(g, x, y);
       pice = get_piece(g, x, y);
       rotate_piece_one(g, x, y);
       if (is_game_over(g)) {
-        fprintf(stderr,
+        FPRINTF(stderr,
                 "Error: function bool is_game_over(cgame g) returned \"true\" "
                 "in a not finished game\n");
         delete_game(g);
@@ -546,7 +558,7 @@ int test_is_game_over() {
       }
       set_piece(g, x, y, (pice + 1) % 4, dir);
       if (is_game_over(g)) {
-        fprintf(stderr,
+        FPRINTF(stderr,
                 "Error: function bool is_game_over(cgame g) returned \"true\" "
                 "in a not finished game\n");
         delete_game(g);
@@ -554,7 +566,7 @@ int test_is_game_over() {
       }
       set_piece(g, x, y, pice, dir);
       if (!is_game_over(g)) {
-        fprintf(stderr,
+        FPRINTF(stderr,
                 "Error: function bool is_game_over(cgame g) returned \"false\" "
                 "in a finished game\n");
         delete_game(g);
@@ -572,7 +584,7 @@ int test_is_game_over() {
                               W, N, E, S, S, N, W, E, W, E, S, S};
   game g2 = new_game(default_pieces2, default_dirs);
   if (is_game_over(g2)) {
-    fprintf(stderr,
+    FPRINTF(stderr,
             "Error: function bool is_game_over(cgame g) returned \"true\" in a "
             "finished game containing a disconnected loop\n");
     delete_game(g2);
@@ -588,7 +600,7 @@ int test_is_game_over() {
                                W, N, E, S, S, N, W, E, W, E, S, S};
   game g3 = new_game(default_pieces3, default_dirs2);
   if (is_game_over(g3)) {
-    fprintf(stderr,
+    FPRINTF(stderr,
             "Error: function bool is_game_over(cgame g) returned \"true\" in a "
             "finished game containing a loop\n");
     delete_game(g3);
@@ -596,12 +608,12 @@ int test_is_game_over() {
   }
   delete_game(g3);
 
-  piece default_pieces4[] = {LEAF, LEAF};
-  direction default_dirs3[] = {W, E};
-  game g4 = new_game_ext(2, 1, default_pieces4, default_dirs3, true);
+  piece default_pieces4[] = {LEAF, CORNER, CORNER, CORNER, SEGMENT, CORNER, LEAF, CORNER, SEGMENT};
+  direction default_dirs3[] = {N, E, S, E, E, W, E, W, N};
+  game g4 = new_game_ext(3, 3, default_pieces4, default_dirs3, true);
 
   if (!is_game_over(g4)) {
-    fprintf(stderr,
+    FPRINTF(stderr,
             "Error: function bool is_game_over(cgame g) returned \"false\" in "
             "a finished game (wrapping problem)\n");
     delete_game(g4);
@@ -625,22 +637,27 @@ int test_is_game_over() {
  */
 int test_new_game_empty() {
   game g = new_game_empty();
+  uint16_t width = game_width(g);
+  uint16_t height = game_height(g);
 
   if (!g) {
-    fprintf(stderr, "Returned game is NULL\n");
+    FPRINTF(stderr, "Returned game is NULL\n");
     return EXIT_FAILURE;
   }
 
-  if (game_height(g) != DEFAULT_SIZE || game_width(g) != DEFAULT_SIZE) {
-    fprintf(stderr, "Invalid game size\n");
+  if (width != DEFAULT_SIZE || height != DEFAULT_SIZE) {
+    FPRINTF(stderr, "Invalid game size\n");
     delete_game(g);
     return EXIT_FAILURE;
   }
 
-  for (int row = game_height(g) - 1; row >= 0; row--) {
-    for (int col = 0; col < game_width(g); col++) {
-      if (get_piece(g, col, row) != EMPTY) {
-        fprintf(stderr, "piece not empty !\n");
+  for (uint16_t x = 0; x < width; x++) {
+    for (uint16_t y = 0; y < height; y++) {
+      if (get_piece(g, x, y) != EMPTY) {
+        FPRINTF(stderr,
+                "Error: test_new_game_empty, piece at (%hu,%hu) is %d, expected "
+                "%d.\n",
+                x, y, get_piece(g, x, y), EMPTY);
         delete_game(g);
         return EXIT_FAILURE;
       }
@@ -650,12 +667,12 @@ int test_new_game_empty() {
   return EXIT_SUCCESS;
 }
 
-/* ********** TEST shuffle_dir ********** */
-/* By Generating many game boards, that test check if the shuffle_dir sfunction
+/* ********** TEST shuffle_direction ********** */
+/* By Generating many game boards, that test check if the shuffle_direction sfunction
  * shuffle correctly pieces. After shufle, a piece has 25% of chance to have
  * same position as before.
  */
-int test_shuffle_dir() {
+int test_shuffle_direction() {
   uint32_t seed = 0;
   srand(seed);
 
@@ -670,23 +687,38 @@ int test_shuffle_dir() {
                       E, N, N, S, W, E, N, N, S, W, E, N};
 
   game g = new_game(default_pieces, default_dirs);
+  uint16_t width = game_width(g);
+  uint16_t height = game_height(g);
 
-  int same = 0;
+  uint32_t same = 0;
 
-  int roll_amount = 500;
-  for (int i = 0; i < roll_amount; i++) {
-    shuffle_dir(g);
-    for (int y = game_height(g) - 1; y >= 0; y--) {
-      for (int x = 0; x < game_width(g); x++) {
-        if (dTab[y * game_width(g) + x] == get_current_dir(g, x, y)) {
+  uint32_t roll_amount = 500;
+  for (uint32_t i = 0; i < roll_amount; i++) {
+    shuffle_direction(g);
+    for (uint16_t y = 0; y < height; y++) {
+      for (uint16_t x = 0; x < width; x++) {
+        if (dTab[y * width + x] == get_current_dir(g, x, y)) {
           same++;
         }
-        dTab[y * game_width(g) + x] = get_current_dir(g, x, y);
+        dTab[y * width + x] = get_current_dir(g, x, y);
       }
     }
   }
-  double height = (double)game_height(g);
-  double width = (double)game_width(g);
+  uint32_t percentage = (same * 100) / (roll_amount * (height * width));
+  uint32_t error_margin = 5;
+  if (percentage > (100 / NB_DIR) - error_margin ||
+      percentage < (100 / NB_DIR) + error_margin) {
+    delete_game(g);
+    return (EXIT_SUCCESS);
+  } else {
+    FPRINTF(stderr,
+            "With %u of similarity, it's probably not a perfect random\n",
+            percentage);
+    delete_game(g);
+    return (EXIT_FAILURE);
+  }
+
+  /*
   double proba = (double)same / ((double)roll_amount * (height * width));
 
   double interval = 0.05;
@@ -695,12 +727,12 @@ int test_shuffle_dir() {
     delete_game(g);
     return (EXIT_SUCCESS);
   } else {
-    fprintf(stderr,
+    FPRINTF(stderr,
             "With %lf of similarity, it's probably not a perfect random\n",
             proba);
     delete_game(g);
     return (EXIT_FAILURE);
-  }
+  } */
 }
 
 /* ********** TEST rotate_piece_one ********** */
@@ -719,8 +751,10 @@ int test_rotate_piece_one() {
 
   game board = new_game(default_pieces, default_dirs);
 
-  for (int row = game_height(board) - 1; row >= 0; row--) {
-    for (int col = 0; col < game_width(board); col++) {
+  uint16_t width = game_width(board);
+  uint16_t height = game_height(board);
+  for (uint16_t row = 0; row < height; row++) {
+    for (uint16_t col = 0; col < width; col++) {
       direction dir = get_current_dir(board, col, row);
       rotate_piece_one(board, col, row);
       switch (get_current_dir(board, col, row)) {
@@ -744,7 +778,7 @@ int test_rotate_piece_one() {
   if (isGood) {
     return EXIT_SUCCESS;
   } else {
-    fprintf(stderr, "Rotation problem\n");
+    FPRINTF(stderr, "Rotation problem\n");
     return EXIT_FAILURE;
   }
 }
@@ -763,8 +797,10 @@ int test_is_edge_coordinates() {
                               E, N, N, S, W, E, N, N, S, W, E, N};
 
   game board = new_game(default_pieces, default_dirs);
-  for (int row = game_height(board) - 1; row >= 0; row--) {
-    for (int col = 0; col < game_width(board); col++) {
+  uint16_t width = game_width(board);
+  uint16_t height = game_height(board);
+  for (uint16_t row = 0; row < height; row--) {
+    for (uint16_t col = 0; col < width; col++) {
       direction dir = get_current_dir(board, col, row);
       piece p = get_piece(board, col, row);
 
@@ -775,7 +811,7 @@ int test_is_edge_coordinates() {
               !is_edge_coordinates(board, col, row, E) ||
               !is_edge_coordinates(board, col, row, W)) {
             delete_game(board);
-            fprintf(stderr, "CROSS can connect in all directions\n");
+            FPRINTF(stderr, "CROSS can connect in all directions\n");
             return EXIT_FAILURE;
           }
           break;
@@ -786,7 +822,7 @@ int test_is_edge_coordinates() {
               is_edge_coordinates(board, col, row, E) ||
               is_edge_coordinates(board, col, row, W)) {
             delete_game(board);
-            fprintf(stderr, "EMPTY cannot have edge\n");
+            FPRINTF(stderr, "EMPTY cannot have edge\n");
             return EXIT_FAILURE;
           }
           break;
@@ -797,7 +833,7 @@ int test_is_edge_coordinates() {
               (is_edge_coordinates(board, col, row, E) && dir != E) ||
               (is_edge_coordinates(board, col, row, W) && dir != W)) {
             delete_game(board);
-            fprintf(stderr, "LEAF edge problem (it say true)\n");
+            FPRINTF(stderr, "LEAF edge problem (it say true)\n");
             return EXIT_FAILURE;
           }
           if ((!is_edge_coordinates(board, col, row, N) && dir == N) ||
@@ -805,7 +841,7 @@ int test_is_edge_coordinates() {
               (!is_edge_coordinates(board, col, row, E) && dir == E) ||
               (!is_edge_coordinates(board, col, row, W) && dir == W)) {
             delete_game(board);
-            fprintf(stderr, "LEAF edge problem (it say false)\n");
+            FPRINTF(stderr, "LEAF edge problem (it say false)\n");
             return EXIT_FAILURE;
           }
           break;
@@ -820,7 +856,7 @@ int test_is_edge_coordinates() {
               (is_edge_coordinates(board, col, row, W) && dir != W &&
                dir != S)) {
             delete_game(board);
-            fprintf(stderr, "CORNER edge problem (it say true)\n");
+            FPRINTF(stderr, "CORNER edge problem (it say true)\n");
             return EXIT_FAILURE;
           }
           if ((!is_edge_coordinates(board, col, row, N) &&
@@ -832,7 +868,7 @@ int test_is_edge_coordinates() {
               (!is_edge_coordinates(board, col, row, W) &&
                (dir == W || dir == S))) {
             delete_game(board);
-            fprintf(stderr, "CORNER edge problem (it say false)\n");
+            FPRINTF(stderr, "CORNER edge problem (it say false)\n");
             return EXIT_FAILURE;
           }
           break;
@@ -847,7 +883,7 @@ int test_is_edge_coordinates() {
               (is_edge_coordinates(board, col, row, W) && dir != E &&
                dir != W)) {
             delete_game(board);
-            fprintf(stderr, "SEGMENT edge problem (it say true)\n");
+            FPRINTF(stderr, "SEGMENT edge problem (it say true)\n");
             return EXIT_FAILURE;
           }
           if ((!is_edge_coordinates(board, col, row, N) &&
@@ -859,7 +895,7 @@ int test_is_edge_coordinates() {
               (!is_edge_coordinates(board, col, row, W) &&
                (dir == E || dir == W))) {
             delete_game(board);
-            fprintf(stderr, "SEGMENT edge problem (it say false)\n");
+            FPRINTF(stderr, "SEGMENT edge problem (it say false)\n");
             return EXIT_FAILURE;
           }
           break;
@@ -870,7 +906,7 @@ int test_is_edge_coordinates() {
               (is_edge_coordinates(board, col, row, E) && dir == W) ||
               (is_edge_coordinates(board, col, row, W) && dir == E)) {
             delete_game(board);
-            fprintf(stderr, "TEE edge problem (it say true)\n");
+            FPRINTF(stderr, "TEE edge problem (it say true)\n");
             return EXIT_FAILURE;
           }
           if ((!is_edge_coordinates(board, col, row, N) && dir != S) ||
@@ -878,7 +914,7 @@ int test_is_edge_coordinates() {
               (!is_edge_coordinates(board, col, row, E) && dir != W) ||
               (!is_edge_coordinates(board, col, row, W) && dir != E)) {
             delete_game(board);
-            fprintf(stderr, "TEE edge problem (it say false)\n");
+            FPRINTF(stderr, "TEE edge problem (it say false)\n");
             return EXIT_FAILURE;
           }
           break;
@@ -908,7 +944,7 @@ int test_copy_game() {
   game copy = copy_game((cgame)board);
 
   if (!board) {
-    fprintf(stderr, "Board has been freed!\n");
+    FPRINTF(stderr, "Board has been freed!\n");
     return EXIT_FAILURE;
   }
 
@@ -916,12 +952,12 @@ int test_copy_game() {
       game_width(board) != game_width(copy)) {
     delete_game(board);
     delete_game(copy);
-    fprintf(stderr, "copy problem, with size\n");
+    FPRINTF(stderr, "copy problem, with size\n");
     return EXIT_FAILURE;
   }
 
-  for (int row = game_height(board) - 1; row >= 0; row--) {
-    for (int col = 0; col < game_width(board); col++) {
+  for (uint16_t row = 0; row < game_height(board); row--) {
+    for (uint16_t col = 0; col < game_width(board); col++) {
       direction dir = get_current_dir(board, col, row);
       piece p = get_piece(board, col, row);
       direction cDir = get_current_dir(copy, col, row);
@@ -930,14 +966,14 @@ int test_copy_game() {
       if (dir != cDir || p != cP) {
         delete_game(board);
         delete_game(copy);
-        fprintf(stderr, "copy problem, with dir or piece\n");
+        FPRINTF(stderr, "copy problem, with dir or piece\n");
         return EXIT_FAILURE;
       }
     }
   }
 
-  for (int row = game_height(board) - 1; row >= 0; row--) {
-    for (int col = 0; col < game_width(board); col++) {
+  for (uint16_t row = 0; row < game_height(board); row--) {
+    for (uint16_t col = 0; col < game_width(board); col++) {
       direction cDir2 = get_current_dir(copy, col, row);
       piece cP2 = get_piece(copy, col, row);
 
@@ -956,7 +992,7 @@ int test_copy_game() {
       if (cDir2 != cDir || cP2 != cP) {
         delete_game(board);
         delete_game(copy);
-        fprintf(stderr,
+        FPRINTF(stderr,
                 "copy problem, the copy seems to copy just the pointer\n");
         return EXIT_FAILURE;
       }
@@ -981,19 +1017,20 @@ int test_get_current_dir() {
                               E, N, N, S, W, E, N, N, S, W, E, N};
 
   game board = new_game(default_pieces, default_dirs);
+  uint16_t width = game_width(board);
+  uint16_t height = game_height(board);
+  direction values[width * height];
 
-  direction values[DEFAULT_SIZE * DEFAULT_SIZE];
-
-  for (int row = game_height(board) - 1; row >= 0; row--) {
-    for (int col = 0; col < game_width(board); col++) {
-      values[row * game_width(board) + col] = get_current_dir(board, col, row);
+  for (uint16_t row = 0; row < height; row++) {
+    for (uint16_t col = 0; col < width; col++) {
+      values[row * width + col] = get_current_dir(board, col, row);
     }
   }
 
-  for (int i = 0; i < game_height(board) * game_width(board); i++) {
+  for (uint16_t i = 0; i < width * height; i++) {
     if (default_dirs[i] != values[i]) {
       delete_game(board);
-      fprintf(stderr, "problem to get curretn direction\n");
+      FPRINTF(stderr, "problem to get curretn direction\n");
       return EXIT_FAILURE;
     }
   }
@@ -1017,14 +1054,14 @@ int test_is_wrapping() {
                          default_dirs, true);
   if (!is_wrapping(g1)) {
     delete_game(g1);
-    fprintf(stderr, "is_wrapping say there is no wrap but there is !\n");
+    FPRINTF(stderr, "is_wrapping say there is no wrap but there is !\n");
     return EXIT_FAILURE;
   }
   game g2 = new_game_ext(5, 5, default_pieces, default_dirs, false);
   if (is_wrapping(g2)) {
     delete_game(g2);
     delete_game(g1);
-    fprintf(stderr, "is_wrapping say there is wrap but there is not !\n");
+    FPRINTF(stderr, "is_wrapping say there is wrap but there is not !\n");
     return EXIT_FAILURE;
   }
 
@@ -1034,14 +1071,14 @@ int test_is_wrapping() {
 }
 
 void usage(char* program_name) {
-  fprintf(stderr, "Usage: %s <testname>\n", program_name);
+  FPRINTF(stderr, "Usage: %s <testname>\n", program_name);
   exit(EXIT_FAILURE);
 }
 
 int main(int argc, char* argv[]) {
   if (argc == 1) usage(argv[0]);
 
-  printf("=> RUN TEST \"%s\"\n", argv[1]);
+  PRINTF("=> RUN TEST \"%s\"\n", argv[1]);
 
   int status;
   if (strcmp("new_game", argv[1]) == 0)
@@ -1058,8 +1095,8 @@ int main(int argc, char* argv[]) {
     status = test_is_game_over();
   else if (strcmp("new_game_empty", argv[1]) == 0)
     status = test_new_game_empty();
-  else if (strcmp("shuffle_dir", argv[1]) == 0)
-    status = test_shuffle_dir();
+  else if (strcmp("shuffle_direction", argv[1]) == 0)
+    status = test_shuffle_direction();
   else if (strcmp("rotate_piece_one", argv[1]) == 0)
     status = test_rotate_piece_one();
   else if (strcmp("is_edge_coordinates", argv[1]) == 0)
@@ -1087,13 +1124,13 @@ int main(int argc, char* argv[]) {
   else if (strcmp("new_game_ext", argv[1]) == 0)
     status = test_new_game_ext();
   else {
-    fprintf(stderr, "Error: test %s not found!\n", argv[1]);
+    FPRINTF(stderr, "Error: test %s not found!\n", argv[1]);
     return EXIT_FAILURE;
   }
 
   if (status != EXIT_SUCCESS)
-    printf("FAILURE (status %d)\n", status);
+    PRINTF("FAILURE (status %d)\n", status);
   else
-    printf("SUCCESS (status %d)\n", status);
+    PRINTF("SUCCESS (status %d)\n", status);
   return status;
 }

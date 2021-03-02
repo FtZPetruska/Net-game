@@ -36,10 +36,12 @@ int main(int argc, char* argv[]) {
   }
 
   // Generates the game
-  g = random_game_ext(atoi(argv[1]), atoi(argv[2]), wrap, !forbidCross);
+  uint16_t width = (uint16_t)atoi(argv[1]);
+  uint16_t height = (uint16_t)atoi(argv[2]);
+  g = random_game_ext(width, height, wrap, !forbidCross);
 
   if (!g) {
-    fprintf(stderr, "Error when generating a new game\n");
+    FPRINTF(stderr, "Error when generating a new game\n");
     usage();
     return EXIT_FAILURE;
   }
@@ -53,7 +55,7 @@ int main(int argc, char* argv[]) {
 }
 
 void usage() {
-  fprintf(stderr,
+  FPRINTF(stderr,
           "./net_gen <width> <height> [S|N] [3|4] <filename>\n[S|N] [3|4] are "
           "optional, default : N 4\n");
 }

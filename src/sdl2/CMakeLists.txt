@@ -26,6 +26,6 @@ endif()
 include_directories(${SDL2_ALL_INC})
 
 add_executable(net_sdl net_graphic.c sdl_graphic.c ../solver/solve_smart.c)
-target_link_libraries(net_sdl PRIVATE project_warnings project_options ${SDL2_ALL_LIBS} ${MATH_LIB} game rand)
+target_link_libraries(net_sdl PRIVATE project_warnings project_options ${SDL2_ALL_LIBS} ${MATH_LIB} ${GAME_LIBS} rand)
 
 file(COPY assets DESTINATION .)

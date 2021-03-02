@@ -22,7 +22,7 @@ static void usage();
 
 int main(int argc, char* argv[]) {
   if (argc > 2) {
-    fprintf(stderr, "Too many arguments!\n");
+    FPRINTF(stderr, "Too many arguments!\n");
     usage();
     return EXIT_FAILURE;
   }
@@ -32,14 +32,14 @@ int main(int argc, char* argv[]) {
   if (argc == 2) {
     SDL_game = load_game(argv[1]);
     if (!SDL_game) {
-      fprintf(stderr, "Error when loading game file\n");
+      FPRINTF(stderr, "Error when loading game file\n");
       usage();
       return EXIT_FAILURE;
     }
   } else {  // Generates a random 5x5 game with crosses and no wrapping
     SDL_game = random_game_ext(5, 5, false, true);
     if (!SDL_game) {
-      fprintf(stderr, "Error when creating default game\n");
+      FPRINTF(stderr, "Error when creating default game\n");
       usage();
       return EXIT_FAILURE;
     }
@@ -50,7 +50,7 @@ int main(int argc, char* argv[]) {
   return EXIT_SUCCESS;
 }
 
-static void usage() { fprintf(stderr, "./net_sdl <savefile>"); }
+static void usage() { FPRINTF(stderr, "./net_sdl <savefile>"); }
 
 game change_game(void) {
 #ifdef __ANDROID__

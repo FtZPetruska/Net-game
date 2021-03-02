@@ -11,6 +11,6 @@
  *pieces
  * @return the randomly generated game
  **/
-game random_game_ext(int width, int height, bool swap, bool allow_cross);
+game random_game_ext(uint16_t width, uint16_t height, bool swap, bool allow_cross);
 
 #endif  // GAME_RAND_H

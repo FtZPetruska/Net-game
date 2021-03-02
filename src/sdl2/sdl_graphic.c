@@ -138,9 +138,8 @@ Env* init(SDL_Window* win, SDL_Renderer* ren, game g) {
 void render(SDL_Window* win, SDL_Renderer* ren, Env* env) {
   SDL_Rect rect;
 
-  int game_w, game_h;
-  game_w = game_width(env->game);
-  game_h = game_height(env->game);
+  int32_t game_w = game_width(env->game);
+  int32_t game_h = game_height(env->game);
   SDL_GetWindowSize(win, &env->win_w, &env->win_h);
 
   if (env->win_w > env->win_h) {
@@ -159,10 +158,10 @@ void render(SDL_Window* win, SDL_Renderer* ren, Env* env) {
   rect.h = env->piece_size;
   piece board_piece;
   direction dir;
-  for (int y = game_h - 1; y >= 0; y--) {
-    for (int x = 0; x < game_w; x++) {
-      board_piece = get_piece(env->game, x, y);
-      dir = get_current_dir(env->game, x, y);
+  for (int32_t y = game_h - 1; y >= 0; y--) {
+    for (int32_t x = 0; x < game_w; x++) {
+      board_piece = get_piece(env->game, (uint16_t)x, (uint16_t)y);
+      dir = get_current_dir(env->game, (uint16_t)x, (uint16_t)y);
       rect.x = env->pos_x + x * env->piece_size;
       rect.y = env->pos_y + (game_h - (y + 1)) * env->piece_size;
       SDL_RenderCopyEx(ren, env->pieces[board_piece], NULL, &rect,
@@ -234,7 +233,7 @@ bool process(SDL_Window* win, Env* env, SDL_Event* e) {
           set_game_layout(win, env);
         }
       } else if (cursor_x < env->win_w / 2) {
-        shuffle_dir(env->game);
+        shuffle_direction(env->game);
         env->win = false;
       } else if (cursor_x < env->win_w - env->win_w / 4)
         find_one_sdl(env->game);
@@ -253,7 +252,7 @@ bool process(SDL_Window* win, Env* env, SDL_Event* e) {
     } else if (!env->win) {
       int x = env->pos_x, y = env->pos_y, size = env->piece_size;
       bool found_col = false, found_row = false;
-      int piece_x, piece_y;
+      int32_t piece_x, piece_y;
       for (piece_x = 0; piece_x < game_width(env->game); piece_x++) {
         if (cursor_x > piece_x * size + x &&
             cursor_x < (piece_x + 1) * size + x) {
@@ -293,7 +292,7 @@ bool process(SDL_Window* win, Env* env, SDL_Event* e) {
         }
 #endif
         if (sound_on) Mix_PlayChannel(-1, env->turn_sfx[rand() % NB_SFX], 0);
-        rotate_piece(env->game, piece_x, piece_y, turn);
+        rotate_piece(env->game, (uint16_t)piece_x, (uint16_t)piece_y, turn);
 
         env->win = false;
         if (is_game_over(env->game)) {

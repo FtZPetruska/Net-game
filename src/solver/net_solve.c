@@ -61,7 +61,7 @@ int main(int argc, char *argv[]) {
 
   if (!status) {  // This tests whether the called function worked properly or
                   // not
-    fprintf(stderr, "Error in %s!\n", argv[1]);
+    FPRINTF(stderr, "Error in %s!\n", argv[1]);
     return EXIT_FAILURE;
   }
 
@@ -76,7 +76,7 @@ int main(int argc, char *argv[]) {
  * @param argv, an array of the arguments
  **/
 static void usage(char *argv[]) {
-  fprintf(stderr,
+  FPRINTF(stderr,
           "%s FIND_ONE|NB_SOL|FIND_ALL <nom_fichier_pb> <prefix_fichier_sol>\n",
           argv[0]);
   exit(EXIT_FAILURE);
@@ -104,7 +104,7 @@ static bool checkArgs(int argc, char *argv[]) {
   FILE *openedFile = fopen(
       argv[2], "r");  // tests whether or not the file to solve is accessible
   if (!openedFile) {
-    fprintf(stderr, "Couldn't open the requested file!\n");
+    FPRINTF(stderr, "Couldn't open the requested file!\n");
     arg2 = false;
   } else
     fclose(openedFile);
@@ -112,7 +112,7 @@ static bool checkArgs(int argc, char *argv[]) {
   FILE *newFile =
       fopen(argv[3], "w");  // tests if the name of the output file is valid
   if (!newFile) {
-    fprintf(stderr, "Couldn't create the new file!\n");
+    FPRINTF(stderr, "Couldn't create the new file!\n");
     arg3 = false;
   } else {
     fclose(newFile);

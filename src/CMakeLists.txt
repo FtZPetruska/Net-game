@@ -5,7 +5,7 @@ option(ENABLE_GENERATOR "Enable compilation of a board generator" OFF)
 
 include_directories(include)
 
-set(GAME_SOURCE_FILES game.c game_io.c)
+set(GAME_SOURCE_FILES game.c game_io.c cell.c)
 add_library(game STATIC ${GAME_SOURCE_FILES})
 target_link_libraries(game project_options project_warnings)
 
@@ -15,6 +15,9 @@ target_link_libraries(rand project_options project_warnings)
 
 add_library(bool_array bool_array.c)
 target_link_libraries(bool_array project_options project_warnings)
+
+set(GAME_LIBS game bool_array)
+set(GAME_LIBS ${GAME_LIBS} PARENT_SCOPE)
 
 if(ENABLE_NET_TEXT)
     add_subdirectory(terminal)

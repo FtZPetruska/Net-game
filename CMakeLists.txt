@@ -34,11 +34,11 @@ option(ENABLE_TESTING "Enable Test Builds" ON)
 # Add the modules to find SDL2 libraries
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/sdl2")
 
+add_subdirectory(src)
+
 if(ENABLE_TESTING)
   set(NET_HEADERS_DIR "${CMAKE_SOURCE_DIR}/src/include")
   enable_testing()
   message("Building Tests.")
   add_subdirectory(test)
 endif()
-
-add_subdirectory(src)
