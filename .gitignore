@@ -1,4 +1,9 @@
 # Microsoft Visual Studio Code
 .vscode
 
+# Microsoft Visual Studio
+.vs
+out
+
+# Usual build folder
 build/
