@@ -4,6 +4,7 @@
 # Microsoft Visual Studio
 .vs
 out
+CMakeSettings.json
 
 # Usual build folder
 build/
