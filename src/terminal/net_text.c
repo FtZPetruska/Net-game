@@ -95,8 +95,7 @@ int main(int argc, char* argv[]) {
         }
       }
 
-      if (x >= 0 && x < game_width(mainGame) && y >= 0 &&
-          y < game_height(mainGame))
+      if (x < game_width(mainGame) && y < game_height(mainGame))
         rightValue = true;
     }
 

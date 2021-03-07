@@ -55,11 +55,11 @@ static void usage() { FPRINTF(stderr, "./net_sdl <savefile>"); }
 game change_game(void) {
 #ifdef __ANDROID__
   game new_game =
-      random_game_ext(rand() % 10 + 3, rand() % 17 + 3, false,
+      random_game_ext((uint16_t)rand() % 10 + 3, (uint16_t)rand() % 17 + 3, false,
                       true);  // Generates a random game between 3x3 and 13x20
 #else
   game new_game =
-      random_game_ext(rand() % 17 + 3, rand() % 17 + 3, false,
+      random_game_ext((uint16_t)rand() % 17 + 3, (uint16_t)rand() % 17 + 3, false,
                       true);  // Generates a random game between 3x3 and 20x20
 #endif
   if (!new_game) return NULL;

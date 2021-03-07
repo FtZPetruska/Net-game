@@ -677,8 +677,8 @@ static bool setRecUnmovable(uint16_t x, uint16_t y) {
   if (unmovable[x][y]) {
     for (uint8_t i = 0; i < NB_DIR; i++) {
       getCoordFromDir(DIRS[i], &x2, &y2);
-      x3 = (x + x2 + game_width(g)) % game_width(g);
-      y3 = (y + y2 + game_height(g)) % game_height(g);
+      x3 = (uint16_t)(x + x2 + game_width(g)) % game_width(g);
+      y3 = (uint16_t)(y + y2 + game_height(g)) % game_height(g);
       if (!(x3 - x2 == x && y3 - y2 == y) && !is_wrapping(g)) {
         // If we're out of bounds and there are no wrapping
       } else if (!setRecUnmovable(x3, y3)) {
@@ -905,8 +905,8 @@ bool isGoodDir(uint16_t x, uint16_t y) {
   bool foundChecked = false;
   for (uint16_t i = 0; i < NB_DIR; i++) {
     getCoordFromDir(DIRS[i], &x2, &y2);
-    x3 = (x + x2 + game_width(g)) % game_width(g);
-    y3 = (y + y2 + game_height(g)) % game_height(g);
+    x3 = (uint16_t)(x + x2 + game_width(g)) % game_width(g);
+    y3 = (uint16_t)(y + y2 + game_height(g)) % game_height(g);
     if (is_edge_coordinates(g, x, y, DIRS[i])) {
       if (!(x3 - x2 == x && y3 - y2 == y) && !is_wrapping(g)) {
         // If we are out of bounds and wrapping is disabled, this piece cannot
