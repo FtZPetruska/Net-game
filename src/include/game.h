@@ -10,8 +10,8 @@
 #define MIN_GAME_WIDTH (uint16_t)3
 #define MIN_GAME_HEIGHT (uint16_t)3
 
-#define MAX_GAME_WIDTH (uint16_t) UINT16_MAX
-#define MAX_GAME_HEIGHT (uint16_t) UINT16_MAX
+#define MAX_GAME_WIDTH (uint16_t) 512
+#define MAX_GAME_HEIGHT (uint16_t) 512
 
 /**
  * @file game.h
