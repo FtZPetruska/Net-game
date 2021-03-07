@@ -1023,7 +1023,7 @@ int test_get_current_dir() {
   game board = new_game(default_pieces, default_dirs);
   uint16_t width = game_width(board);
   uint16_t height = game_height(board);
-  direction values[width * height];
+  direction* values = (direction*)malloc(width * height * sizeof(direction));
 
   for (uint16_t row = 0; row < height; row++) {
     for (uint16_t col = 0; col < width; col++) {
@@ -1034,6 +1034,7 @@ int test_get_current_dir() {
   for (uint16_t i = 0; i < width * height; i++) {
     if (default_dirs[i] != values[i]) {
       delete_game(board);
+      free(values);
       FPRINTF(stderr, "problem to get curretn direction\n");
       return EXIT_FAILURE;
     }

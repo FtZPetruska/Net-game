@@ -9,6 +9,8 @@
 
 #define NB_DIR 4
 #define NB_DIR_SEGMENT 2
+#define FILENAME_MAX_SIZE 64
+#define SOL_NUM_SIZE 10
 
 // Global variables to avoid copying them in each function call
 direction DIRS[] = {N, E, S, W};
@@ -101,15 +103,17 @@ bool find_one(char *argv[]) {
   checked = alloc_double_bool_array(width, height);
   unmovable = alloc_double_bool_array(width, height);
   possibility solution = findSolution(0, 0);
-
+  char solution_fname[FILENAME_MAX_SIZE * 2];
+  STRCPY(solution_fname, argv[3], FILENAME_MAX_SIZE);
+  STRCAT(solution_fname, ".sol", FILENAME_MAX_SIZE);
   if (solution != NULL) {
     loadPossibility(solution, 0);
-    save_game(g, strcat(argv[3], ".sol"));
+    save_game(g, solution_fname);
     freeChainPossibility(solution);
   } else {
-    FILE *f = fopen(strcat(argv[3], ".sol"), "w");
+    FOPEN(f, solution_fname, "w");
     FPRINTF(f, "NO SOLUTION\n");
-    fclose(f);
+    FCLOSE(f);
   }
 
   free_double_bool_array(checked, width);
@@ -131,7 +135,10 @@ bool nb_sol(char *argv[]) {
   g = load_game(argv[2]);
   if (!g) return gameLoadError();
 
-  FILE *fSolution = fopen(strcat(argv[3], ".nbsol"), "w");
+  char nb_solution_fname[FILENAME_MAX_SIZE * 2];
+  STRCPY(nb_solution_fname, argv[3], FILENAME_MAX_SIZE);
+  STRCAT(nb_solution_fname, ".nbsol", FILENAME_MAX_SIZE);
+  FOPEN(fSolution, nb_solution_fname, "w");
   if (!fSolution) return solFileError(g);
   uint32_t result = 0;
 
@@ -147,7 +154,7 @@ bool nb_sol(char *argv[]) {
   }
   FPRINTF(fSolution, "%u\n", result);
 
-  fclose(fSolution);
+  FCLOSE(fSolution);
 
   free_double_bool_array(checked, width);
   checked = NULL;
@@ -180,10 +187,13 @@ bool find_all(char *argv[]) {
   if (solution != NULL) {
     for (uint32_t i = 0; i < solution->totalNextDerivPos; i++) {
       loadPossibility(solution, i);
-      char sol_num[10];
-      sprintf(sol_num, "%u", i + 1);
-      char fNameCopy[100];
-      save_game(g, strcat(strcat(strcpy(fNameCopy, argv[3]), ".sol"), sol_num));
+      char sol_num[SOL_NUM_SIZE];
+      SPRINTF(sol_num, SOL_NUM_SIZE, "%u", i + 1);
+      char fNameCopy[FILENAME_MAX_SIZE * 2];
+      STRCPY(fNameCopy, argv[3], FILENAME_MAX_SIZE);
+      STRCAT(fNameCopy, ".sol", FILENAME_MAX_SIZE);
+      STRCAT(fNameCopy, sol_num, FILENAME_MAX_SIZE);
+      save_game(g, fNameCopy);
     }
     freeChainPossibility(solution);
   }

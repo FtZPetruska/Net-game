@@ -102,21 +102,21 @@ static bool checkArgs(int argc, char *argv[]) {
     arg1 = true;
   }
 
-  FILE *openedFile = fopen(
-      argv[2], "r");  // tests whether or not the file to solve is accessible
+  FOPEN(openedFile, argv[2],
+        "r");  // tests whether or not the file to solve is accessible
   if (!openedFile) {
     FPRINTF(stderr, "Couldn't open the requested file!\n");
     arg2 = false;
   } else
-    fclose(openedFile);
+    FCLOSE(openedFile);
 
-  FILE *newFile =
-      fopen(argv[3], "w");  // tests if the name of the output file is valid
+  FOPEN(newFile, argv[3],
+        "w");  // tests if the name of the output file is valid
   if (!newFile) {
     FPRINTF(stderr, "Couldn't create the new file!\n");
     arg3 = false;
   } else {
-    fclose(newFile);
+    FCLOSE(newFile);
     remove(argv[3]);
   }
 

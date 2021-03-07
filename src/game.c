@@ -346,8 +346,10 @@ game copy_game(cgame source_board) {
   uint16_t source_width = get_game_width(source_board);
   uint16_t source_height = get_game_height(source_board);
 
-  piece source_pieces[source_width * source_height];
-  direction source_initial_direction[source_width * source_height];
+  piece *source_pieces =
+      (piece *)malloc(source_width * source_height * sizeof(piece));
+  direction *source_initial_direction =
+      (direction *)malloc(source_width * source_height * sizeof(direction));
   bool source_wrapping = get_game_wrap(source_board);
 
   cell source_origin = get_game_origin(source_board);
@@ -362,6 +364,8 @@ game copy_game(cgame source_board) {
 
   game board_copy = new_game_ext(source_width, source_height, source_pieces,
                                  source_initial_direction, source_wrapping);
+  free(source_pieces);
+  free(source_initial_direction);
   if (!board_copy) {
     FPRINTF(stderr, "Error: copy_game, game copy pointer is NULL.\n");
     return NULL;

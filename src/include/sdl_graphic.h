@@ -24,11 +24,11 @@ typedef struct Env_t Env;
 #else
 #define PRINT(STR, ...)       \
   do {                        \
-    printf(STR, __VA_ARGS__); \
+    PRINTF(STR, __VA_ARGS__); \
   } while (0)
 #define ERROR(STR, ...)                \
   do {                                 \
-    fprintf(stderr, STR, __VA_ARGS__); \
+    FPRINTF(stderr, STR, __VA_ARGS__); \
     exit(EXIT_FAILURE);                \
   } while (0)
 #endif

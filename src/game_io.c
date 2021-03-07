@@ -23,7 +23,7 @@ game load_game(char* filename) {
     return NULL;
   }
 
-  FILE* gamefile = FOPEN(filename, "r");
+  FOPEN(gamefile, filename, "r");
   if (!gamefile) {
     FPRINTF(stderr, "Cannot open file! \n");
     return NULL;
@@ -31,7 +31,11 @@ game load_game(char* filename) {
 
   uint16_t width, height;
   char wrapchar;
-  if (!fscanf(gamefile, "%hu %hu %c ", &width, &height, &wrapchar)) {
+#ifdef _WIN32
+  if (!FSCANF(gamefile, "%hu %hu %c ", &width, &height, &wrapchar, 1)) {
+#else
+  if (!FSCANF(gamefile, "%hu %hu %c ", &width, &height, &wrapchar)) {
+#endif
     FPRINTF(stderr, "Error while reading the first line! \n");
     FCLOSE(gamefile);
     return NULL;
@@ -59,7 +63,12 @@ game load_game(char* filename) {
   char piecechar, dirchar;
   for (uint16_t y = height; y-- > 0;) {
     for (uint16_t x = 0; x < width; x++) {
+#ifdef _WIN32
+      if (!FSCANF(gamefile, "%c%c ", &piecechar, 1, &dirchar, 1)) {
+#else
       if (!FSCANF(gamefile, "%c%c ", &piecechar, &dirchar)) {
+#endif
+
         FPRINTF(stderr, "Error while reading the game file!\n");
         delete_game(g);
         FCLOSE(gamefile);
@@ -75,7 +84,7 @@ game load_game(char* filename) {
 void save_game(cgame g, char* filename) {
   assert(g);
   assert(filename);
-  FILE* f = FOPEN(filename, "w");
+  FOPEN(f, filename, "r");
   assert(f);
   uint16_t width = game_width(g);
   uint16_t height = game_height(g);
@@ -89,7 +98,7 @@ void save_game(cgame g, char* filename) {
     FPRINTF(f, "%c%c\n", pieceToChar(get_piece(g, game_width(g) - 1, y)),
             dirToChar(get_current_dir(g, game_width(g) - 1, y)));
   }
-  fclose(f);
+  FCLOSE(f);
 }
 
 //--------------------------------------------------------------------------------------
