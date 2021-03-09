@@ -6,19 +6,14 @@
 #include "bool_array.h"
 #include "cell.h"
 
-#define NB_DIR 4
-#define DEFAULT_SIZE 5
-
-//--------------------------------------------------------------------------------------
-//                                Structures
-
-// game board structure:
+/**
+ * @brief Structure for a game board
+ */
 struct game_s {
-  bool is_wrapped;  // boolean to know if the game is in tore mode.
-  uint16_t width;
-  uint16_t height;
-  cell origin;  // first cell at (0,0) (down-left corner), all other cells of
-                // the board will be linked from this point.
+  bool is_wrapped; /**< tells whether board wraps around the edges */
+  uint16_t width;  /**< width of a board */
+  uint16_t height; /**< height of a board */
+  cell origin;     /**< pointer to the cell at the (0,0) coordinates */
 };
 
 //--------------------------------------------------------------------------------------
@@ -49,6 +44,21 @@ game new_game_empty() {
 }
 
 game new_game_empty_ext(uint16_t width, uint16_t height, bool wrapping) {
+  if (width < MIN_GAME_WIDTH || MAX_GAME_WIDTH < width) {
+    FPRINTF(stderr,
+            "Error: new_game_empty_ext, given width %hu is out of the [%hu, "
+            "%hu] range.\n",
+            width, MIN_GAME_WIDTH, MAX_GAME_WIDTH);
+    return NULL;
+  }
+  if (height < MIN_GAME_HEIGHT || MAX_GAME_HEIGHT < height) {
+    FPRINTF(stderr,
+            "Error: new_game_empty_ext, given height %hu is out of the [%hu, "
+            "%hu] range.\n",
+            height, MIN_GAME_HEIGHT, MAX_GAME_HEIGHT);
+    return NULL;
+  }
+
   game board = (game)malloc(sizeof(struct game_s));
   if (!board) {
     FPRINTF(stderr, "Error: new_game_empty_ext, can't allocate game board.\n");
@@ -119,7 +129,7 @@ game new_game_empty_ext(uint16_t width, uint16_t height, bool wrapping) {
   return board;
 }
 
-game new_game(piece *pieces, direction *initial_directions) {
+game new_game(const piece *pieces, const direction *initial_directions) {
   game board = new_game_ext(DEFAULT_SIZE, DEFAULT_SIZE, pieces,
                             initial_directions, false);
   if (!board) {
@@ -129,8 +139,8 @@ game new_game(piece *pieces, direction *initial_directions) {
   return board;
 }
 
-game new_game_ext(uint16_t width, uint16_t height, piece *pieces,
-                  direction *initial_directions, bool wrapping) {
+game new_game_ext(uint16_t width, uint16_t height, const piece *pieces,
+                  const direction *initial_directions, bool wrapping) {
   game board = new_game_empty_ext(width, height, wrapping);
   if (!board) {
     FPRINTF(stderr, "Error: new_game_ext, couldn't create a game object.\n");

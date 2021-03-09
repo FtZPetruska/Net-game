@@ -7,11 +7,13 @@
 
 #include "cross_io.h"
 
+#define DEFAULT_SIZE 5
+
 #define MIN_GAME_WIDTH (uint16_t)3
 #define MIN_GAME_HEIGHT (uint16_t)3
 
-#define MAX_GAME_WIDTH (uint16_t) 512
-#define MAX_GAME_HEIGHT (uint16_t) 512
+#define MAX_GAME_WIDTH (uint16_t)512
+#define MAX_GAME_HEIGHT (uint16_t)512
 
 /**
  * @file game.h
@@ -126,7 +128,7 @@ game new_game_empty_ext(uint16_t width, uint16_t height, bool wrapping);
  *initially
  * @return the newly created game
  **/
-game new_game(piece *pieces, direction *initial_directions);
+game new_game(const piece *pieces, const direction *initial_directions);
 
 /**
  * @brief Creates a new game having a grid of width x height
@@ -139,72 +141,72 @@ game new_game(piece *pieces, direction *initial_directions);
  * @param wrapping a boolean indicating whether the grid is "wrapping"
  * @return the newly created game
  **/
-game new_game_ext(uint16_t width, uint16_t height, piece *pieces,
-                  direction *initial_directions, bool wrapping);
+game new_game_ext(uint16_t width, uint16_t height, const piece *pieces,
+                  const direction *initial_directions, bool wrapping);
 
 /**
  * @brief Initialises a grid square to a given piece and orientation
- * @param game the game to be modified
+ * @param board the game to be modified
  * @param x the x coordinate (the column) of the square on the grid
  * @param y the y coordinate (the row) of the square on the grid
  * @param piece the piece to be put in the grid square
  * @param dir the initial orientation of the piece that is set
  **/
-void set_piece(game g, uint16_t x, uint16_t y, piece piece, direction dir);
+void set_piece(game board, uint16_t x, uint16_t y, piece piece, direction dir);
 
 /**
  * @brief Returns whether the grid is defined as being "wrapping" or not
- * @param g a constant pointer on the game to be tested
+ * @param board a constant pointer on the game to be tested
  * @return true if the grid is wrapping, false otherwise
  **/
-bool is_wrapping(cgame g);
+bool is_wrapping(cgame board);
 
 /**
  * @brief Shuffles the current orientations of the pieces
- * @param g the game to be shuffled
+ * @param board the game to be shuffled
  **/
-void shuffle_direction(game g);
+void shuffle_direction(game board);
 
 /**
  * @brief Returns the number of rows on the grid
- * @param game the game
- * @return the height of the game
+ * @param board the game
+ * @return the height of the game, 0 in case of error
  **/
-uint16_t game_height(cgame game);
+uint16_t game_height(cgame board);
 
 /**
  * @brief Returns the number of columns on the game
- * @param game the game
- * @return the width of the game
+ * @param board the game
+ * @return the width of the game, 0 in case of error
  **/
-uint16_t game_width(cgame game);
+uint16_t game_width(cgame board);
 
 /**
  * @brief Rotates a piece once clockwise
- * @param game the game
+ * @param board the game
  * @param x the x coordinate of the piece on the grid
  * @param y the y coordinate of the piece on the grid
  **/
-void rotate_piece_one(game game, uint16_t x, uint16_t y);
+void rotate_piece_one(game board, uint16_t x, uint16_t y);
 
 /**
  * @brief Rotates a piece several times clockwise
- * @param game the game
+ * @param board the game
  * @param x the x coordinate of the piece on the grid
  * @param y the y coordinate of the piece on the grid
  * @param nb_ccw_quarter_turn number of clockwise turns to be applied
  **/
-void rotate_piece(game game, uint16_t x, uint16_t y,
+void rotate_piece(game board, uint16_t x, uint16_t y,
                   int32_t nb_ccw_quarter_turn);
 
 /**
  * @brief Sets the current direction of the piece located at (x,y)
- * @param game the game to be modified
+ * @param board the game to be modified
  * @param x the column (x coordinate) of the piece on the grid
  * @param y the row (y coordinate) of the piece on the grid
  * @param dir the current direction to be set for the piece located at (x,y)
  **/
-void set_piece_current_dir(game game, uint16_t x, uint16_t y, direction dir);
+void set_piece_current_dir(game board, uint16_t x, uint16_t y, direction dir);
 
 /**
  * @brief Tests whether a piece on a given position is oriented so as it could
@@ -217,7 +219,7 @@ void set_piece_current_dir(game game, uint16_t x, uint16_t y, direction dir);
  * @return true if the piece on (x,y) could be connected in the direction dir,
  *false otherwise
  **/
-bool is_edge_coordinates(cgame g, uint16_t x, uint16_t y, direction dir);
+bool is_edge_coordinates(cgame board, uint16_t x, uint16_t y, direction dir);
 
 /**
  * @brief Tests whether a piece with a specific orientation could be connected
@@ -241,47 +243,49 @@ bool is_edge(piece piece, direction orientation, direction dir);
 direction opposite_dir(direction dir);
 
 /**
- * @brief Clones the game g_src
- * @param g_src a constant pointer on the game to clone
- * @return the clone of g_src
+ * @brief Clones the game source_board
+ * @param source_board a constant pointer on the game to clone
+ * @return the clone of source_board
  **/
-game copy_game(cgame g_src);
+game copy_game(cgame source_board);
 
 /**
  * @brief Destroys the game and frees the allocated memory
- * @param g the game to destroy
+ * @param board the game to destroy
  **/
-void delete_game(game g);
+void delete_game(game board);
 
 /**
  * @brief Gets the piece located at (x,y) square on the grid
- * @param game the game we consider
+ * @param board the game we consider
  * @param x the x coordinate of the square
  * @param y the y coordinate of the square
  * @return the piece of the square
  **/
-piece get_piece(cgame game, uint16_t x, uint16_t y);
+piece get_piece(cgame board, uint16_t x, uint16_t y);
 
 /**
  * @brief Gets the current orientation of a square on the grid
- * @param g a constant pointer on the game we consider
+ * @param board a constant pointer on the game we consider
  * @param x the x coordinate of the square
  * @param y the y coordinate of the square
  * @return the current orientation
  **/
-direction get_current_dir(cgame g, uint16_t x, uint16_t y);
+direction get_current_dir(cgame board, uint16_t x, uint16_t y);
 
 /**
  * @brief Tests if the game is over (that is the grid is filled according to the
  *requirements)
+ * @param board the board to test
  * @return true if all the constraints are satisfied
  **/
-bool is_game_over(cgame g);
+bool is_game_over(cgame board);
 
 /**
  * @brief Restarts a game by reinitialising all the current directions to the
  *initial directions
+ * @param board the board to restart
  **/
-void restart_game(game g);
+void restart_game(game board);
 
 #endif  // __GAME_H__

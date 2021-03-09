@@ -8,8 +8,6 @@
 #include "game_io.h"
 #include "game_rand.h"
 
-#define DEFAULT_SIZE 5
-
 // Prototypes:
 void usage();
 

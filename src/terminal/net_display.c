@@ -6,7 +6,6 @@
 #include "game.h"
 #include "game_io.h"
 
-#define DEFAULT_SIZE 5
 #define BORDER_CHAR "█"
 
 int main(int argc, char** argv) {

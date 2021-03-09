@@ -7,7 +7,6 @@
 #include "game.h"
 #include "game_io.h"
 
-#define NB_DIR 4
 #define NB_DIR_SEGMENT 2
 #define FILENAME_MAX_SIZE 64
 #define SOL_NUM_SIZE 10
