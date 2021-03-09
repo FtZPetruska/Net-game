@@ -210,7 +210,7 @@ int test_get_top_cell_oob_neighbour() {
     return EXIT_FAILURE;
   }
 
-  free_cell(top_cell);
+  free_cell(bottom_cell);
   return EXIT_SUCCESS;
 }
 
