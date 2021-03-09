@@ -17,7 +17,7 @@ set( SDL2_ALL_LIBS
     ${SDL2_TTF_LIBRARIES}
 )
 
-if(MSVC)
+if(WIN32)
     set(MATH_LIB)
 else()
     set(MATH_LIB m)
