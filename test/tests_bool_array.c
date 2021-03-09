@@ -21,6 +21,7 @@ static int test_alloc_double_bool_array() {
   for (size_t i = 0; i < NB_LINES; i++) {
     if (!double_array[i]) {
       FPRINTF(stderr, "Error: test_alloc_bool_array, line %zu is NULL.\n", i);
+      free_double_bool_array(double_array, NB_LINES);
       return EXIT_FAILURE;
     }
     for (size_t j = 0; j < LINE_LENGTH; j++) {
@@ -29,11 +30,12 @@ static int test_alloc_double_bool_array() {
                 "Error: test_alloc_bool_array, cell [%zu][%zu] has been "
                 "initialized to true. (Expected false)\n",
                 i, j);
+        free_double_bool_array(double_array, NB_LINES);
         return EXIT_FAILURE;
       }
     }
   }
-
+  free_double_bool_array(double_array, NB_LINES);
   return EXIT_SUCCESS;
 }
 
@@ -65,9 +67,10 @@ static int test_check_double_bool_array_true() {
     FPRINTF(stderr,
             "Error: test_check_double_bool_array_true, function returned false "
             "on a valid array. (Expected true)\n");
+    free_double_bool_array(true_array, NB_LINES);
     return EXIT_FAILURE;
   }
-
+  free_double_bool_array(true_array, NB_LINES);
   return EXIT_SUCCESS;
 }
 
@@ -77,9 +80,10 @@ static int test_check_double_bool_array_false() {
     FPRINTF(stderr,
             "Error: test_check_double_bool_array_true, function returned true "
             "on an invalid array. (Expected false)\n");
+    free_double_bool_array(true_array, NB_LINES);
     return EXIT_FAILURE;
   }
-
+  free_double_bool_array(true_array, NB_LINES);
   return EXIT_SUCCESS;
 }
 

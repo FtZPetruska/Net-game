@@ -16,6 +16,7 @@ int test_alloc_cell() {
             "Error: test_alloc_cell, new cell was initialized with %d instead "
             "of %d.\n",
             get_piece_cell(new_cell), EMPTY);
+    free_cell(new_cell);
     return EXIT_FAILURE;
   }
 
@@ -24,6 +25,7 @@ int test_alloc_cell() {
             "Error: test_alloc_cell, new cell has current direction %u instead "
             "of initial %u",
             get_current_direction_cell(new_cell), N);
+    free_cell(new_cell);
     return EXIT_FAILURE;
   }
 
@@ -32,6 +34,7 @@ int test_alloc_cell() {
             "Error: test_alloc_cell, new cell has default direction %u instead "
             "of initial %u",
             get_default_direction_cell(new_cell), N);
+    free_cell(new_cell);
     return EXIT_FAILURE;
   }
 
@@ -40,6 +43,7 @@ int test_alloc_cell() {
         stderr,
         "Error: test_alloc_cell, new cell has an invalid left neighbour.\n");
     return EXIT_FAILURE;
+    free_cell(new_cell);
   }
 
   if (!is_out_of_bounds_cell(get_right_cell(new_cell))) {
@@ -47,12 +51,14 @@ int test_alloc_cell() {
         stderr,
         "Error: test_alloc_cell, new cell has an invalid right neighbour.\n");
     return EXIT_FAILURE;
+    free_cell(new_cell);
   }
 
   if (!is_out_of_bounds_cell(get_top_cell(new_cell))) {
     FPRINTF(stderr,
             "Error: test_alloc_cell, new cell has an invalid top neighbour.\n");
     return EXIT_FAILURE;
+    free_cell(new_cell);
   }
 
   if (!is_out_of_bounds_cell(get_bottom_cell(new_cell))) {
@@ -60,8 +66,10 @@ int test_alloc_cell() {
         stderr,
         "Error: test_alloc_cell, new cell has an invalid bottom neighbour.\n");
     return EXIT_FAILURE;
+    free_cell(new_cell);
   }
 
+  free_cell(new_cell);
   return EXIT_SUCCESS;
 }
 
