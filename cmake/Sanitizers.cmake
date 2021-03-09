@@ -19,23 +19,27 @@ function(enable_sanitizers project_name)
       list(APPEND SANITIZERS "address")
     endif()
 
-    option(ENABLE_SANITIZER_LEAK "Enable leak sanitizer" FALSE)
-    if(ENABLE_SANITIZER_LEAK)
-      list(APPEND SANITIZERS "leak")
+    if(!APPLE)
+      option(ENABLE_SANITIZER_LEAK "Enable leak sanitizer" FALSE)
+      if(ENABLE_SANITIZER_LEAK)
+        list(APPEND SANITIZERS "leak")
+      endif()
     endif()
-
+    
     option(ENABLE_SANITIZER_UNDEFINED_BEHAVIOR "Enable undefined behavior sanitizer" FALSE)
     if(ENABLE_SANITIZER_UNDEFINED_BEHAVIOR)
       list(APPEND SANITIZERS "undefined")
     endif()
 
-    option(ENABLE_SANITIZER_MEMORY "Enable memory sanitizer" FALSE)
-    if(ENABLE_SANITIZER_MEMORY AND CMAKE_C_COMPILER_ID MATCHES ".*Clang")
-      if("address" IN_LIST SANITIZERS
-         OR "leak" IN_LIST SANITIZERS)
-        message(WARNING "Memory sanitizer does not work with Address and Leak sanitizer enabled")
-      else()
-        list(APPEND SANITIZERS "memory")
+    if(!APPLE)
+      option(ENABLE_SANITIZER_MEMORY "Enable memory sanitizer" FALSE)
+      if(ENABLE_SANITIZER_MEMORY AND CMAKE_C_COMPILER_ID MATCHES ".*Clang")
+        if("address" IN_LIST SANITIZERS
+          OR "leak" IN_LIST SANITIZERS)
+          message(WARNING "Memory sanitizer does not work with Address and Leak sanitizer enabled")
+        else()
+          list(APPEND SANITIZERS "memory")
+        endif()
       endif()
     endif()
 
