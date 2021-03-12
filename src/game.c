@@ -1,8 +1,5 @@
 #include "game.h"
 
-#include <assert.h>
-#include <stdio.h>
-
 #include "bool_array.h"
 #include "cell.h"
 
@@ -30,8 +27,10 @@ static uint16_t get_game_width(cgame board);
 static void set_game_wrap(game board, bool new_wrap);
 static bool get_game_wrap(cgame board);
 
-static void get_coordinates_from_direction(direction dir, int *delta_x, int *delta_y);
-static bool is_branch_over(cgame board, cell branch_cell, direction origin_direction, bool **checked_cells,
+static void get_coordinates_from_direction(direction dir, int *delta_x,
+                                           int *delta_y);
+static bool is_branch_over(cgame board, cell branch_cell,
+                           direction origin_direction, bool **checked_cells,
                            int x, int y);
 
 game new_game_empty() {
@@ -626,7 +625,7 @@ static void set_game_wrap(game board, bool new_wrap) {
 static bool get_game_wrap(cgame board) {
   if (!board) {
     FPRINTF(stderr, "Error: set_game_wrap, game pointer is NULL.\n");
-    return false; 
+    return false;
   }
   return board->is_wrapped;
 }

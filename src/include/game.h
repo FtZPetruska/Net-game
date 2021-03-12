@@ -152,7 +152,8 @@ game new_game_ext(uint16_t width, uint16_t height, const piece *pieces,
  * @param piece the piece to be put in the grid square
  * @param dir the initial orientation of the piece that is set
  **/
-void set_piece(game board, uint16_t x, uint16_t y, piece new_piece, direction new_direction);
+void set_piece(game board, uint16_t x, uint16_t y, piece new_piece,
+               direction new_direction);
 
 /**
  * @brief Returns whether the grid is defined as being "wrapping" or not
@@ -206,7 +207,8 @@ void rotate_piece(game board, uint16_t x, uint16_t y,
  * @param y the row (y coordinate) of the piece on the grid
  * @param dir the current direction to be set for the piece located at (x,y)
  **/
-void set_piece_current_dir(game board, uint16_t x, uint16_t y, direction new_direction);
+void set_piece_current_dir(game board, uint16_t x, uint16_t y,
+                           direction new_direction);
 
 /**
  * @brief Tests whether a piece on a given position is oriented so as it could

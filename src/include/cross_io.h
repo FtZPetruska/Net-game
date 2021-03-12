@@ -17,9 +17,7 @@
   sprintf_s(BUFFER, SIZE_OF_BUFFER, FORMAT, __VA_ARGS__)
 #define SCANF(...) scanf_s(__VA_ARGS__)
 #define FSCANF(...) fscanf_s(__VA_ARGS__)
-#define FOPEN(VARNAME, ...) \
-  FILE* VARNAME;            \
-  fopen_s(&VARNAME, __VA_ARGS__)
+#define FOPEN(STREAM, ...) fopen_s(&STREAM, __VA_ARGS__)
 #define FCLOSE(...) fclose(__VA_ARGS__)
 #define STRCAT(DEST, SOURCE, DEST_SIZE) strcat_s(DEST, DEST_SIZE, SOURCE)
 #define STRCPY(DEST, SOURCE, DEST_SIZE) strcpy_s(DEST, DEST_SIZE, SOURCE)
@@ -30,7 +28,7 @@
   sprintf(BUFFER, FORMAT, __VA_ARGS__)
 #define SCANF(...) scanf(__VA_ARGS__)
 #define FSCANF(...) fscanf(__VA_ARGS__)
-#define FOPEN(VARNAME, ...) FILE* VARNAME = fopen(__VA_ARGS__)
+#define FOPEN(STREAM, ...) STREAM = fopen(__VA_ARGS__)
 #define FCLOSE(...) fclose(__VA_ARGS__)
 #define STRCAT(DEST, SOURCE, DEST_SIZE) strncat(DEST, SOURCE, DEST_SIZE)
 #define STRCPY(DEST, SOURCE, DEST_SIZE) strncpy(DEST, SOURCE, DEST_SIZE)

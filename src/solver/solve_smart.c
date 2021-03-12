@@ -110,9 +110,10 @@ bool find_one(char *argv[]) {
     save_game(g, solution_fname);
     freeChainPossibility(solution);
   } else {
-    FOPEN(f, solution_fname, "w");
-    FPRINTF(f, "NO SOLUTION\n");
-    FCLOSE(f);
+    FILE *stream;
+    FOPEN(stream, solution_fname, "w");
+    FPRINTF(stream, "NO SOLUTION\n");
+    FCLOSE(stream);
   }
 
   free_double_bool_array(checked, width);
@@ -137,8 +138,9 @@ bool nb_sol(char *argv[]) {
   char nb_solution_fname[FILENAME_MAX_SIZE * 2];
   STRCPY(nb_solution_fname, argv[3], FILENAME_MAX_SIZE);
   STRCAT(nb_solution_fname, ".nbsol", FILENAME_MAX_SIZE);
-  FOPEN(fSolution, nb_solution_fname, "w");
-  if (!fSolution) return solFileError(g);
+  FILE *stream;
+  FOPEN(stream, nb_solution_fname, "w");
+  if (!stream) return solFileError(g);
   uint32_t result = 0;
 
   uint16_t width = game_width(g);
@@ -151,9 +153,9 @@ bool nb_sol(char *argv[]) {
     result = solution->totalNextDerivPos;
     freeChainPossibility(solution);
   }
-  FPRINTF(fSolution, "%u\n", result);
+  FPRINTF(stream, "%u\n", result);
 
-  FCLOSE(fSolution);
+  FCLOSE(stream);
 
   free_double_bool_array(checked, width);
   checked = NULL;

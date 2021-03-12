@@ -1,125 +1,106 @@
 #include "game_io.h"
 
-#include <assert.h>
-#include <stdlib.h>
-
 #include "game.h"
-
-//--------------------------------------------------------------------------------------
-//                                Static functions
-static direction charToDir(char c);
-static char dirToChar(direction d);
-static piece charToPiece(char c);
-static char pieceToChar(piece p);
-
-//--------------------------------------------------------------------------------------
-//                                 Prototyped functions
-//                 NB: headers documentation for this functions are in the .h of
-//                 this file.
 
 game load_game(char* filename) {
   if (!filename) {
-    FPRINTF(stderr, "Invalid file name! \n");
+    FPRINTF(stderr, "Error: load_game, filename pointer is NULL.\n");
     return NULL;
   }
 
-  FOPEN(gamefile, filename, "r");
-  if (!gamefile) {
-    FPRINTF(stderr, "Cannot open file! \n");
+  FILE* stream;
+  FOPEN(stream, filename, "r");
+  if (!stream) {
+    FPRINTF(stderr, "Error: load_game, unable to open the savefile.\n");
     return NULL;
   }
 
   uint16_t width, height;
-  char wrapchar;
+  uint32_t wrap;
 #ifdef _WIN32
-  if (!FSCANF(gamefile, "%hu %hu %c ", &width, &height, &wrapchar, 1)) {
+  if (!FSCANF(stream, "%hu %hu %d ", &width, &height, &wrap)) {
 #else
-  if (!FSCANF(gamefile, "%hu %hu %c ", &width, &height, &wrapchar)) {
+  if (!FSCANF(stream, "%hu %hu %d ", &width, &height, &wrap)) {
 #endif
-    FPRINTF(stderr, "Error while reading the first line! \n");
-    FCLOSE(gamefile);
+    FPRINTF(stderr,
+            "Error: load_game, unable to read header of the savefile.\n");
+    FCLOSE(stream);
     return NULL;
   }
-  if (width <= 0 || height <= 0) {
-    FPRINTF(stderr, "Invalid width and height! \n");
-    FCLOSE(gamefile);
-    return NULL;
-  }
-
-  if (wrapchar != 'N' && wrapchar != 'S') {
-    FPRINTF(stderr, "Invalid wrapping value! \n");
-    FCLOSE(gamefile);
+  if (width < MIN_GAME_WIDTH || MAX_GAME_WIDTH < width) {
+    FPRINTF(stderr, "Error: load_game, the saved game has an invalid width.\n");
+    FCLOSE(stream);
     return NULL;
   }
 
-  game g = new_game_empty_ext(width, height, wrapchar == 'S');
-
-  if (!g) {
-    FPRINTF(stderr, "Not enough memory!\n");
-    FCLOSE(gamefile);
+  if (height < MIN_GAME_HEIGHT || MAX_GAME_HEIGHT < height) {
+    FPRINTF(stderr,
+            "Error: load_game, the saved game has an invalid height.\n");
+    FCLOSE(stream);
     return NULL;
   }
 
-  char piecechar, dirchar;
+  game board = new_game_empty_ext(width, height, wrap == true);
+
+  if (!board) {
+    FPRINTF(stderr, "Error: load_game, couldn't create a game object.\n");
+    FCLOSE(stream);
+    return NULL;
+  }
+
+  piece current_piece;
+  direction current_direction;
   for (uint16_t y = height; y-- > 0;) {
     for (uint16_t x = 0; x < width; x++) {
 #ifdef _WIN32
-      if (!FSCANF(gamefile, "%c%c ", &piecechar, 1, &dirchar, 1)) {
+      if (!FSCANF(stream, "%d;%d ", &current_piece, &current_direction)) {
 #else
-      if (!FSCANF(gamefile, "%c%c ", &piecechar, &dirchar)) {
+      if (!FSCANF(stream, "%d;%d ", &current_piece, &current_direction)) {
 #endif
 
         FPRINTF(stderr, "Error while reading the game file!\n");
-        delete_game(g);
-        FCLOSE(gamefile);
+        delete_game(board);
+        FCLOSE(stream);
         return NULL;
       }
-      set_piece(g, x, y, charToPiece(piecechar), charToDir(dirchar));
+      set_piece(board, x, y, current_piece, current_direction);
     }
   }
 
-  return g;
+  return board;
 }
 
-void save_game(cgame g, char* filename) {
-  assert(g);
-  assert(filename);
-  FOPEN(f, filename, "r");
-  assert(f);
-  uint16_t width = game_width(g);
-  uint16_t height = game_height(g);
-  FPRINTF(f, "%hu %hu %c\n", width, height, is_wrapping(g) ? 'S' : 'N');
+void save_game(cgame board, char* filename) {
+  if (!board) {
+    FPRINTF(stderr, "Error: save_game, game pointer is NULL.\n");
+    return;
+  }
+
+  if (!filename) {
+    FPRINTF(stderr, "Error: save_game, filename pointer is NULL.\n");
+    return;
+  }
+
+  FILE* stream;
+  FOPEN(stream, filename, "w");
+
+  if (!stream) {
+    FPRINTF(stderr, "Error: save_game, unable to open the destination file.\n");
+    return;
+  }
+
+  uint16_t width = game_width(board);
+  uint16_t height = game_height(board);
+  FPRINTF(stream, "%hu %hu %d\n", width, height,
+          is_wrapping(board) ? true : false);
 
   for (uint16_t y = height; y-- > 0;) {
     for (uint16_t x = 0; x < width - 1; x++) {
-      FPRINTF(f, "%c%c ", pieceToChar(get_piece(g, x, y)),
-              dirToChar(get_current_dir(g, x, y)));
+      FPRINTF(stream, "%d;%d ", get_piece(board, x, y),
+              get_current_dir(board, x, y));
     }
-    FPRINTF(f, "%c%c\n", pieceToChar(get_piece(g, game_width(g) - 1, y)),
-            dirToChar(get_current_dir(g, game_width(g) - 1, y)));
+    FPRINTF(stream, "%d;%d\n", get_piece(board, game_width(board) - 1, y),
+            get_current_dir(board, game_width(board) - 1, y));
   }
-  FCLOSE(f);
+  FCLOSE(stream);
 }
-
-//--------------------------------------------------------------------------------------
-//                                Static functions bodies
-
-static const char dirTab[] = {'N', 'E', 'S', 'W'};
-
-static const char pieceTab[] = {'L', 'S', 'C', 'T', 'F'};
-
-static direction charToDir(char c) {
-  for (direction i = N; i < NB_DIR; i++)
-    if (c == dirTab[i]) return i;
-  return N;
-}
-
-static char dirToChar(direction d) { return dirTab[d]; }
-
-static piece charToPiece(char c) {
-  for (piece i = EMPTY; i < NB_PIECE_TYPE; i++)
-    if (c == pieceTab[i]) return i;
-  return EMPTY;
-}
-
-static char pieceToChar(piece p) { return pieceTab[p]; }

@@ -23,6 +23,6 @@ game load_game(char *filename);
  * @param g game to save
  * @param filename output file
  **/
-void save_game(cgame g, char *filename);
+void save_game(cgame board, char *filename);
 
 #endif  // GAME_IO_H
