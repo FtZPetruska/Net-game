@@ -25,3 +25,4 @@ X Make the CMakeList more portable, by adding options for CLang, MSVC, right now
 - Clean up all the header include
 - Clean up cell header and file (It has been straight up exported from game so most functions are in header)
 - Some functions of libgame such as is_game_over seems broken on MSVC
+- Fix all cppcheck issues in refactored code.
