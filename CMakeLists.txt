@@ -29,6 +29,9 @@ enable_sanitizers(project_options)
 include(cmake/Doxygen.cmake)
 enable_doxygen()
 
+# allow for static analysis options
+include(cmake/StaticAnalyzers.cmake)
+
 # Add the modules to find SDL2 libraries
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/sdl2")
 
