@@ -22,16 +22,16 @@ struct game_s {
 //                         correcly in net_text function
 
 static cell get_game_origin(cgame board);
-static void set_game_origin(game board, cell c);
-static void set_game_height(game board, uint16_t height);
-static void set_game_width(game board, uint16_t width);
+static void set_game_origin(game board, cell new_origin);
+static void set_game_height(game board, uint16_t new_height);
+static void set_game_width(game board, uint16_t new_width);
 static uint16_t get_game_height(cgame board);
 static uint16_t get_game_width(cgame board);
-static void set_game_wrap(game board, bool is_wrapped);
+static void set_game_wrap(game board, bool new_wrap);
 static bool get_game_wrap(cgame board);
 
-static void get_coordinates_from_direction(direction dir, int *x, int *y);
-static bool is_branch_over(cgame g, cell c, direction dir, bool **checked,
+static void get_coordinates_from_direction(direction dir, int *delta_x, int *delta_y);
+static bool is_branch_over(cgame board, cell branch_cell, direction origin_direction, bool **checked_cells,
                            int x, int y);
 
 game new_game_empty() {
@@ -404,7 +404,7 @@ void delete_game(game board) {
   cell origin = get_game_origin(board);
   destroy_cell_rectangle(origin);
   free(board);
-  board = NULL;
+  return;
 }
 
 piece get_piece(cgame board, uint16_t x, uint16_t y) {
@@ -621,12 +621,12 @@ static void set_game_wrap(game board, bool new_wrap) {
  * @brief Get the is_wrapped field of a game
  *
  * @param board, const pointer to the game object
- * @return wrap boolean or -1 in case of error
+ * @return wrap boolean or false in case of error
  **/
 static bool get_game_wrap(cgame board) {
   if (!board) {
     FPRINTF(stderr, "Error: set_game_wrap, game pointer is NULL.\n");
-    return -1;
+    return false; 
   }
   return board->is_wrapped;
 }

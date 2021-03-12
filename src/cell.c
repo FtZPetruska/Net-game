@@ -264,7 +264,7 @@ cell translate_cell(cell current_cell, int32_t x, int32_t y) {
   }
 
   while (y != 0) {
-    if (!temporary_cell && y != 0) {
+    if (!temporary_cell) {
       FPRINTF(stderr, "Error when trying to get cell, y was out of range!\n");
       return NULL;
     }
@@ -358,9 +358,8 @@ cell create_cell_line(uint16_t width) {
   }
 
   cell previous_cell = origin;
-  cell new_cell = make_out_of_bounds_cell();
   for (uint16_t i = 1; i < width; i++) {
-    new_cell = alloc_cell();
+    cell new_cell = alloc_cell();
     if (is_out_of_bounds_cell(new_cell)) {
       FPRINTF(stderr,
               "Error: create_cell_line, can't allocate enough cells.\n");
@@ -381,11 +380,10 @@ cell create_cell_line(uint16_t width) {
  * @param origin, the left-most cell of the row
  **/
 void destroy_cell_line(cell origin) {
-  cell next_cell = make_out_of_bounds_cell();
   cell current_cell = origin;
   uint16_t length = line_size_cell(origin);
   for (uint16_t i = 0; i < length; i++) {
-    next_cell = get_right_cell(current_cell);
+    cell next_cell = get_right_cell(current_cell);
     free_cell(current_cell);
     current_cell = next_cell;
   }
@@ -397,11 +395,10 @@ void destroy_cell_line(cell origin) {
  * @param origin, the bottomleft-most cell of the rectangle
  **/
 void destroy_cell_rectangle(cell origin) {
-  cell next_cell = make_out_of_bounds_cell();
   cell current_cell = origin;
   uint16_t height = size_column_cell(origin);
   for (uint16_t i = 0; i < height; i++) {
-    next_cell = get_top_cell(current_cell);
+    cell next_cell = get_top_cell(current_cell);
     destroy_cell_line(current_cell);
     current_cell = next_cell;
   }
@@ -414,9 +411,8 @@ void destroy_cell_rectangle(cell origin) {
  **/
 static void shuffle_direction_line_cell(cell origin, uint16_t width) {
   cell current_cell = origin;
-  direction new_direction = N;
   for (uint16_t i = 0; i < width; i++) {
-    new_direction = rand() % NB_DIR;
+    direction new_direction = rand() % NB_DIR;
     set_current_direction_cell(current_cell, new_direction);
     current_cell = get_right_cell(current_cell);
   }

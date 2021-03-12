@@ -152,7 +152,7 @@ game new_game_ext(uint16_t width, uint16_t height, const piece *pieces,
  * @param piece the piece to be put in the grid square
  * @param dir the initial orientation of the piece that is set
  **/
-void set_piece(game board, uint16_t x, uint16_t y, piece piece, direction dir);
+void set_piece(game board, uint16_t x, uint16_t y, piece new_piece, direction new_direction);
 
 /**
  * @brief Returns whether the grid is defined as being "wrapping" or not
@@ -197,7 +197,7 @@ void rotate_piece_one(game board, uint16_t x, uint16_t y);
  * @param nb_ccw_quarter_turn number of clockwise turns to be applied
  **/
 void rotate_piece(game board, uint16_t x, uint16_t y,
-                  int32_t nb_ccw_quarter_turn);
+                  int32_t nb_cw_quarter_turn);
 
 /**
  * @brief Sets the current direction of the piece located at (x,y)
@@ -206,7 +206,7 @@ void rotate_piece(game board, uint16_t x, uint16_t y,
  * @param y the row (y coordinate) of the piece on the grid
  * @param dir the current direction to be set for the piece located at (x,y)
  **/
-void set_piece_current_dir(game board, uint16_t x, uint16_t y, direction dir);
+void set_piece_current_dir(game board, uint16_t x, uint16_t y, direction new_direction);
 
 /**
  * @brief Tests whether a piece on a given position is oriented so as it could
@@ -232,7 +232,7 @@ bool is_edge_coordinates(cgame board, uint16_t x, uint16_t y, direction dir);
  *otherwise
  **/
 
-bool is_edge(piece piece, direction orientation, direction dir);
+bool is_edge(piece test_piece, direction orientation, direction dir);
 
 /**
  * @brief Computes the opposite of a given direction

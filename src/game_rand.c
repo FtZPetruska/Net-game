@@ -165,12 +165,12 @@ static edge get_random_candidate(cgame board, bool allow_cross) {
   return new_edge;
 }
 
-game random_game_ext(uint16_t width, uint16_t height, bool is_swap,
+game random_game_ext(uint16_t width, uint16_t height, bool swap,
                      bool allow_cross) {
   assert(width >= MIN_GAME_WIDTH);
   assert(height >= MIN_GAME_HEIGHT);
 
-  game new_board = new_game_empty_ext(width, height, is_swap);
+  game new_board = new_game_empty_ext(width, height, swap);
 
   edge initial_edge = {{width / 2, height / 2}, get_random_dir()};
 
