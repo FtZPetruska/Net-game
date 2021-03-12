@@ -78,7 +78,7 @@ static bool compare_game_and_directions_array(
         FPRINTF(stderr,
                 "Error: compare_game_and_directions_array, piece at (%hu,%hu) "
                 "has direction "
-                "%u while %u was expected.\n",
+                "%d while %d was expected.\n",
                 x, y, current_direction, expected_directions[x + width * y]);
         return false;
       }
@@ -170,7 +170,7 @@ static int test_copy_game_valid() {
       if (current_source_direction != current_copied_direction) {
         FPRINTF(stderr,
                 "Error: test_copy_game_valid, at (%hu,%hu) copied piece has "
-                "direction %u while %u is the direction in source.\n",
+                "direction %d while %d is the direction in source.\n",
                 x, y, current_copied_direction, current_source_direction);
         delete_game(source_board);
         delete_game(copied_board);
