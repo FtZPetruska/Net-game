@@ -8,3 +8,6 @@ CMakeSettings.json
 
 # Usual build folder
 build/
+
+# macOS
+.DS_store
