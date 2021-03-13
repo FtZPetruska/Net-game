@@ -1,13 +1,5 @@
 #include "sdl_graphic.h"
 
-#include <SDL.h>
-#include <SDL_image.h>  // required to load transparent texture from PNG
-#include <SDL_mixer.h>  // required to use music
-#include <SDL_ttf.h>    // required to use TTF fonts
-#include <stdbool.h>
-#include <stdio.h>
-#include <stdlib.h>
-
 #include "game_io.h"
 
 /* **************************************************************** */

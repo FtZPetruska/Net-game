@@ -1,7 +1,3 @@
-#include <assert.h>
-#include <stdio.h>
-#include <stdlib.h>
-
 #include "draw_game.h"
 #include "game.h"
 #include "game_io.h"
@@ -13,10 +9,13 @@ int main(int argc, char** argv) {
     FPRINTF(stderr, "usage : ./net_display savegame\n");
     return EXIT_FAILURE;
   }
-  game g = load_game(argv[1]);
-  assert(g);
-  draw_game(g);
-  delete_game(g);
+  game board = load_game(argv[1]);
+  if(!board) {
+    FPRINTF(stderr, "Error: net_display, unable to load the game.\n");
+    return EXIT_FAILURE;
+  }
+  draw_game(board);
+  delete_game(board);
 
   return EXIT_SUCCESS;
 }

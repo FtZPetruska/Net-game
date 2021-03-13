@@ -1,6 +1,3 @@
-#include <stdio.h>
-#include <string.h>
-
 #include "cell.h"
 
 int test_alloc_cell() {

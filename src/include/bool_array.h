@@ -1,7 +1,6 @@
 #ifndef __BOOL_ARRAY_H__
 #define __BOOL_ARRAY_H__
 #include <stdbool.h>
-#include <stdint.h>
 #include <stdlib.h>
 
 /**

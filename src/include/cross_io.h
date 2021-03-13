@@ -1,6 +1,7 @@
 #ifndef __CROSS_IO_H__
 #define __CROSS_IO_H__
 #include <stdio.h>
+#include <string.h>
 
 /**
  * @file cross_io.h

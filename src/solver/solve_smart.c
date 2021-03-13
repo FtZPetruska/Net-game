@@ -1,7 +1,4 @@
 #include <assert.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
 #include "bool_array.h"
 #include "game.h"

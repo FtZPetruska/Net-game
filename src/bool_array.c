@@ -1,7 +1,5 @@
 #include "bool_array.h"
 
-#include <stdio.h>
-
 #include "cross_io.h"
 
 bool** alloc_double_bool_array(size_t nb_lines, size_t line_length) {

@@ -1,6 +1,5 @@
 #include "cell.h"
 
-#include <stdio.h>
 /**
  * @brief Structure for a board cell
  */
