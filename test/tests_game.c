@@ -605,134 +605,191 @@ static int test_is_edge_CROSS() {
 }
 
 /**
- * @brief
+ * @brief Tests all directions for is_edge_coordinates on an EMPTY piece
  */
-static int test_is_edge_coordinates() {
-  piece default_pieces[] = {
-      LEAF,   LEAF,    LEAF,    LEAF,    LEAF,    TEE,   TEE,    TEE,    TEE,
-      TEE,    SEGMENT, SEGMENT, SEGMENT, SEGMENT, CROSS, CORNER, CORNER, CROSS,
-      CORNER, CORNER,  EMPTY,   EMPTY,   EMPTY,   EMPTY, EMPTY};
-  direction default_dirs[] = {N, S, W, E, N, N, S, W, E, N, N, S, W,
-                              E, N, N, S, W, E, N, N, S, W, E, N};
-
-  game board = new_game(default_pieces, default_dirs);
-  uint16_t width = game_width(board);
-  uint16_t height = game_height(board);
-  for (uint16_t x = 0; x < width; x++) {
-    for (uint16_t y = 0; y < height; y++) {
-      direction dir = get_current_direction(board, x, y);
-      piece p = get_piece(board, x, y);
-
-      switch (p) {
-        case CROSS:
-          if (!is_edge_coordinates(board, x, y, N) ||
-              !is_edge_coordinates(board, x, y, S) ||
-              !is_edge_coordinates(board, x, y, E) ||
-              !is_edge_coordinates(board, x, y, W)) {
-            delete_game(board);
-            FPRINTF(stderr, "CROSS can connect in all directions\n");
-            return EXIT_FAILURE;
-          }
-          break;
-
-        case EMPTY:
-          if (is_edge_coordinates(board, x, y, N) ||
-              is_edge_coordinates(board, x, y, S) ||
-              is_edge_coordinates(board, x, y, E) ||
-              is_edge_coordinates(board, x, y, W)) {
-            delete_game(board);
-            FPRINTF(stderr, "EMPTY cannot have edge\n");
-            return EXIT_FAILURE;
-          }
-          break;
-
-        case LEAF:
-          if ((is_edge_coordinates(board, x, y, N) && dir != N) ||
-              (is_edge_coordinates(board, x, y, S) && dir != S) ||
-              (is_edge_coordinates(board, x, y, E) && dir != E) ||
-              (is_edge_coordinates(board, x, y, W) && dir != W)) {
-            delete_game(board);
-            FPRINTF(stderr, "LEAF edge problem (it say true)\n");
-            return EXIT_FAILURE;
-          }
-          if ((!is_edge_coordinates(board, x, y, N) && dir == N) ||
-              (!is_edge_coordinates(board, x, y, S) && dir == S) ||
-              (!is_edge_coordinates(board, x, y, E) && dir == E) ||
-              (!is_edge_coordinates(board, x, y, W) && dir == W)) {
-            delete_game(board);
-            FPRINTF(stderr, "LEAF edge problem (it say false)\n");
-            return EXIT_FAILURE;
-          }
-          break;
-
-        case CORNER:
-          if ((is_edge_coordinates(board, x, y, N) && dir != N && dir != W) ||
-              (is_edge_coordinates(board, x, y, S) && dir != S && dir != E) ||
-              (is_edge_coordinates(board, x, y, E) && dir != E && dir != N) ||
-              (is_edge_coordinates(board, x, y, W) && dir != W && dir != S)) {
-            delete_game(board);
-            FPRINTF(stderr, "CORNER edge problem (it say true)\n");
-            return EXIT_FAILURE;
-          }
-          if ((!is_edge_coordinates(board, x, y, N) &&
-               (dir == N || dir == W)) ||
-              (!is_edge_coordinates(board, x, y, S) &&
-               (dir == S || dir == E)) ||
-              (!is_edge_coordinates(board, x, y, E) &&
-               (dir == E || dir == N)) ||
-              (!is_edge_coordinates(board, x, y, W) &&
-               (dir == W || dir == S))) {
-            delete_game(board);
-            FPRINTF(stderr, "CORNER edge problem (it say false)\n");
-            return EXIT_FAILURE;
-          }
-          break;
-
-        case SEGMENT:
-          if ((is_edge_coordinates(board, x, y, N) && dir != N && dir != S) ||
-              (is_edge_coordinates(board, x, y, S) && dir != N && dir != S) ||
-              (is_edge_coordinates(board, x, y, E) && dir != E && dir != W) ||
-              (is_edge_coordinates(board, x, y, W) && dir != E && dir != W)) {
-            delete_game(board);
-            FPRINTF(stderr, "SEGMENT edge problem (it say true)\n");
-            return EXIT_FAILURE;
-          }
-          if ((!is_edge_coordinates(board, x, y, N) &&
-               (dir == N || dir == S)) ||
-              (!is_edge_coordinates(board, x, y, S) &&
-               (dir == N || dir == S)) ||
-              (!is_edge_coordinates(board, x, y, E) &&
-               (dir == E || dir == W)) ||
-              (!is_edge_coordinates(board, x, y, W) &&
-               (dir == E || dir == W))) {
-            delete_game(board);
-            FPRINTF(stderr, "SEGMENT edge problem (it say false)\n");
-            return EXIT_FAILURE;
-          }
-          break;
-
-        case TEE:
-          if ((is_edge_coordinates(board, x, y, N) && dir == S) ||
-              (is_edge_coordinates(board, x, y, S) && dir == N) ||
-              (is_edge_coordinates(board, x, y, E) && dir == W) ||
-              (is_edge_coordinates(board, x, y, W) && dir == E)) {
-            delete_game(board);
-            FPRINTF(stderr, "TEE edge problem (it say true)\n");
-            return EXIT_FAILURE;
-          }
-          if ((!is_edge_coordinates(board, x, y, N) && dir != S) ||
-              (!is_edge_coordinates(board, x, y, S) && dir != N) ||
-              (!is_edge_coordinates(board, x, y, E) && dir != W) ||
-              (!is_edge_coordinates(board, x, y, W) && dir != E)) {
-            delete_game(board);
-            FPRINTF(stderr, "TEE edge problem (it say false)\n");
-            return EXIT_FAILURE;
-          }
-          break;
+static int test_is_edge_coordinates_EMPTY() {
+  const piece default_pieces[] = {EMPTY, EMPTY, EMPTY, EMPTY, EMPTY,
+                                  EMPTY, EMPTY, EMPTY, EMPTY};
+  const direction default_dirs[] = {N, E, S, W, N, E, S, W, N};
+  uint16_t board_size = 3;
+  game board =
+      new_game_ext(board_size, board_size, default_pieces, default_dirs, false);
+  for (uint16_t x = 0; x < board_size; x++) {
+    for (uint16_t y = 0; y < board_size; y++) {
+      for (direction test_direction = N; test_direction < NB_DIR;
+           test_direction++) {
+        if (is_edge_coordinates(board, x, y, test_direction)) {
+          FPRINTF(stderr,
+                  "Error: test_is_edge_coordinates_EMPTY, is_edge_coordinates "
+                  "returned true for the piece (%hu,%hu) in the direction %d "
+                  "for an EMPTY piece.\n",
+                  x, y, test_direction);
+          delete_game(board);
+          return EXIT_FAILURE;
+        }
       }
     }
   }
+  delete_game(board);
+  return EXIT_SUCCESS;
+}
 
+/**
+ * @brief Tests all directions for is_edge_coordinates on an LEAF piece
+ */
+static int test_is_edge_coordinates_LEAF() {
+  const piece default_pieces[] = {LEAF, LEAF, LEAF, LEAF, LEAF,
+                                  LEAF, LEAF, LEAF, LEAF};
+  const direction default_dirs[] = {N, E, S, W, N, E, S, W, N};
+  uint16_t board_size = 3;
+  game board =
+      new_game_ext(board_size, board_size, default_pieces, default_dirs, false);
+  for (uint16_t x = 0; x < board_size; x++) {
+    for (uint16_t y = 0; y < board_size; y++) {
+      for (direction test_direction = N; test_direction < NB_DIR;
+           test_direction++) {
+        direction current_direction = get_current_direction(board, x, y);
+        bool result = is_edge_coordinates(board, x, y, test_direction);
+        if (result != (current_direction == test_direction)) {
+          FPRINTF(stderr,
+                  "Error: test_is_edge_coordinates_LEAF, is_edge_coordinates "
+                  "returned %s for the piece (%hu,%hu) in the direction %d "
+                  "for a LEAF piece.\n",
+                  result ? "true" : "false", x, y, test_direction);
+          delete_game(board);
+          return EXIT_FAILURE;
+        }
+      }
+    }
+  }
+  delete_game(board);
+  return EXIT_SUCCESS;
+}
+
+/**
+ * @brief Tests all directions for is_edge_coordinates on a SEGMENT piece
+ */
+static int test_is_edge_coordinates_SEGMENT() {
+  const piece default_pieces[] = {SEGMENT, SEGMENT, SEGMENT, SEGMENT, SEGMENT,
+                                  SEGMENT, SEGMENT, SEGMENT, SEGMENT};
+  const direction default_dirs[] = {N, E, S, W, N, E, S, W, N};
+  uint16_t board_size = 3;
+  game board =
+      new_game_ext(board_size, board_size, default_pieces, default_dirs, false);
+  for (uint16_t x = 0; x < board_size; x++) {
+    for (uint16_t y = 0; y < board_size; y++) {
+      for (direction test_direction = N; test_direction < NB_DIR;
+           test_direction++) {
+        direction current_direction = get_current_direction(board, x, y);
+        bool result = is_edge_coordinates(board, x, y, test_direction);
+        if (result != (current_direction % 2 == test_direction % 2)) {
+          FPRINTF(
+              stderr,
+              "Error: test_is_edge_coordinates_SEGMENT, is_edge_coordinates "
+              "returned %s for the piece (%hu,%hu) in the direction %d "
+              "for a SEGMENT piece.\n",
+              result ? "true" : "false", x, y, test_direction);
+          delete_game(board);
+          return EXIT_FAILURE;
+        }
+      }
+    }
+  }
+  delete_game(board);
+  return EXIT_SUCCESS;
+}
+
+/**
+ * @brief Tests all directions for is_edge_coordinates on a CORNER piece
+ */
+static int test_is_edge_coordinates_CORNER() {
+  const piece default_pieces[] = {CORNER, CORNER, CORNER, CORNER, CORNER,
+                                  CORNER, CORNER, CORNER, CORNER};
+  const direction default_dirs[] = {N, E, S, W, N, E, S, W, N};
+  uint16_t board_size = 3;
+  game board =
+      new_game_ext(board_size, board_size, default_pieces, default_dirs, false);
+  for (uint16_t x = 0; x < board_size; x++) {
+    for (uint16_t y = 0; y < board_size; y++) {
+      for (direction test_direction = N; test_direction < NB_DIR;
+           test_direction++) {
+        direction current_direction = get_current_direction(board, x, y);
+        bool result = is_edge_coordinates(board, x, y, test_direction);
+        if (result != (current_direction == test_direction ||
+                       (current_direction + 1) % NB_DIR == test_direction)) {
+          FPRINTF(stderr,
+                  "Error: test_is_edge_coordinates_CORNER, is_edge_coordinates "
+                  "returned %s for the piece (%hu,%hu) in the direction %d "
+                  "for a CORNER piece.\n",
+                  result ? "true" : "false", x, y, test_direction);
+          delete_game(board);
+          return EXIT_FAILURE;
+        }
+      }
+    }
+  }
+  delete_game(board);
+  return EXIT_SUCCESS;
+}
+
+/**
+ * @brief Tests all directions for is_edge_coordinates on a TEE piece
+ */
+static int test_is_edge_coordinates_TEE() {
+  const piece default_pieces[] = {TEE, TEE, TEE, TEE, TEE, TEE, TEE, TEE, TEE};
+  const direction default_dirs[] = {N, E, S, W, N, E, S, W, N};
+  uint16_t board_size = 3;
+  game board =
+      new_game_ext(board_size, board_size, default_pieces, default_dirs, false);
+  for (uint16_t x = 0; x < board_size; x++) {
+    for (uint16_t y = 0; y < board_size; y++) {
+      for (direction test_direction = N; test_direction < NB_DIR;
+           test_direction++) {
+        direction current_direction = get_current_direction(board, x, y);
+        bool result = is_edge_coordinates(board, x, y, test_direction);
+        if (result != ((current_direction - 1) % NB_DIR == test_direction ||
+                       current_direction == test_direction ||
+                       (current_direction + 1) % NB_DIR == test_direction)) {
+          FPRINTF(stderr,
+                  "Error: test_is_edge_coordinates_TEE, is_edge_coordinates "
+                  "returned %s for the piece (%hu,%hu) in the direction %d "
+                  "for a TEE piece.\n",
+                  result ? "true" : "false", x, y, test_direction);
+          delete_game(board);
+          return EXIT_FAILURE;
+        }
+      }
+    }
+  }
+  return EXIT_SUCCESS;
+}
+
+/**
+ * @brief Tests all directions for is_edge_coordinates on a CROSS piece
+ */
+static int test_is_edge_coordinates_CROSS() {
+  const piece default_pieces[] = {CROSS, CROSS, CROSS, CROSS, CROSS,
+                                  CROSS, CROSS, CROSS, CROSS};
+  const direction default_dirs[] = {N, E, S, W, N, E, S, W, N};
+  uint16_t board_size = 3;
+  game board =
+      new_game_ext(board_size, board_size, default_pieces, default_dirs, false);
+  for (uint16_t x = 0; x < board_size; x++) {
+    for (uint16_t y = 0; y < board_size; y++) {
+      for (direction test_direction = N; test_direction < NB_DIR;
+           test_direction++) {
+        if (!is_edge_coordinates(board, x, y, test_direction)) {
+          FPRINTF(stderr,
+                  "Error: test_is_edge_coordinates_CROSS, is_edge_coordinates "
+                  "returned false for the piece (%hu,%hu) in the direction %d "
+                  "for an CROSS piece.\n",
+                  x, y, test_direction);
+          delete_game(board);
+          return EXIT_FAILURE;
+        }
+      }
+    }
+  }
   delete_game(board);
   return EXIT_SUCCESS;
 }
@@ -1550,8 +1607,18 @@ int main(int argc, char* argv[]) {
     status = test_is_edge_TEE();
   else if (strcmp("is_edge_CROSS", argv[1]) == 0)
     status = test_is_edge_CROSS();
-  else if (strcmp("is_edge_coordinates", argv[1]) == 0)
-    status = test_is_edge_coordinates();
+  else if (strcmp("is_edge_coordinates_EMPTY", argv[1]) == 0)
+    status = test_is_edge_coordinates_EMPTY();
+  else if (strcmp("is_edge_coordinates_LEAF", argv[1]) == 0)
+    status = test_is_edge_coordinates_LEAF();
+  else if (strcmp("is_edge_coordinates_SEGMENT", argv[1]) == 0)
+    status = test_is_edge_coordinates_SEGMENT();
+  else if (strcmp("is_edge_coordinates_CORNER", argv[1]) == 0)
+    status = test_is_edge_coordinates_CORNER();
+  else if (strcmp("is_edge_coordinates_TEE", argv[1]) == 0)
+    status = test_is_edge_coordinates_TEE();
+  else if (strcmp("is_edge_coordinates_CROSS", argv[1]) == 0)
+    status = test_is_edge_coordinates_CROSS();
   else if (strcmp("is_game_over_true", argv[1]) == 0)
     status = test_is_game_over_true();
   else if (strcmp("is_game_over_true_wrapped", argv[1]) == 0)
