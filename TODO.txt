@@ -1,6 +1,7 @@
 A bunch of things that could be done:
 X Rewrite game_rand.c, the original code was provided by the teachers for us to generate boards easily, it saddly cannot be shared as-is and must be rewritten from scratch
-    - Add documentation to game_rand
+    X Add documentation to game_rand
+        - Added in 85ea701e92bba75203249d9158e5aee20929b946
 - Clean the code, it's been written before any of the original writers had heard about the book called "Clean code"
     - 02/03/2020 Big rewrite of the game.c file done, passes all tests and generates no warnings
 - Comment the code, for the same reason as above, actual meaningful (and working) doxygen could be very useful
@@ -22,7 +23,10 @@ X Make the CMakeList more portable, by adding options for CLang, MSVC, right now
     Ideas:
         - On save, first save all the current directions, then restart the game to get the initial directions
         - On load, create the game object with the initial directions then set each piece to what the current direction was on save
-- Clean up all the header include
+X Clean up all the header include
+    - Mostly cleaned in 886226e6b2623b994d114951aba15ac1bcbc6aa7
+    - <assert.h> left in solver, maybe move <time.h> to game_rand
 - Clean up cell header and file (It has been straight up exported from game so most functions are in header)
-- Some functions of libgame such as is_game_over seems broken on MSVC
+X Some functions of libgame such as is_game_over seems broken on MSVC
+    - Fixed in commit 49313d7d159b2653c5d8fd744e35e858adb480ac
 - Fix all cppcheck issues in refactored code.
