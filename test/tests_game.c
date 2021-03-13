@@ -73,7 +73,7 @@ static bool compare_game_and_directions_array(
   uint16_t height = game_height(board);
   for (uint16_t x = 0; x < width; x++) {
     for (uint16_t y = 0; y < height; y++) {
-      direction current_direction = get_current_dir(board, x, y);
+      direction current_direction = get_current_direction(board, x, y);
       if (current_direction != expected_directions[x + width * y]) {
         FPRINTF(stderr,
                 "Error: compare_game_and_directions_array, piece at (%hu,%hu) "
@@ -165,8 +165,10 @@ static int test_copy_game_valid() {
         return EXIT_FAILURE;
       }
 
-      direction current_source_direction = get_current_dir(source_board, x, y);
-      direction current_copied_direction = get_current_dir(copied_board, x, y);
+      direction current_source_direction =
+          get_current_direction(source_board, x, y);
+      direction current_copied_direction =
+          get_current_direction(copied_board, x, y);
       if (current_source_direction != current_copied_direction) {
         FPRINTF(stderr,
                 "Error: test_copy_game_valid, at (%hu,%hu) copied piece has "
@@ -327,144 +329,273 @@ static int test_game_height_null_game() {
 }
 
 /**
- * @brief
+ * @brief Creates a default empty game and checks if the returned width
+ * corresponds to DEFAULT_SIZE declared in game.h.
  */
-static int test_game_width() {
-  game g = new_game_empty();
-  if (game_width(g) == DEFAULT_SIZE) {
-    delete_game(g);
-  } else {
+static int test_game_width_valid() {
+  game board = new_game_empty();
+  uint16_t width = game_width(board);
+  delete_game(board);
+
+  if (width != DEFAULT_SIZE) {
     FPRINTF(stderr,
-            "Error with game_width : Width of standard game is %d, was "
-            "expected %d\n",
-            game_width(g), DEFAULT_SIZE);
-    delete_game(g);
+            "Error: test_game_width_valid, game_width returned %hu "
+            "instead of 0.\n",
+            width);
     return EXIT_FAILURE;
   }
-  uint16_t width = 42;
-  uint16_t height = 115;
-  game g_ext = new_game_empty_ext(width, height, false);
-  if (game_width(g_ext) == width && game_height(g_ext) == height) {
-    delete_game(g_ext);
-    return EXIT_SUCCESS;
-  }
-  FPRINTF(
-      stderr,
-      "Error with game_width : Width of extended game is %d, was expected %d\n",
-      game_width(g_ext), width);
-  return EXIT_FAILURE;
+  return EXIT_SUCCESS;
 }
 
 /**
- * @brief
+ * @brief Tries to get the width of a NULL pointer and verifies if it returns
+ * 0 as defined in game.h.
  */
-static int test_get_current_dir() {
-  piece default_pieces[] = {LEAF,    LEAF,    LEAF,    LEAF,    LEAF,
-                            TEE,     TEE,     TEE,     TEE,     TEE,
-                            SEGMENT, SEGMENT, SEGMENT, SEGMENT, SEGMENT,
-                            CORNER,  CORNER,  CORNER,  CORNER,  CORNER,
-                            EMPTY,   EMPTY,   EMPTY,   EMPTY,   EMPTY};
-  direction default_dirs[] = {N, S, W, E, N, N, S, W, E, N, N, S, W,
-                              E, N, N, S, W, E, N, N, S, W, E, N};
+static int test_game_width_null_game() {
+  uint16_t fake_width = game_width(NULL);
+  if (fake_width != 0) {
+    FPRINTF(stderr,
+            "Error: test_game_width_null_game, game_width returned %hu "
+            "instead of 0.\n",
+            fake_width);
+    return EXIT_FAILURE;
+  }
+  return EXIT_SUCCESS;
+}
+
+/**
+ * @brief Creates a standard game with all piece types and directions.
+ * Tests if for each piece each direction is correctly initialized.
+ */
+static int test_get_current_direction_valid() {
+  const piece default_pieces[] = {
+      LEAF,   LEAF,    LEAF,    LEAF,    CROSS,   TEE,   TEE,    TEE,    TEE,
+      CROSS,  SEGMENT, SEGMENT, SEGMENT, SEGMENT, CROSS, CORNER, CORNER, CORNER,
+      CORNER, CROSS,   EMPTY,   EMPTY,   EMPTY,   EMPTY, EMPTY};
+  const direction default_dirs[] = {N, S, W, E, N, N, S, W, E, S, N, S, W,
+                                    E, S, N, S, W, E, E, N, S, W, E, N};
 
   game board = new_game(default_pieces, default_dirs);
-  uint16_t width = game_width(board);
-  uint16_t height = game_height(board);
-  direction* values = (direction*)malloc(width * height * sizeof(direction));
-
-  for (uint16_t row = 0; row < height; row++) {
-    for (uint16_t col = 0; col < width; col++) {
-      values[row * width + col] = get_current_dir(board, col, row);
-    }
-  }
-
-  for (uint16_t i = 0; i < width * height; i++) {
-    if (default_dirs[i] != values[i]) {
-      delete_game(board);
-      free(values);
-      FPRINTF(stderr, "problem to get curretn direction\n");
-      return EXIT_FAILURE;
-    }
+  if (!compare_game_and_directions_array(board, default_dirs)) {
+    FPRINTF(stderr,
+            "Error: test_get_current_direction_valid, the board pieces' "
+            "direction differs from default.\n");
+    delete_game(board);
+    return EXIT_FAILURE;
   }
 
   delete_game(board);
-  free(values);
   return EXIT_SUCCESS;
 }
 
 /**
- * @brief
+ * @brief Tries to get the direction of NULL pointer at coordinates (0,0) and
+ * verifies if it returns -1 as defined in game.h
  */
-static int test_get_piece() {
-  game g = new_game_empty();
-  uint16_t width = game_width(g);
-  uint16_t height = game_height(g);
-  for (uint16_t x = 0; x < width; x++) {
-    for (uint16_t y = 0; y < height; y++) {
-      for (piece i = EMPTY; i < NB_PIECE_TYPE; i++) {
-        set_piece(g, x, y, i, N);
-        if (get_piece(g, x, y) != i) {
-          FPRINTF(stderr,
-                  "Error: function get_piece(game, %d, %d) returned a wrong "
-                  "answer (%d instead of %d)\n",
-                  x, y, get_piece(g, x, y), i);
-          delete_game(g);
-          return EXIT_FAILURE;
-        }
+static int test_get_current_direction_null_game() {
+  direction fake_direction = get_current_direction(NULL, 0, 0);
+  if (fake_direction != (direction)-1) {
+    FPRINTF(stderr,
+            "Error: test_get_current_direction_null_game, "
+            "get_current_direction returned %d while %d was expected.\n",
+            fake_direction, (direction)-1);
+    return EXIT_FAILURE;
+  }
+  return EXIT_SUCCESS;
+}
+
+/**
+ * @brief Tries to get the direction outside the boundaries of the game and
+ * verifies if it returns -1 as defined in game.h
+ */
+static int test_get_current_direction_out_of_bounds() {
+  game board = new_game_empty();
+  uint16_t out_of_bound_x = DEFAULT_SIZE;
+  uint16_t out_of_bound_y = DEFAULT_SIZE;
+  direction oob_direction =
+      get_current_direction(board, out_of_bound_x, out_of_bound_y);
+
+  if (oob_direction != (direction)-1) {
+    FPRINTF(stderr,
+            "Error: test_get_current_direction_out_of_bounds, "
+            "get_current_direction returned %d while %d was expected.\n",
+            oob_direction, (direction)-1);
+    delete_game(board);
+    return EXIT_FAILURE;
+  }
+
+  delete_game(board);
+  return EXIT_SUCCESS;
+}
+
+/**
+ * @brief Creates a standard game with all piece types and directions.
+ * Tests if each piece is correctly initialized.
+ */
+static int test_get_piece_valid() {
+  const piece default_pieces[] = {
+      LEAF,   LEAF,    LEAF,    LEAF,    CROSS,   TEE,   TEE,    TEE,    TEE,
+      CROSS,  SEGMENT, SEGMENT, SEGMENT, SEGMENT, CROSS, CORNER, CORNER, CORNER,
+      CORNER, CROSS,   EMPTY,   EMPTY,   EMPTY,   EMPTY, EMPTY};
+  const direction default_dirs[] = {N, S, W, E, N, N, S, W, E, S, N, S, W,
+                                    E, S, N, S, W, E, E, N, S, W, E, N};
+
+  game board = new_game(default_pieces, default_dirs);
+  if (!compare_game_and_pieces_array(board, default_pieces)) {
+    FPRINTF(stderr,
+            "Error: test_get_current_direction_valid, the board' pieces "
+            "differs from default.\n");
+    delete_game(board);
+    return EXIT_FAILURE;
+  }
+  delete_game(board);
+  return EXIT_SUCCESS;
+}
+
+/**
+ * @brief Tries to get the direction of NULL pointer at coordinates (0,0) and
+ * verifies if it returns -1 as defined in game.h
+ */
+static int test_get_piece_null_game() {
+  piece fake_piece = get_piece(NULL, 0, 0);
+  if (fake_piece != (piece)-2) {
+    FPRINTF(stderr,
+            "Error: test_get_piece_null_game, "
+            "get_piece returned %d while %d was expected.\n",
+            fake_piece, (piece)-2);
+    return EXIT_FAILURE;
+  }
+  return EXIT_SUCCESS;
+}
+
+/**
+ * @brief Tries to get a piece outside the boundaries of the game and
+ * verifies if it returns -2 as defined in game.h
+ */
+static int test_get_piece_out_of_bounds() {
+  game board = new_game_empty();
+  uint16_t out_of_bound_x = DEFAULT_SIZE;
+  uint16_t out_of_bound_y = DEFAULT_SIZE;
+  piece oob_piece = get_piece(board, out_of_bound_x, out_of_bound_y);
+
+  if (oob_piece != (piece)-2) {
+    FPRINTF(stderr,
+            "Error: test_get_piece_out_of_bounds, "
+            "get_piece returned %d while %d was expected.\n",
+            oob_piece, (piece)-2);
+    delete_game(board);
+    return EXIT_FAILURE;
+  }
+
+  delete_game(board);
+  return EXIT_SUCCESS;
+}
+
+/**
+ * @brief Tests all valid parameters of is_edge for an EMPTY piece
+ */
+static int test_is_edge_EMPTY() {
+  for (direction i = N; i < NB_DIR; i++) {
+    for (direction j = N; j < NB_DIR; j++) {
+      if (is_edge(EMPTY, i, j)) {
+        FPRINTF(stderr,
+                "Error: test_is_edge_EMPTY, is_edge returned true for piece "
+                "orientation %d in direction %d for an EMPTY piece.\n",
+                i, j);
+        return EXIT_FAILURE;
       }
     }
   }
-  delete_game(g);
   return EXIT_SUCCESS;
 }
 
 /**
- * @brief
+ * @brief Tests all valid parameters of is_edge for a LEAF piece
  */
-static int test_is_edge() {
-  for (direction i = 0; i < NB_DIR; i++) {
-    for (direction j = 0; j < NB_DIR; j++) {
-      if (is_edge(EMPTY, i, j) != false) {
+static int test_is_edge_LEAF() {
+  for (direction i = N; i < NB_DIR; i++) {
+    for (direction j = N; j < NB_DIR; j++) {
+      bool result = is_edge(LEAF, i, j);
+      if (result != (i == j)) {
         FPRINTF(stderr,
-                "Error: function is_edge(EMPTY, %d, %d) returned a wrong "
-                "answer (%d)\n",
-                i, j, is_edge(EMPTY, i, j));
+                "Error: test_is_edge_LEAF, is_edge returned %s for piece "
+                "orientation %d in direction %d for a LEAF piece.\n",
+                result ? "true" : "false", i, j);
         return EXIT_FAILURE;
       }
-      if (is_edge(LEAF, i, j) != (i == j)) {
+    }
+  }
+  return EXIT_SUCCESS;
+}
+
+/**
+ * @brief Tests all valid parameters of is_edge for a SEGMENT piece
+ */
+static int test_is_edge_SEGMENT() {
+  for (direction i = N; i < NB_DIR; i++) {
+    for (direction j = N; j < NB_DIR; j++) {
+      bool result = is_edge(SEGMENT, i, j);
+      if (result != (i % 2 == j % 2)) {
         FPRINTF(stderr,
-                "Error: function is_edge(LEAF, %d, %d) returned a wrong answer "
-                "(%d)\n",
-                i, j, is_edge(LEAF, i, j));
+                "Error: test_is_edge_SEGMENT, is_edge returned %s for piece "
+                "orientation %d in direction %d for a SEGMENT piece.\n",
+                result ? "true" : "false", i, j);
         return EXIT_FAILURE;
       }
-      if (is_edge(SEGMENT, i, j) != (i % 2 == j % 2)) {
+    }
+  }
+  return EXIT_SUCCESS;
+}
+
+/**
+ * @brief Tests all valid parameters of is_edge for a CORNER piece
+ */
+static int test_is_edge_CORNER() {
+  for (direction i = N; i < NB_DIR; i++) {
+    for (direction j = N; j < NB_DIR; j++) {
+      bool result = is_edge(CORNER, i, j);
+      if (result != (i == j || (i + 1) % 4 == j)) {
         FPRINTF(stderr,
-                "Error: function is_edge(SEGMENT, %d, %d) returned a wrong "
-                "answer (%d)\n",
-                i, j, is_edge(SEGMENT, i, j));
+                "Error: test_is_edge_CORNER, is_edge returned %s for piece "
+                "orientation %d in direction %d for a CORNER piece.\n",
+                result ? "true" : "false", i, j);
         return EXIT_FAILURE;
       }
-      if (is_edge(CORNER, i, j) != (i == j || (i + 1) % 4 == j)) {
+    }
+  }
+  return EXIT_SUCCESS;
+}
+
+/**
+ * @brief Tests all valid parameters of is_edge for a TEE piece
+ */
+static int test_is_edge_TEE() {
+  for (direction i = N; i < NB_DIR; i++) {
+    for (direction j = N; j < NB_DIR; j++) {
+      bool result = is_edge(TEE, i, j);
+      if (result != (i == (j + 1) % 4 || i == j || (i + 1) % 4 == j)) {
         FPRINTF(stderr,
-                "Error: function is_edge(CORNER, %d, %d) returned a wrong "
-                "answer (%d)\n",
-                i, j, is_edge(CORNER, i, j));
+                "Error: test_is_edge_TEE, is_edge returned %s for piece "
+                "orientation %d in direction %d for a TEE piece.\n",
+                result ? "true" : "false", i, j);
         return EXIT_FAILURE;
       }
-      if (is_edge(TEE, i, j) !=
-          (i == (j + 1) % 4 || i == j || (i + 1) % 4 == j)) {
+    }
+  }
+  return EXIT_SUCCESS;
+}
+
+/**
+ * @brief Tests all valid parameters of is_edge for a CROSS piece
+ */
+static int test_is_edge_CROSS() {
+  for (direction i = N; i < NB_DIR; i++) {
+    for (direction j = N; j < NB_DIR; j++) {
+      if (!is_edge(CROSS, i, j)) {
         FPRINTF(stderr,
-                "Error: function is_edge(TEE, %d, %d) returned a wrong answer "
-                "(%d)\n",
-                i, j, is_edge(TEE, i, j));
-        return EXIT_FAILURE;
-      }
-      if (is_edge(CROSS, i, j) != true) {
-        FPRINTF(stderr,
-                "Error: function is_edge(CROSS, %d, %d) returned a wrong "
-                "answer (%d)\n",
-                i, j, is_edge(CROSS, i, j));
+                "Error: test_is_edge_CORNER, is_edge returned false for piece "
+                "orientation %d in direction %d for a CROSS piece.\n",
+                i, j);
         return EXIT_FAILURE;
       }
     }
@@ -486,9 +617,9 @@ static int test_is_edge_coordinates() {
   game board = new_game(default_pieces, default_dirs);
   uint16_t width = game_width(board);
   uint16_t height = game_height(board);
-  for (uint16_t row = 0; row < height; row--) {
+  for (uint16_t row = 0; row < height; row++) {
     for (uint16_t col = 0; col < width; col++) {
-      direction dir = get_current_dir(board, col, row);
+      direction dir = get_current_direction(board, col, row);
       piece p = get_piece(board, col, row);
 
       switch (p) {
@@ -614,139 +745,176 @@ static int test_is_edge_coordinates() {
 }
 
 /**
- * @brief
+ * @brief Creates a completed regular board game and verifies that is_game_over
+ * returns true.
  */
-static int test_is_game_over() {
-  piece default_pieces[] = {LEAF,    TEE,    LEAF,    LEAF, LEAF, LEAF, TEE,
-                            TEE,     CORNER, SEGMENT, LEAF, LEAF, TEE,  LEAF,
-                            SEGMENT, TEE,    TEE,     TEE,  TEE,  TEE,  CORNER,
-                            LEAF,    LEAF,   CORNER,  LEAF};
-  direction solution_dirs[] = {E, N, W, N, N, E, S, N, S, N, N, N, E,
-                               W, N, E, S, S, N, W, E, W, E, S, S};
-  game g = new_game(default_pieces, solution_dirs);
-  uint16_t width = game_width(g);
-  uint16_t height = game_height(g);
-  direction dir;
-  piece pice;
+static int test_is_game_over_true() {
+  const piece default_pieces[] = {LEAF,   CORNER, LEAF, TEE, CROSS,
+                                  CORNER, LEAF,   LEAF, LEAF};
+  const direction default_dirs[] = {N, N, W, E, S, W, S, S, S};
+  const uint16_t board_size = 3;
 
-  if (!is_game_over(g)) {
+  game board =
+      new_game_ext(board_size, board_size, default_pieces, default_dirs, false);
+
+  if (!is_game_over(board)) {
     FPRINTF(stderr,
-            "Error: function bool is_game_over(cgame g) returned \"false\" in "
-            "a finished game\n");
-    delete_game(g);
+            "Error: test_is_game_over_true, is_game_over returned false on a "
+            "completed board.\n");
+    delete_game(board);
     return EXIT_FAILURE;
   }
-
-  for (uint16_t x = 0; x < width; x++) {
-    for (uint16_t y = 0; y < height; y++) {
-      dir = get_current_dir(g, x, y);
-      pice = get_piece(g, x, y);
-      rotate_piece_one(g, x, y);
-      if (is_game_over(g)) {
-        FPRINTF(stderr,
-                "Error: function bool is_game_over(cgame g) returned \"true\" "
-                "in a not finished game\n");
-        delete_game(g);
-        return EXIT_FAILURE;
-      }
-      set_piece(g, x, y, (pice + 1) % 4, dir);
-      if (is_game_over(g)) {
-        FPRINTF(stderr,
-                "Error: function bool is_game_over(cgame g) returned \"true\" "
-                "in a not finished game\n");
-        delete_game(g);
-        return EXIT_FAILURE;
-      }
-      set_piece(g, x, y, pice, dir);
-      if (!is_game_over(g)) {
-        FPRINTF(stderr,
-                "Error: function bool is_game_over(cgame g) returned \"false\" "
-                "in a finished game\n");
-        delete_game(g);
-        return EXIT_FAILURE;
-      }
-    }
-  }
-  delete_game(g);
-
-  piece default_pieces2[] = {
-      CORNER,  CORNER, LEAF,   LEAF, LEAF, CORNER,  CORNER, TEE, CORNER,
-      SEGMENT, LEAF,   LEAF,   TEE,  LEAF, SEGMENT, TEE,    TEE, TEE,
-      TEE,     TEE,    CORNER, LEAF, LEAF, CORNER,  LEAF};
-  direction default_dirs[] = {N, W, N, N, N, E, S, E, S, N, N, N, E,
-                              W, N, E, S, S, N, W, E, W, E, S, S};
-  game g2 = new_game(default_pieces2, default_dirs);
-  if (is_game_over(g2)) {
-    FPRINTF(stderr,
-            "Error: function bool is_game_over(cgame g) returned \"true\" in a "
-            "finished game containing a disconnected loop\n");
-    delete_game(g2);
-    return EXIT_FAILURE;
-  }
-  delete_game(g2);
-
-  piece default_pieces3[] = {
-      CORNER,  TEE,  LEAF,   LEAF, LEAF, CORNER,  TEE, TEE, CORNER,
-      SEGMENT, LEAF, LEAF,   TEE,  LEAF, SEGMENT, TEE, TEE, TEE,
-      TEE,     TEE,  CORNER, LEAF, LEAF, CORNER,  LEAF};
-  direction default_dirs2[] = {N, N, W, N, N, E, S, N, S, N, N, N, E,
-                               W, N, E, S, S, N, W, E, W, E, S, S};
-  game g3 = new_game(default_pieces3, default_dirs2);
-  if (is_game_over(g3)) {
-    FPRINTF(stderr,
-            "Error: function bool is_game_over(cgame g) returned \"true\" in a "
-            "finished game containing a loop\n");
-    delete_game(g3);
-    return EXIT_FAILURE;
-  }
-  delete_game(g3);
-
-  piece default_pieces4[] = {LEAF,   CORNER, CORNER, CORNER, SEGMENT,
-                             CORNER, LEAF,   CORNER, SEGMENT};
-  direction default_dirs3[] = {N, E, S, E, E, W, E, W, N};
-  game g4 = new_game_ext(3, 3, default_pieces4, default_dirs3, true);
-
-  if (!is_game_over(g4)) {
-    FPRINTF(stderr,
-            "Error: function bool is_game_over(cgame g) returned \"false\" in "
-            "a finished game (wrapping problem)\n");
-    delete_game(g4);
-    return EXIT_FAILURE;
-  }
-
-  delete_game(g4);
-
+  delete_game(board);
   return EXIT_SUCCESS;
 }
 
 /**
- * @brief
+ * @brief Creates a completed wrapped board game and verifies that is_game_over
+ * returns true.
  */
-static int test_is_wrapping() {
-  piece default_pieces[] = {LEAF,    LEAF,    LEAF,    LEAF,    LEAF,
-                            TEE,     TEE,     TEE,     TEE,     TEE,
-                            SEGMENT, SEGMENT, SEGMENT, SEGMENT, SEGMENT,
-                            CORNER,  CORNER,  CORNER,  CORNER,  CORNER,
-                            EMPTY,   EMPTY,   EMPTY,   EMPTY,   EMPTY};
-  direction default_dirs[] = {N, S, W, E, N, N, S, W, E, N, N, S, W,
-                              E, N, N, S, W, E, N, N, S, W, E, N};
-  game g1 = new_game_ext(DEFAULT_SIZE, DEFAULT_SIZE, default_pieces,
-                         default_dirs, true);
-  if (!is_wrapping(g1)) {
-    delete_game(g1);
-    FPRINTF(stderr, "is_wrapping say there is no wrap but there is !\n");
-    return EXIT_FAILURE;
-  }
-  game g2 = new_game_ext(5, 5, default_pieces, default_dirs, false);
-  if (is_wrapping(g2)) {
-    delete_game(g2);
-    delete_game(g1);
-    FPRINTF(stderr, "is_wrapping say there is wrap but there is not !\n");
-    return EXIT_FAILURE;
-  }
+static int test_is_game_over_true_wrapped() {
+  const piece default_pieces[] = {LEAF,   CORNER, LEAF,   TEE, SEGMENT,
+                                  CORNER, CORNER, CORNER, LEAF};
+  const direction default_dirs[] = {N, E, W, E, E, W, E, W, S};
+  const uint16_t board_size = 3;
 
-  delete_game(g1);
-  delete_game(g2);
+  game board =
+      new_game_ext(board_size, board_size, default_pieces, default_dirs, true);
+  if (!is_game_over(board)) {
+    FPRINTF(stderr,
+            "Error: test_is_game_over_true_wrapped, is_game_over returned "
+            "false on a "
+            "completed board.\n");
+    delete_game(board);
+    return EXIT_FAILURE;
+  }
+  return EXIT_SUCCESS;
+}
+
+/**
+ * @brief Creates a completed regular board game, rotates all the pieces once,
+ * and verifies that is_game_over returns false.
+ */
+static int test_is_game_over_false() {
+  const piece default_pieces[] = {LEAF,   CORNER, LEAF, TEE, CROSS,
+                                  CORNER, LEAF,   LEAF, LEAF};
+  const direction default_dirs[] = {N, N, W, E, S, W, S, S, S};
+  const uint16_t board_size = 3;
+
+  game board =
+      new_game_ext(board_size, board_size, default_pieces, default_dirs, false);
+  rotate_all_pieces_once(board);
+  if (is_game_over(board)) {
+    FPRINTF(stderr,
+            "Error: test_is_game_over_false, is_game_over returned true on an "
+            "incompleted board.\n");
+    delete_game(board);
+    return EXIT_FAILURE;
+  }
+  delete_game(board);
+  return EXIT_SUCCESS;
+}
+
+/**
+ * @brief Creates a completed wrapped board game, rotates all the pieces once,
+ * and verifies that is_game_over returns false.
+ */
+static int test_is_game_over_false_wrapped() {
+  const piece default_pieces[] = {LEAF,   CORNER, LEAF,   TEE, SEGMENT,
+                                  CORNER, CORNER, CORNER, LEAF};
+  const direction default_dirs[] = {N, E, W, E, E, W, E, W, S};
+  const uint16_t board_size = 3;
+
+  game board =
+      new_game_ext(board_size, board_size, default_pieces, default_dirs, true);
+  rotate_all_pieces_once(board);
+  if (is_game_over(board)) {
+    FPRINTF(stderr,
+            "Error: test_is_game_over_false_wrapped, is_game_over returned "
+            "true on an "
+            "incompleted board.\n");
+    delete_game(board);
+    return EXIT_FAILURE;
+  }
+  delete_game(board);
+  return EXIT_SUCCESS;
+}
+
+/**
+ * @brief Creates an empty game and verifies that is_game_over returns false.
+ */
+static int test_is_game_over_empty_game() {
+  game board = new_game_empty();
+  if (is_game_over(board)) {
+    FPRINTF(stderr,
+            "Error: is_game_over_empty_game, is_game_over returned true on an "
+            "empty game.\n");
+    delete_game(board);
+    return EXIT_FAILURE;
+  }
+  delete_game(board);
+  return EXIT_SUCCESS;
+}
+
+/**
+ * @brief Tries to check if a NULL pointer is completed and verifies if it
+ * returns false as defined in game.h.
+ */
+static int test_is_game_over_null_game() {
+  if (is_game_over(NULL)) {
+    FPRINTF(stderr,
+            "Error: is_game_over_empty_game, is_game_over returned true on a "
+            "NULL pointer.\n");
+    return EXIT_FAILURE;
+  }
+  return EXIT_SUCCESS;
+}
+
+/**
+ * @brief Creates an empty wrapped game and checks if the wrap value is set
+ * correctly.
+ */
+static int test_is_wrapping_true() {
+  game board = new_game_empty_ext(DEFAULT_SIZE, DEFAULT_SIZE, true);
+  if (!is_wrapping(board)) {
+    FPRINTF(stderr,
+            "Error: test_is_wrapping_true, is_wrapping returned false on a "
+            "wrapped game.\n");
+    delete_game(board);
+    return EXIT_FAILURE;
+  }
+  delete_game(board);
+  return EXIT_SUCCESS;
+}
+
+/**
+ * @brief Creates an empty regular game and checks if the wrap value is set
+ * correctly.
+ */
+static int test_is_wrapping_false() {
+  game board = new_game_empty();
+  if (is_wrapping(board)) {
+    FPRINTF(stderr,
+            "Error: test_is_wrapping_false, is_wrapping returned true on a "
+            "regular game.\n");
+    delete_game(board);
+    return EXIT_FAILURE;
+  }
+  delete_game(board);
+  return EXIT_SUCCESS;
+}
+
+/**
+ * @brief Tries to get the wrapping of a NULL pointer and verifies if it returns
+ * false as defined in game.h.
+ */
+static int test_is_wrapping_null_game() {
+  if (is_wrapping(NULL)) {
+    FPRINTF(stderr,
+            "Error: test_is_wrapping_null_game, is_wrapping returned true on a "
+            "NULL pointer.\n");
+    return EXIT_FAILURE;
+  }
   return EXIT_SUCCESS;
 }
 
@@ -779,11 +947,12 @@ static int test_new_game() {
         delete_game(g);
         return EXIT_FAILURE;
       }
-      if (get_current_dir(g, i, j) != default_dirs[(j * width) + i]) {
+      if (get_current_direction(g, i, j) != default_dirs[(j * width) + i]) {
         FPRINTF(stderr,
                 "Error: piece's direction (%hu,%hu) is not corresponding! "
                 "(should be %d, is %d)\n",
-                i, j, default_dirs[(j * width) + i], get_current_dir(g, i, j));
+                i, j, default_dirs[(j * width) + i],
+                get_current_direction(g, i, j));
         delete_game(g);
         return EXIT_FAILURE;
       }
@@ -906,13 +1075,14 @@ static int test_new_game_ext() {
           delete_game(g);
           return EXIT_FAILURE;
         }
-        if (get_current_dir(g, row, col) != default_dirs[(col * width) + row]) {
+        if (get_current_direction(g, row, col) !=
+            default_dirs[(col * width) + row]) {
           FPRINTF(stderr,
                   "Error with new_game_ext : piece's direction (%d,%d) is not "
                   "corresponding! "
                   "(should be %d, is %d)\n",
                   row, col, default_dirs[(col * width) + row],
-                  get_current_dir(g, row, col));
+                  get_current_direction(g, row, col));
           delete_game(g);
           return EXIT_FAILURE;
         }
@@ -934,31 +1104,76 @@ static int test_new_game_ext() {
 }
 
 /**
- * @brief
+ * @brief Checks if the opposite of N is S
  */
-static int test_opposite_dir() {
-  if (opposite_dir(N) != S) {
-    FPRINTF(stderr,
-            "Error with opposite_dir : opposite of %d is %d, was expected %d\n",
-            0, opposite_dir(N), 2);
+static int test_opposite_direction_N() {
+  if (opposite_direction(N) != S) {
+    FPRINTF(
+        stderr,
+        "Error: test_opposite_direction_N, opposite_direction returned %d as "
+        "the opposite of %d while %d was expected.\n",
+        opposite_direction(N), N, S);
     return EXIT_FAILURE;
   }
-  if (opposite_dir(E) != W) {
-    FPRINTF(stderr,
-            "Error with opposite_dir : opposite of %d is %d, was expected %d\n",
-            1, opposite_dir(E), 3);
+  return EXIT_SUCCESS;
+}
+
+/**
+ * @brief Checks if the opposite of E is W
+ */
+static int test_opposite_direction_E() {
+  if (opposite_direction(E) != W) {
+    FPRINTF(
+        stderr,
+        "Error: test_opposite_direction_E, opposite_direction returned %d as "
+        "the opposite of %d while %d was expected.\n",
+        opposite_direction(E), E, W);
     return EXIT_FAILURE;
   }
-  if (opposite_dir(S) != N) {
-    FPRINTF(stderr,
-            "Error with opposite_dir : opposite of %d is %d, was expected %d\n",
-            2, opposite_dir(S), 0);
+  return EXIT_SUCCESS;
+}
+
+/**
+ * @brief Checks if the opposite of S is N
+ */
+static int test_opposite_direction_S() {
+  if (opposite_direction(S) != N) {
+    FPRINTF(
+        stderr,
+        "Error: test_opposite_direction_S, opposite_direction returned %d as "
+        "the opposite of %d while %d was expected.\n",
+        opposite_direction(S), S, N);
     return EXIT_FAILURE;
   }
-  if (opposite_dir(W) != E) {
+  return EXIT_SUCCESS;
+}
+
+/**
+ * @brief Checks if the opposite of W is E
+ */
+static int test_opposite_direction_W() {
+  if (opposite_direction(W) != E) {
+    FPRINTF(
+        stderr,
+        "Error: test_opposite_direction_W, opposite_direction returned %d as "
+        "the opposite of %d while %d was expected.\n",
+        opposite_direction(W), W, E);
+    return EXIT_FAILURE;
+  }
+  return EXIT_SUCCESS;
+}
+
+/**
+ * @brief Tries to get the opposite direction of an invalid value and verifies
+ * if it returns -1 as defined in game.h
+ */
+static int test_opposite_direction_invalid() {
+  if (opposite_direction(INT16_MAX) != (direction)-1) {
     FPRINTF(stderr,
-            "Error with opposite_dir : opposite of %d is %d, was expected %d\n",
-            3, opposite_dir(W), 1);
+            "Error: test_opposite_direction_invalid, opposite_direction "
+            "returned %d as "
+            "the opposite of %d while %d was expected.\n",
+            opposite_direction(INT16_MAX), INT16_MAX, (direction)-1);
     return EXIT_FAILURE;
   }
   return EXIT_SUCCESS;
@@ -982,14 +1197,15 @@ static int test_restart_game() {
   for (uint16_t y = 0; y < height; y++) {
     for (uint16_t x = 0; x < width; x++) {
       if (get_piece(g, x, y) != default_pieces[x + y * DEFAULT_SIZE] ||
-          get_current_dir(g, x, y) != default_dirs[x + y * DEFAULT_SIZE]) {
+          get_current_direction(g, x, y) !=
+              default_dirs[x + y * DEFAULT_SIZE]) {
         FPRINTF(stderr,
                 "Error with restart_game : after a restart the piece "
                 "was %d and should be %d and the dir was %d and should be %d "
                 "@(x=%d,y=%d)\n",
                 get_piece(g, x, y), default_pieces[x + y * DEFAULT_SIZE],
-                get_current_dir(g, x, y), default_dirs[x + y * DEFAULT_SIZE], x,
-                y);
+                get_current_direction(g, x, y),
+                default_dirs[x + y * DEFAULT_SIZE], x, y);
         delete_game(g);
         return EXIT_FAILURE;
       }
@@ -1010,9 +1226,9 @@ static int test_rotate_piece() {
   for (uint16_t x = 0; x < width; x++) {
     for (uint16_t y = 0; y < height; y++) {
       for (int32_t i = 0; i < 8; i++) {
-        dir = get_current_dir(g, x, y);
+        dir = get_current_direction(g, x, y);
         rotate_piece(g, x, y, i);
-        if (get_current_dir(g, x, y) != (dir + (uint32_t)i) % 4) {
+        if (get_current_direction(g, x, y) != (dir + (uint32_t)i) % 4) {
           FPRINTF(stderr,
                   "Error: function void rotate_piece(game game, int x, int y, "
                   "int cnb_cw_quarter_turn) is not working correctly\n");
@@ -1045,9 +1261,9 @@ static int test_rotate_piece_one() {
   uint16_t height = game_height(board);
   for (uint16_t row = 0; row < height; row++) {
     for (uint16_t col = 0; col < width; col++) {
-      direction dir = get_current_dir(board, col, row);
+      direction dir = get_current_direction(board, col, row);
       rotate_piece_one(board, col, row);
-      switch (get_current_dir(board, col, row)) {
+      switch (get_current_direction(board, col, row)) {
         case N:
           isGood = (dir == W);
           break;
@@ -1095,14 +1311,15 @@ static int test_set_piece() {
   for (uint16_t y = 0; y < height; y++) {
     for (uint16_t x = 0; x < width; x++) {
       if (get_piece(g, x, y) != default_pieces[x + y * DEFAULT_SIZE] ||
-          get_current_dir(g, x, y) != default_dirs[x + y * DEFAULT_SIZE]) {
+          get_current_direction(g, x, y) !=
+              default_dirs[x + y * DEFAULT_SIZE]) {
         FPRINTF(stderr,
                 "Error when set_piece : after a restart the piece "
                 "was %d and should be %d and the dir was %d and should be %d "
                 "@(x=%d,y=%d)\n",
                 get_piece(g, x, y), default_pieces[x + y * DEFAULT_SIZE],
-                get_current_dir(g, x, y), default_dirs[x + y * DEFAULT_SIZE], x,
-                y);
+                get_current_direction(g, x, y),
+                default_dirs[x + y * DEFAULT_SIZE], x, y);
         delete_game(g);
         return EXIT_FAILURE;
       }
@@ -1122,12 +1339,12 @@ static int test_set_piece_current_dir() {
   uint16_t height = game_height(g);
   for (uint16_t x = 0; x < width; x++) {
     for (uint16_t y = 0; y < height; y++) {
-      set_piece_current_dir(g, x, y, dir);
-      if (get_current_dir(g, x, y) != dir) {
+      set_piece_current_direction(g, x, y, dir);
+      if (get_current_direction(g, x, y) != dir) {
         FPRINTF(stderr,
-                "Error with set_piece_current_dir : Direction is %d, was "
+                "Error with set_piece_current_direction : Direction is %d, was "
                 "expected %d\n",
-                get_current_dir(g, x, y), dir);
+                get_current_direction(g, x, y), dir);
         delete_game(g);
         return EXIT_FAILURE;
       }
@@ -1136,12 +1353,12 @@ static int test_set_piece_current_dir() {
   dir = E;
   for (uint16_t x = 0; x < width; x++) {
     for (uint16_t y = 0; y < height; y++) {
-      set_piece_current_dir(g, x, y, dir);
-      if (get_current_dir(g, x, y) != dir) {
+      set_piece_current_direction(g, x, y, dir);
+      if (get_current_direction(g, x, y) != dir) {
         FPRINTF(stderr,
-                "Error with set_piece_current_dir : Direction is %d, was "
+                "Error with set_piece_current_direction : Direction is %d, was "
                 "expected %d\n",
-                get_current_dir(g, x, y), dir);
+                get_current_direction(g, x, y), dir);
         delete_game(g);
         return EXIT_FAILURE;
       }
@@ -1150,12 +1367,12 @@ static int test_set_piece_current_dir() {
   dir = S;
   for (uint16_t x = 0; x < width; x++) {
     for (uint16_t y = 0; y < height; y++) {
-      set_piece_current_dir(g, x, y, dir);
-      if (get_current_dir(g, x, y) != dir) {
+      set_piece_current_direction(g, x, y, dir);
+      if (get_current_direction(g, x, y) != dir) {
         FPRINTF(stderr,
-                "Error with set_piece_current_dir : Direction is %d, was "
+                "Error with set_piece_current_direction : Direction is %d, was "
                 "expected %d\n",
-                get_current_dir(g, x, y), dir);
+                get_current_direction(g, x, y), dir);
         delete_game(g);
         return EXIT_FAILURE;
       }
@@ -1164,12 +1381,12 @@ static int test_set_piece_current_dir() {
   dir = W;
   for (uint16_t x = 0; x < width; x++) {
     for (uint16_t y = 0; y < height; y++) {
-      set_piece_current_dir(g, x, y, dir);
-      if (get_current_dir(g, x, y) != dir) {
+      set_piece_current_direction(g, x, y, dir);
+      if (get_current_direction(g, x, y) != dir) {
         FPRINTF(stderr,
-                "Error with set_piece_current_dir : Direction is %d, was "
+                "Error with set_piece_current_direction : Direction is %d, was "
                 "expected %d\n",
-                get_current_dir(g, x, y), dir);
+                get_current_direction(g, x, y), dir);
         delete_game(g);
         return EXIT_FAILURE;
       }
@@ -1183,7 +1400,6 @@ static int test_set_piece_current_dir() {
  * @brief Changes the current direction and piece type out of bounds. Checks if
  * all pieces kept their original type, current direction and original
  * direction.
- *
  */
 static int test_set_piece_out_of_bounds() {
   uint16_t width = 3;
@@ -1259,10 +1475,10 @@ static int test_shuffle_direction() {
     shuffle_direction(g);
     for (uint16_t y = 0; y < height; y++) {
       for (uint16_t x = 0; x < width; x++) {
-        if (dTab[y * width + x] == get_current_dir(g, x, y)) {
+        if (dTab[y * width + x] == get_current_direction(g, x, y)) {
           same++;
         }
-        dTab[y * width + x] = get_current_dir(g, x, y);
+        dTab[y * width + x] = get_current_direction(g, x, y);
       }
     }
   }
@@ -1315,20 +1531,54 @@ int main(int argc, char* argv[]) {
     status = test_game_height_valid();
   else if (strcmp("game_height_null_game", argv[1]) == 0)
     status = test_game_height_null_game();
-  else if (strcmp("game_width", argv[1]) == 0)
-    status = test_game_width();
-  else if (strcmp("get_current_dir", argv[1]) == 0)
-    status = test_get_current_dir();
-  else if (strcmp("get_piece", argv[1]) == 0)
-    status = test_get_piece();
-  else if (strcmp("is_edge", argv[1]) == 0)
-    status = test_is_edge();
+  else if (strcmp("game_width_valid", argv[1]) == 0)
+    status = test_game_width_valid();
+  else if (strcmp("game_width_null_game", argv[1]) == 0)
+    status = test_game_width_null_game();
+  else if (strcmp("get_current_direction_valid", argv[1]) == 0)
+    status = test_get_current_direction_valid();
+  else if (strcmp("get_current_direction_null_game", argv[1]) == 0)
+    status = test_get_current_direction_null_game();
+  else if (strcmp("get_current_direction_out_of_bounds", argv[1]) == 0)
+    status = test_get_current_direction_out_of_bounds();
+  else if (strcmp("get_piece_valid", argv[1]) == 0)
+    status = test_get_piece_valid();
+  else if (strcmp("get_piece_null_game", argv[1]) == 0)
+    status = test_get_piece_null_game();
+  else if (strcmp("get_piece_out_of_bounds", argv[1]) == 0)
+    status = test_get_piece_out_of_bounds();
+  else if (strcmp("is_edge_EMPTY", argv[1]) == 0)
+    status = test_is_edge_EMPTY();
+  else if (strcmp("is_edge_LEAF", argv[1]) == 0)
+    status = test_is_edge_LEAF();
+  else if (strcmp("is_edge_SEGMENT", argv[1]) == 0)
+    status = test_is_edge_SEGMENT();
+  else if (strcmp("is_edge_CORNER", argv[1]) == 0)
+    status = test_is_edge_CORNER();
+  else if (strcmp("is_edge_TEE", argv[1]) == 0)
+    status = test_is_edge_TEE();
+  else if (strcmp("is_edge_CROSS", argv[1]) == 0)
+    status = test_is_edge_CROSS();
   else if (strcmp("is_edge_coordinates", argv[1]) == 0)
     status = test_is_edge_coordinates();
-  else if (strcmp("is_game_over", argv[1]) == 0)
-    status = test_is_game_over();
-  else if (strcmp("is_wrapping", argv[1]) == 0)
-    status = test_is_wrapping();
+  else if (strcmp("is_game_over_true", argv[1]) == 0)
+    status = test_is_game_over_true();
+  else if (strcmp("is_game_over_true_wrapped", argv[1]) == 0)
+    status = test_is_game_over_true_wrapped();
+  else if (strcmp("is_game_over_false", argv[1]) == 0)
+    status = test_is_game_over_false();
+  else if (strcmp("is_game_over_false_wrapped", argv[1]) == 0)
+    status = test_is_game_over_false_wrapped();
+  else if (strcmp("is_game_over_empty_game", argv[1]) == 0)
+    status = test_is_game_over_empty_game();
+  else if (strcmp("is_game_over_null_game", argv[1]) == 0)
+    status = test_is_game_over_null_game();
+  else if (strcmp("is_wrapping_true", argv[1]) == 0)
+    status = test_is_wrapping_true();
+  else if (strcmp("is_wrapping_false", argv[1]) == 0)
+    status = test_is_wrapping_false();
+  else if (strcmp("is_wrapping_null_game", argv[1]) == 0)
+    status = test_is_wrapping_null_game();
   else if (strcmp("new_game", argv[1]) == 0)
     status = test_new_game();
   else if (strcmp("new_game_empty", argv[1]) == 0)
@@ -1337,8 +1587,16 @@ int main(int argc, char* argv[]) {
     status = test_new_game_empty_ext();
   else if (strcmp("new_game_ext", argv[1]) == 0)
     status = test_new_game_ext();
-  else if (strcmp("opposite_dir", argv[1]) == 0)
-    status = test_opposite_dir();
+  else if (strcmp("opposite_direction_N", argv[1]) == 0)
+    status = test_opposite_direction_N();
+  else if (strcmp("opposite_direction_E", argv[1]) == 0)
+    status = test_opposite_direction_E();
+  else if (strcmp("opposite_direction_S", argv[1]) == 0)
+    status = test_opposite_direction_S();
+  else if (strcmp("opposite_direction_W", argv[1]) == 0)
+    status = test_opposite_direction_W();
+  else if (strcmp("opposite_direction_invalid", argv[1]) == 0)
+    status = test_opposite_direction_invalid();
   else if (strcmp("restart_game", argv[1]) == 0)
     status = test_restart_game();
   else if (strcmp("rotate_piece", argv[1]) == 0)
@@ -1347,7 +1605,7 @@ int main(int argc, char* argv[]) {
     status = test_rotate_piece_one();
   else if (strcmp("set_piece", argv[1]) == 0)
     status = test_set_piece();
-  else if (strcmp("set_piece_current_dir", argv[1]) == 0)
+  else if (strcmp("set_piece_current_direction", argv[1]) == 0)
     status = test_set_piece_current_dir();
   else if (strcmp("set_piece_out_of_bounds", argv[1]) == 0)
     status = test_set_piece_out_of_bounds();

@@ -106,7 +106,7 @@ typedef const struct game_s *cgame;
 /**
  * @brief Creates an empty game (DEFAULT_SIZE x DEFAULT_SIZE) with squares set
  *to empty and directions set to North
- * @return the newly created game
+ * @return the newly created game, NULL in case of error
  **/
 game new_game_empty();
 
@@ -116,7 +116,7 @@ game new_game_empty();
  * @param width the width of the grid for the empty game (number of columns)
  * @param height the height of the grid for the empty game (number of rows)
  * @param wrapping a boolean indicating whether the grid is "wrapping"
- * @return the newly created game
+ * @return the newly created game, NULL in case of error
  **/
 game new_game_empty_ext(uint16_t width, uint16_t height, bool wrapping);
 
@@ -126,7 +126,7 @@ game new_game_empty_ext(uint16_t width, uint16_t height, bool wrapping);
  *bottom of the grid
  * @param initial_directions the directions in which the pieces are oriented
  *initially
- * @return the newly created game
+ * @return the newly created game, NULL in case of error
  **/
 game new_game(const piece *pieces, const direction *initial_directions);
 
@@ -139,7 +139,7 @@ game new_game(const piece *pieces, const direction *initial_directions);
  * @param initial_directions the directions in which the pieces are oriented
  *initially
  * @param wrapping a boolean indicating whether the grid is "wrapping"
- * @return the newly created game
+ * @return the newly created game, NULL in case of error
  **/
 game new_game_ext(uint16_t width, uint16_t height, const piece *pieces,
                   const direction *initial_directions, bool wrapping);
@@ -158,7 +158,7 @@ void set_piece(game board, uint16_t x, uint16_t y, piece new_piece,
 /**
  * @brief Returns whether the grid is defined as being "wrapping" or not
  * @param board a constant pointer on the game to be tested
- * @return true if the grid is wrapping, false otherwise
+ * @return true if the grid is wrapping, false otherwise or in case of error
  **/
 bool is_wrapping(cgame board);
 
@@ -208,7 +208,7 @@ void rotate_piece(game board, uint16_t x, uint16_t y,
  * @param dir the current direction to be set for the piece located at (x,y)
  **/
 void set_piece_current_direction(game board, uint16_t x, uint16_t y,
-                           direction new_direction);
+                                 direction new_direction);
 
 /**
  * @brief Tests whether a piece on a given position is oriented so as it could
@@ -219,7 +219,7 @@ void set_piece_current_direction(game board, uint16_t x, uint16_t y,
  * @param dir the direction in which to test whether the piece could be
  *connected
  * @return true if the piece on (x,y) could be connected in the direction dir,
- *false otherwise
+ *false otherwise or in case of error
  **/
 bool is_edge_coordinates(cgame board, uint16_t x, uint16_t y, direction dir);
 
@@ -231,7 +231,7 @@ bool is_edge_coordinates(cgame board, uint16_t x, uint16_t y, direction dir);
  * @param dir the direction in which to test whether the piece could be
  *connected
  * @return true if the piece could be connected in the direction dir, false
- *otherwise
+ *otherwise, false in case of error
  **/
 
 bool is_edge(piece test_piece, direction orientation, direction dir);
@@ -239,7 +239,7 @@ bool is_edge(piece test_piece, direction orientation, direction dir);
 /**
  * @brief Computes the opposite of a given direction
  * @param dir the direction
- * @return the opposite direction of dir
+ * @return the opposite direction of dir, -1 in case of error
  **/
 
 direction opposite_direction(direction dir);
@@ -247,7 +247,7 @@ direction opposite_direction(direction dir);
 /**
  * @brief Clones the game source_board
  * @param source_board a constant pointer on the game to clone
- * @return the clone of source_board
+ * @return the clone of source_board, NULL in case of error
  **/
 game copy_game(cgame source_board);
 
@@ -262,7 +262,7 @@ void delete_game(game board);
  * @param board the game we consider
  * @param x the x coordinate of the square
  * @param y the y coordinate of the square
- * @return the piece of the square
+ * @return the piece of the board, -2 in case of error
  **/
 piece get_piece(cgame board, uint16_t x, uint16_t y);
 
@@ -271,7 +271,7 @@ piece get_piece(cgame board, uint16_t x, uint16_t y);
  * @param board a constant pointer on the game we consider
  * @param x the x coordinate of the square
  * @param y the y coordinate of the square
- * @return the current orientation
+ * @return the current orientation, -1 in case of error
  **/
 direction get_current_direction(cgame board, uint16_t x, uint16_t y);
 
@@ -279,7 +279,7 @@ direction get_current_direction(cgame board, uint16_t x, uint16_t y);
  * @brief Tests if the game is over (that is the grid is filled according to the
  *requirements)
  * @param board the board to test
- * @return true if all the constraints are satisfied
+ * @return true if all the constraints are satisfied, false in case of error
  **/
 bool is_game_over(cgame board);
 
