@@ -19,7 +19,9 @@
  * @file game.h
  * @brief This file describes the programming interface of a puzzle
  * game, named 'Net'.
- *
+ */
+
+/**
  * @mainpage
  *
  * This game was originally invented by David Millar. A demo of this game is

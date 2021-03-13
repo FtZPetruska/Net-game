@@ -3,6 +3,12 @@
 
 #include "game.h"
 
+/**
+ * @file cell.h
+ *
+ * @brief This file provides structures and functions to manipulate board cells.
+ **/
+
 typedef struct cell_s *cell;
 
 cell alloc_cell();

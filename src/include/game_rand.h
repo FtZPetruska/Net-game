@@ -3,6 +3,12 @@
 #include "game.h"
 
 /**
+ * @file game_rand.h
+ *
+ * @brief This file provides a function to randomly generate game objects.
+ **/
+
+/**
  * @brief Creates a valid game randomly
  * @param width the width of the board for the game (number of columns)
  * @param height the height of the board for the game (number of rows)

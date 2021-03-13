@@ -1,18 +1,18 @@
 #include "cell.h"
 
 #include <stdio.h>
-
+/**
+ * @brief Structure for a board cell
+ */
 struct cell_s {
-  piece cell_piece;                   // cell holds a piece
-  direction current_piece_direction;  // with a direction
-  cell left;                          // pointers to neighbor cells
-  cell right;   // so value == NULL if this cell is a border.
-  cell top;     // this struct is similar to a doubly linked list
-  cell bottom;  // but in 2D.
-  // L,R,U,D -> Respectively Left, Right, Up, Down
-  direction default_piece_direction;  // this is the direction by default of the
-                                      // piece, initialized at the creation of
-                                      // the game, used to reset the board.
+  piece cell_piece;                  /**< Piece help by the cell.*/
+  direction current_piece_direction; /**< Current direction of the piece.*/
+  cell left;   /**< Pointer to the cell to the left, NULL if there is none.*/
+  cell right;  /**< Pointer to the cell to the right, NULL if there is none.*/
+  cell top;    /**< Pointer to the cell to the top, NULL if there is none.*/
+  cell bottom; /**< Pointer to the cell to the bottom, NULL if there is none.*/
+  direction default_piece_direction; /**< Default direction of the piece, used
+                                        for restart.*/
 };
 
 static uint16_t size_column_cell(cell origin) {

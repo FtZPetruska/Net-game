@@ -7,6 +7,10 @@
  *
  * @brief This file provides functions to load or save a game.
  *
+ * The format used for save files is the following:
+ * The first line contains respectively the width, the height and the wrapping
+ *boolean. On subsequent lines the game board is represented with pairs of
+ *PIECE;DIRECTION.
  **/
 
 /**
