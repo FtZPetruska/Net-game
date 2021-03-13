@@ -87,7 +87,7 @@ typedef enum piece_e {
 /**
  * @brief The four cardinal directions
  **/
-typedef enum direction_e { N, E, S, W } direction;
+typedef enum direction_e { N = 0, E = 1, S = 2, W = 3 } direction;
 
 #define NB_DIR 4
 
