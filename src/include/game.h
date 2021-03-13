@@ -207,7 +207,7 @@ void rotate_piece(game board, uint16_t x, uint16_t y,
  * @param y the row (y coordinate) of the piece on the grid
  * @param dir the current direction to be set for the piece located at (x,y)
  **/
-void set_piece_current_dir(game board, uint16_t x, uint16_t y,
+void set_piece_current_direction(game board, uint16_t x, uint16_t y,
                            direction new_direction);
 
 /**
@@ -242,7 +242,7 @@ bool is_edge(piece test_piece, direction orientation, direction dir);
  * @return the opposite direction of dir
  **/
 
-direction opposite_dir(direction dir);
+direction opposite_direction(direction dir);
 
 /**
  * @brief Clones the game source_board
@@ -273,7 +273,7 @@ piece get_piece(cgame board, uint16_t x, uint16_t y);
  * @param y the y coordinate of the square
  * @return the current orientation
  **/
-direction get_current_dir(cgame board, uint16_t x, uint16_t y);
+direction get_current_direction(cgame board, uint16_t x, uint16_t y);
 
 /**
  * @brief Tests if the game is over (that is the grid is filled according to the

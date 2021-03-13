@@ -161,7 +161,7 @@ void render(SDL_Window* win, SDL_Renderer* ren, Env* env) {
   for (int32_t y = game_h - 1; y >= 0; y--) {
     for (int32_t x = 0; x < game_w; x++) {
       board_piece = get_piece(env->game, (uint16_t)x, (uint16_t)y);
-      dir = get_current_dir(env->game, (uint16_t)x, (uint16_t)y);
+      dir = get_current_direction(env->game, (uint16_t)x, (uint16_t)y);
       rect.x = env->pos_x + x * env->piece_size;
       rect.y = env->pos_y + (game_h - (y + 1)) * env->piece_size;
       SDL_RenderCopyEx(ren, env->pieces[board_piece], NULL, &rect,

@@ -42,7 +42,7 @@ void draw_game(game board) {
 
     for (uint16_t x = 0; x < width; x++) {
       piece current_piece = get_piece(board, x, y);
-      direction current_direction = get_current_dir(board, x, y);
+      direction current_direction = get_current_direction(board, x, y);
       draw_piece(current_piece, current_direction);
     }
 

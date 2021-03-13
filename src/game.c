@@ -251,15 +251,15 @@ void rotate_piece(game board, uint16_t x, uint16_t y,
   set_current_direction_cell(current_cell, new_direction % NB_DIR);
 }
 
-void set_piece_current_dir(game board, uint16_t x, uint16_t y,
+void set_piece_current_direction(game board, uint16_t x, uint16_t y,
                            direction new_direction) {
   if (!board) {
-    FPRINTF(stderr, "Error: set_piece_current_dir, game pointer is NULL.\n");
+    FPRINTF(stderr, "Error: set_piece_current_direction, game pointer is NULL.\n");
     return;
   }
   if (x >= get_game_width(board) || y >= get_game_height(board)) {
     FPRINTF(stderr,
-            "Error: set_piece_current_dir, coordinates (%hu,%hu) are out of "
+            "Error: set_piece_current_direction, coordinates (%hu,%hu) are out of "
             "bounds, "
             "x and y must be, respectively, in the following intervals: "
             "[0; %hu[ and [0; %hu[.\n",
@@ -334,10 +334,10 @@ bool is_edge(piece test_piece, direction orientation, direction dir) {
   }
 }
 
-direction opposite_dir(direction dir) {
+direction opposite_direction(direction dir) {
   if (dir < N || W < dir) {
     FPRINTF(stderr,
-            "Error: opposite_dir, given test direction has invalid value %d, "
+            "Error: opposite_direction, given test direction has invalid value %d, "
             "expected value in interval [%d;%d].\n",
             dir, N, W);
     return (direction)-1;
@@ -425,14 +425,14 @@ piece get_piece(cgame board, uint16_t x, uint16_t y) {
   return get_piece_cell(current_cell);
 }
 
-direction get_current_dir(cgame board, uint16_t x, uint16_t y) {
+direction get_current_direction(cgame board, uint16_t x, uint16_t y) {
   if (!board) {
-    FPRINTF(stderr, "Error: get_current_dir, game pointer is NULL.\n");
+    FPRINTF(stderr, "Error: get_current_direction, game pointer is NULL.\n");
     return (direction)-1;
   }
   if (x >= get_game_width(board) || y >= get_game_height(board)) {
     FPRINTF(stderr,
-            "Error: get_current_dir, coordinates (%hu,%hu) are out of bounds, "
+            "Error: get_current_direction, coordinates (%hu,%hu) are out of bounds, "
             "x and y must be, respectively, in the following intervals: "
             "[0; %hu[ and [0; %hu[.\n",
             x, y, get_game_width(board), get_game_height(board));
@@ -466,7 +466,7 @@ bool is_game_over(cgame board) {
                          // if the branch is well formed
       get_coordinates_from_direction(dir, &delta_x, &delta_y);
       if (!is_branch_over(board, translate_cell(origin, delta_x, delta_y),
-                          opposite_dir(dir), checked_cells,
+                          opposite_direction(dir), checked_cells,
                           (delta_x + width) % width,
                           (delta_y + height) % height)) {
         // one of the branch starting from the origin isn't well formed
@@ -711,7 +711,7 @@ static bool is_branch_over(cgame board, cell branch_cell,
       get_coordinates_from_direction(dir, &delta_x, &delta_y);
       cell next_branch_cell = translate_cell(branch_cell, delta_x, delta_y);
 
-      if (!is_branch_over(board, next_branch_cell, opposite_dir(dir),
+      if (!is_branch_over(board, next_branch_cell, opposite_direction(dir),
                           checked_cells, (x + delta_x + width) % width,
                           (y + delta_y + height) % height)) {
         return false;

@@ -105,7 +105,7 @@ static board_element get_board_element_from_edge_links(edge_links links) {
       new_piece = TEE;
       for (direction orientation = 0; orientation < NB_DIR; orientation++)
         if (!links.links[orientation])
-          new_direction = opposite_dir(orientation);
+          new_direction = opposite_direction(orientation);
       break;
     case 4:
       new_piece = CROSS;
@@ -123,7 +123,7 @@ static void add_half_edge(game board, edge new_edge) {
   uint16_t new_edge_x = (uint16_t)new_edge.point.x;
   uint16_t new_edge_y = (uint16_t)new_edge.point.y;
   board_element old_element = {get_piece(board, new_edge_x, new_edge_y),
-                               get_current_dir(board, new_edge_x, new_edge_y)};
+                               get_current_direction(board, new_edge_x, new_edge_y)};
   edge_links piece_edge_links = get_edge_links_from_board_element(old_element);
   piece_edge_links.links[new_edge.piece_direction] = true;
   board_element new_element =
@@ -134,7 +134,7 @@ static void add_half_edge(game board, edge new_edge) {
 
 static void add_edge(game board, edge new_edge) {
   edge neighbour_edge = {get_neighbour_point(board, new_edge),
-                         opposite_dir(new_edge.piece_direction)};
+                         opposite_direction(new_edge.piece_direction)};
   assert(is_point_in_board_bounds(board, neighbour_edge.point));
   add_half_edge(board, new_edge);
   add_half_edge(board, neighbour_edge);

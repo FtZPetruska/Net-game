@@ -351,7 +351,7 @@ static possibility findSolution(uint16_t x, uint16_t y) {
 
   if (setUnmovable()) {
     if (check_double_bool_array(unmovable, width, height)) {
-      thisPoss = createSinglePoss(0, 0, get_current_dir(g, 0, 0));
+      thisPoss = createSinglePoss(0, 0, get_current_direction(g, 0, 0));
       thisPoss->totalNextDerivPos = 1;
     } else {
       thisPoss = createSinglePoss(0, 0, 0);
@@ -667,7 +667,7 @@ static bool setRecUnmovable(uint16_t x, uint16_t y) {
   }
 
   for (uint32_t i = 0; i < nbDir; i++) {
-    set_piece_current_dir(g, x, y, DIRS[i]);
+    set_piece_current_direction(g, x, y, DIRS[i]);
     if (isGoodDir(x, y)) {
       nbPosition++;
       positions[i] = true;
@@ -679,7 +679,7 @@ static bool setRecUnmovable(uint16_t x, uint16_t y) {
   } else if (nbPosition == 1) {
     for (uint8_t i = 0; i < nbDir; i++) {
       if (positions[i]) {
-        set_piece_current_dir(g, x, y, DIRS[i]);
+        set_piece_current_direction(g, x, y, DIRS[i]);
         unmovable[x][y] = true;
       }
     }
@@ -719,7 +719,7 @@ static bool setRecUnmovable(uint16_t x, uint16_t y) {
  **/
 static possibility propagate(uint16_t x, uint16_t y) {
   int32_t x2, y2;
-  possibility thisPoss = createSinglePoss(x, y, get_current_dir(g, x, y));
+  possibility thisPoss = createSinglePoss(x, y, get_current_direction(g, x, y));
   // The possibility we're going to return at the end of the function
   possibility possFound[NB_DIR];
   // Trees of possibilites will be stored in this array
@@ -783,7 +783,7 @@ static possibility propagate(uint16_t x, uint16_t y) {
  **/
 static void loadPossibility(possibility poss, uint32_t numPoss) {
   if (poss == NULL) return;  // we're trying to load an unexisting possibility
-  set_piece_current_dir(g, poss->x, poss->y, poss->dir);
+  set_piece_current_direction(g, poss->x, poss->y, poss->dir);
   checked[poss->x][poss->y] = true;
   if (poss->isLeaf) return;  // we've reached the end of the possibility to load
   uint32_t i = 0;
@@ -873,7 +873,7 @@ static uint32_t findPoss(possibility *possArray, uint32_t *nbDerivPos,
   } else {
     for (uint8_t i = 0; i < nbDir; i++) {
       // For each direction this piece can be in
-      set_piece_current_dir(g, x, y, DIRS[i]);
+      set_piece_current_direction(g, x, y, DIRS[i]);
       if (isGoodDir(x, y)) {
         // If it's suitable with the rest of the game.
         possArray[nbPoss] = propagate(x, y);
@@ -926,13 +926,13 @@ bool isGoodDir(uint16_t x, uint16_t y) {
       }
 
       if ((checked[x3][y3] || unmovable[x3][y3]) &&
-          !is_edge_coordinates(g, x3, y3, opposite_dir(DIRS[i]))) {
+          !is_edge_coordinates(g, x3, y3, opposite_direction(DIRS[i]))) {
         // The piece to which it is connected cannot move and is not connected
         return false;
       }
 
       if (checked[x3][y3] &&
-          is_edge_coordinates(g, x3, y3, opposite_dir(DIRS[i]))) {
+          is_edge_coordinates(g, x3, y3, opposite_direction(DIRS[i]))) {
         if (foundChecked) {
           // We already found a pieced that is connected and checked : place the
           // piece this way would create a loop
@@ -941,7 +941,7 @@ bool isGoodDir(uint16_t x, uint16_t y) {
         foundChecked = true;
       }
     } else if ((checked[x3][y3] || unmovable[x3][y3]) &&
-               is_edge_coordinates(g, x3, y3, opposite_dir(DIRS[i]))) {
+               is_edge_coordinates(g, x3, y3, opposite_direction(DIRS[i]))) {
       // The piece to which it is not connected cannot move and has to be
       // connected in return
       return false;

@@ -97,10 +97,10 @@ void save_game(cgame board, char* filename) {
   for (uint16_t y = height; y-- > 0;) {
     for (uint16_t x = 0; x < width - 1; x++) {
       FPRINTF(stream, "%d;%d ", get_piece(board, x, y),
-              get_current_dir(board, x, y));
+              get_current_direction(board, x, y));
     }
     FPRINTF(stream, "%d;%d\n", get_piece(board, game_width(board) - 1, y),
-            get_current_dir(board, game_width(board) - 1, y));
+            get_current_direction(board, game_width(board) - 1, y));
   }
   FCLOSE(stream);
 }
