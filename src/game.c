@@ -326,8 +326,7 @@ bool is_edge(piece test_piece, direction orientation, direction dir) {
     case CORNER:
       return (orientation == dir || (orientation + 1) % NB_DIR == dir);
     case TEE:
-      return ((orientation - 1) % NB_DIR == dir || orientation == dir ||
-              (orientation + 1) % NB_DIR == dir);
+      return (orientation != opposite_direction(dir));
     case CROSS:
       return true;
     default:
@@ -456,6 +455,11 @@ bool is_game_over(cgame board) {
   uint16_t width = get_game_width(board);
   uint16_t height = get_game_height(board);
   bool **checked_cells = alloc_double_bool_array(width, height);
+  if (!checked_cells) {
+    FPRINTF(stderr,
+            "Error: is_game_over, couldn't allocate a 2D bool array.\n");
+    return false;
+  }
   checked_cells[0][0] = true;  // The origin is always checked
 
   int delta_x, delta_y;

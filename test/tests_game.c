@@ -1,6 +1,3 @@
-#include <signal.h>
-#include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 
 #include "game.h"
@@ -573,8 +570,7 @@ static int test_is_edge_TEE() {
   for (direction i = N; i < NB_DIR; i++) {
     for (direction j = N; j < NB_DIR; j++) {
       bool result = is_edge(TEE, i, j);
-      if (result !=
-          ((i - 1) % NB_DIR == j || i == j || (i + 1) % NB_DIR == j)) {
+      if (result != (i != opposite_direction(j))) {
         FPRINTF(stderr,
                 "Error: test_is_edge_TEE, is_edge returned %s for piece "
                 "orientation %d in direction %d for a TEE piece.\n",
@@ -747,9 +743,8 @@ static int test_is_edge_coordinates_TEE() {
            test_direction++) {
         direction current_direction = get_current_direction(board, x, y);
         bool result = is_edge_coordinates(board, x, y, test_direction);
-        if (result != ((current_direction - 1) % NB_DIR == test_direction ||
-                       current_direction == test_direction ||
-                       (current_direction + 1) % NB_DIR == test_direction)) {
+        if (result !=
+            (current_direction != opposite_direction(test_direction))) {
           FPRINTF(stderr,
                   "Error: test_is_edge_coordinates_TEE, is_edge_coordinates "
                   "returned %s for the piece (%hu,%hu) in the direction %d "
