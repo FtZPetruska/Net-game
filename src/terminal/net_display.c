@@ -10,7 +10,7 @@ int main(int argc, char** argv) {
     return EXIT_FAILURE;
   }
   game board = load_game(argv[1]);
-  if(!board) {
+  if (!board) {
     FPRINTF(stderr, "Error: net_display, unable to load the game.\n");
     return EXIT_FAILURE;
   }
